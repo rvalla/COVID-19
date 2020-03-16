@@ -14,12 +14,12 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Brazil"]
+regions = ["Argentina", "Germany", "France", "Italy", "Spain"]
 
 #Selecting data to display
 startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
-confirmedCases = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
-outbreakDayCount = 0 #Number of days after confirmedCases condition is fulfiled
+caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
+outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 
 #Loading data...
 data = pd.read_csv(fileCompletePath)
@@ -38,10 +38,10 @@ def regionsIndexes(regions):
 #Function to plot cases for regions by date
 def plotbyDate(regions):
 	indexes = regionsIndexes(regions)
-	figure(num=None, figsize=(8, 3), dpi=150, facecolor='w', edgecolor='k')
+	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(indexes)):
 		data[startDate:][indexes[i]].plot(kind='line', label=regions[i])
-	plt.title("COVID-19: Casos confirmados por fecha")
+	plt.title("COVID-19: " + dataSelection + " cases since " + startDate)
 	plt.legend()	
 	plt.tight_layout()
 	plt.grid()
@@ -54,7 +54,7 @@ def regionsStartPoints(regions):
 	startPoints = []
 	for i in range(len(regions)):
 		for e in range(data.shape[0]-4):
-			if data.iloc[4 + e, indexes[i]] >= confirmedCases:
+			if data.iloc[4 + e, indexes[i]] >= caseCount:
 				startPoints.append(e + 4)
 				break
 	return startPoints
@@ -64,16 +64,17 @@ def plotbyOutbreak(regions):
 	indexes = regionsIndexes(regions)
 	startPoints = regionsStartPoints(regions)
 	period = data.shape[0] - startPoints[0] - outbreakDayCount
-	figure(num=None, figsize=(8, 3), dpi=150, facecolor='w', edgecolor='k')
+	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(indexes)):
 		startPoint = startPoints[i] + outbreakDayCount
 		data[startPoint:startPoint + period][indexes[i]].plot(kind='line', label=regions[i])
-	plt.title("COVID-19: Confirmed cases since number " + str(confirmedCases) + " case")
+	plt.title("COVID-19: " + dataSelection + " cases since number " + str(caseCount))
 	plt.legend()	
 	plt.tight_layout()
 	plt.grid()
-	plt.yscale(plotScale)
 	plt.xticks([])
+	plt.xlabel("Time in days")
+	plt.yscale(plotScale)
 	plt.show()
 
 #plotbyDate(regions)
