@@ -14,7 +14,9 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Germany", "France", "Italy", "Spain"]
+regions = ["India"]
+regionsIndexes = []
+groupbyCountry = True
 
 #Selecting data to display
 startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
@@ -26,7 +28,7 @@ data = pd.read_csv(fileCompletePath)
 data = data.T
 
 #Function to look for selected regions in Data Frame
-def regionsIndexes(regions):
+def getRegionsIndexes(regions):
 	indexes = []
 	for i in range(len(regions)):
 		for e in range(data.shape[1]):
@@ -35,12 +37,23 @@ def regionsIndexes(regions):
 				break
 	return indexes
 
+regionsIndexes = getRegionsIndexes(regions)
+
+#Grouping data by country if needed (sum added at the end of the Data Frame)
+if groupbyCountry == True:
+	for r in range(len(regions)):
+		ls = []
+		for i in range(data.shape[1]):
+			if data.loc['Country/Region', i] == regions[r]:
+				ls.append(i)
+		data[data.shape[1]] = data[:][ls].sum(axis=1)
+		regionsIndexes[r] = data.shape[1] - 1
+
 #Function to plot cases for regions by date
 def plotbyDate(regions):
-	indexes = regionsIndexes(regions)
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
-	for i in range(len(indexes)):
-		data[startDate:][indexes[i]].plot(kind='line', label=regions[i])
+	for i in range(len(regionsIndexes)):
+		data[startDate:][regionsIndexes[i]].plot(kind='line', label=regions[i])
 	plt.title("COVID-19: " + dataSelection + " cases since " + startDate)
 	plt.legend()	
 	plt.tight_layout()
@@ -50,24 +63,22 @@ def plotbyDate(regions):
 
 #Function to look for first case in each region
 def regionsStartPoints(regions):
-	indexes = regionsIndexes(regions)
 	startPoints = []
 	for i in range(len(regions)):
 		for e in range(data.shape[0]-4):
-			if data.iloc[4 + e, indexes[i]] >= caseCount:
+			if data.iloc[4 + e, regionsIndexes[i]] >= caseCount:
 				startPoints.append(e + 4)
 				break
 	return startPoints
 
 #Function to plot cases for regions since first case
 def plotbyOutbreak(regions):
-	indexes = regionsIndexes(regions)
 	startPoints = regionsStartPoints(regions)
 	period = data.shape[0] - startPoints[0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
-	for i in range(len(indexes)):
+	for i in range(len(regionsIndexes)):
 		startPoint = startPoints[i] + outbreakDayCount
-		data[startPoint:startPoint + period][indexes[i]].plot(kind='line', label=regions[i])
+		data[startPoint:startPoint + period][regionsIndexes[i]].plot(kind='line', label=regions[i])
 	plt.title("COVID-19: " + dataSelection + " cases since number " + str(caseCount))
 	plt.legend()	
 	plt.tight_layout()
