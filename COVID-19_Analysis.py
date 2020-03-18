@@ -14,9 +14,9 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["India"]
+regions = ["Argentina", "Brazil", "Uruguay", "Colombia"]
 regionsIndexes = []
-groupbyCountry = True
+groupbyCountry = False
 
 #Selecting data to display
 startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
