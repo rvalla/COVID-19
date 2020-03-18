@@ -5,7 +5,7 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = "Confirmed"
+dataSelection = "Deaths"
 fileName = "time_series_19-covid-" + dataSelection + ".csv"
 fileCompletePath = "COVID-19/csse_covid_19_data/csse_covid_19_time_series/" + fileName
 
@@ -14,13 +14,13 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Brazil", "Uruguay", "Colombia"]
+regions = ["Italy", "Germany", "France", "Spain"]
 regionsIndexes = []
 groupbyCountry = False
 
 #Selecting data to display
-startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 2 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 
 #Loading data...
@@ -55,10 +55,12 @@ def plotbyDate(regions):
 	for i in range(len(regionsIndexes)):
 		data[startDate:][regionsIndexes[i]].plot(kind='line', label=regions[i])
 	plt.title("COVID-19: " + dataSelection + " cases since " + startDate)
-	plt.legend()	
-	plt.tight_layout()
-	plt.grid()
+	plt.legend()
+	plt.grid(which='both', axis='both')
 	plt.yscale(plotScale)
+	plt.ylabel("Number of cases")
+	plt.xlabel("Time in days")
+	plt.tight_layout()
 	plt.show()
 
 #Function to look for first case in each region
@@ -81,11 +83,12 @@ def plotbyOutbreak(regions):
 		data[startPoint:startPoint + period][regionsIndexes[i]].plot(kind='line', label=regions[i])
 	plt.title("COVID-19: " + dataSelection + " cases since number " + str(caseCount))
 	plt.legend()	
-	plt.tight_layout()
 	plt.grid()
 	plt.xticks([])
+	plt.ylabel("Number of cases")
 	plt.xlabel("Time in days")
 	plt.yscale(plotScale)
+	plt.tight_layout()
 	plt.show()
 
 #plotbyDate(regions)
