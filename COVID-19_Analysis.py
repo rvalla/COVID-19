@@ -5,7 +5,7 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = "Deaths"
+dataSelection = "Confirmed"
 fileName = "time_series_19-covid-" + dataSelection + ".csv"
 fileCompletePath = "COVID-19/csse_covid_19_data/csse_covid_19_time_series/" + fileName
 
@@ -14,13 +14,16 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Italy", "Germany", "France", "Spain"]
+regions = ["New York", "California", "Ohio", "Washington", "Nevada", "Florida", "New Jersey", "Oregon", "Texas", "Arizona", "Michigan"]
 regionsIndexes = []
 groupbyCountry = False
+#You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
+#If you choose 'Province/State' then 'groupbyCountry' must be False
+regionReference = "Province/State"
 
 #Selecting data to display
-startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 2 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "3/8/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 
 #Loading data...
@@ -32,7 +35,7 @@ def getRegionsIndexes(regions):
 	indexes = []
 	for i in range(len(regions)):
 		for e in range(data.shape[1]):
-			if data.loc['Country/Region', e] == regions[i]:
+			if data.loc[regionReference, e] == regions[i]:
 				indexes.append(e)
 				break
 	return indexes
@@ -44,7 +47,7 @@ if groupbyCountry == True:
 	for r in range(len(regions)):
 		ls = []
 		for i in range(data.shape[1]):
-			if data.loc['Country/Region', i] == regions[r]:
+			if data.loc[regionReference, i] == regions[r]:
 				ls.append(i)
 		data[data.shape[1]] = data[:][ls].sum(axis=1)
 		regionsIndexes[r] = data.shape[1] - 1
