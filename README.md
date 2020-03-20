@@ -11,7 +11,10 @@ Then you need **Python 3** and this packages to use it:
 - pandas
 - numpy
 
-You can plot cases' data by date or since first case appearance. With linear or logarithmic
-scales.
+You can plot cases' data (confirmed cases, deaths, recovered patients) by date or
+since _n_ case appearance.
+You can use linear or logarithmic scales.
+You can group data by country or study states/province data.
+You can plot death rate evolution too.
 
 Contact [rodrigovalla[at]yahoo.com.ar](mailto:rodrigovalla@yahoo.com.ar)

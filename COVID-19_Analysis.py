@@ -28,7 +28,7 @@ regionReference = "Country/Region"
 
 #Selecting data to display
 startDate = "2/25/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 
 #Loading data...
