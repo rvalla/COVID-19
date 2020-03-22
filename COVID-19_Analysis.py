@@ -19,7 +19,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["US", "Canada"]
+regions = ["Argentina", "Brazil"]
 regionsIndexes = [[],[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -27,9 +27,10 @@ groupbyCountry = True
 regionReference = "Country/Region"
 
 #Selecting data to display
-startDate = "2/25/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "3/5/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
+dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 
 #Loading data...
 databases = []
@@ -131,6 +132,6 @@ def plotDeathRate(datalocation):
 	plt.show()
 
 	
-#plotbyDate(regionsIndexes, 0)
-#plotbyOutbreak(regionsIndexes, 0)
+#plotbyDate(regionsIndexes, dataType)
+#plotbyOutbreak(regionsIndexes, dataType)
 plotDeathRate(regionsIndexes)
