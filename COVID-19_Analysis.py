@@ -19,7 +19,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Brazil"]
+regions = ["Italy", "Spain", "France"]
 regionsIndexes = [[],[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -27,10 +27,10 @@ groupbyCountry = True
 regionReference = "Country/Region"
 
 #Selecting data to display
-startDate = "3/5/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
+dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 
 #Loading data...
 databases = []
@@ -94,11 +94,12 @@ def plotbyOutbreak(datalocation, datatype):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[datatype][i] + outbreakDayCount
-		databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].plot(kind='line', label=regions[i], linewidth=2.5)
+		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
+		plt.plot(datalist, label=regions[i], linewidth=2.5)
+
 	plt.title("COVID-19: " + dataSelection[datatype] + " cases since number " + str(caseCount))
 	plt.legend()	
 	plt.grid()
-	plt.xticks([])
 	plt.ylabel("Number of cases")
 	plt.xlabel("Time in days")
 	plt.yscale(plotScale)
@@ -132,6 +133,6 @@ def plotDeathRate(datalocation):
 	plt.show()
 
 	
-#plotbyDate(regionsIndexes, dataType)
-#plotbyOutbreak(regionsIndexes, dataType)
+plotbyDate(regionsIndexes, dataType)
+plotbyOutbreak(regionsIndexes, dataType)
 plotDeathRate(regionsIndexes)
