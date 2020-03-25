@@ -5,8 +5,8 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["Confirmed", "Deaths", "Recovered"]
-fileNamePrefix = "time_series_19-covid-"
+dataSelection = ["confirmed_global", "deaths_global"]
+fileNamePrefix = "time_series_covid19_"
 fileExtension = ".csv"
 fileNames = []
 fileCompletePaths = []
@@ -19,15 +19,15 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Italy", "Spain", "France"]
-regionsIndexes = [[],[],[]]
-groupbyCountry = True
+regions = ["Italy", "Spain", "Germany"]
+regionsIndexes = [[],[]]
+groupbyCountry = False
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
 #If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
 
 #Selecting data to display
-startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
@@ -40,8 +40,8 @@ for i in range(len(fileCompletePaths)):
 
 #Function to look for selected regions in Data Frame
 def getRegionsIndexes(regions):
-	indexes = [[] for c in range (3)]
-	for d in range(3):
+	indexes = [[] for c in range (len(dataSelection))]
+	for d in range(len(dataSelection)):
 		for i in range(len(regions)):
 			for e in range(databases[d].shape[1]):
 				if databases[d].loc[regionReference, e] == regions[i]:
@@ -53,13 +53,14 @@ regionsIndexes = getRegionsIndexes(regions)
 
 #Grouping data by country if needed (sum added at the end of the Data Frame)
 if groupbyCountry == True:
-	for d in range(3):
+	for d in range(len(dataSelection)):
 		for r in range(len(regions)):
 			ls = []
 			for i in range(databases[d].shape[1]):
 				if databases[d].loc[regionReference, i] == regions[r]:
 					ls.append(i)
 			databases[d][databases[d].shape[1]] = databases[d][:][ls].sum(axis=1)
+			print(databases[d].shape[1])
 			regionsIndexes[d][r] = databases[d].shape[1] - 1
 
 #Function to plot cases for regions by date. Use 0, 1 or 2 to select Confirmed, Deaths or Recovered
@@ -78,12 +79,13 @@ def plotbyDate(datalocation, datatype):
 
 #Function to look for first case in each region
 def regionsStartPoints(regions):
-	startPoints = [[] for c in range(3)]
-	for d in range(3):
+	startPoints = [[] for c in range(len(dataSelection))]
+	for d in range(len(dataSelection)):
 		for i in range(len(regions)):
 			for e in range(databases[d].shape[0]-4):
 				if databases[d].iloc[4 + e, regionsIndexes[d][i]] >= caseCount:
 					startPoints[d].append(e + 4)
+					print(e + 4)
 					break
 	return startPoints
 
