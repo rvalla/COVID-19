@@ -6,6 +6,7 @@ import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
 dataSelection = ["confirmed_global", "deaths_global"]
+dataTitles = ["Confirmed", "Deaths"]
 fileNamePrefix = "time_series_covid19_"
 fileExtension = ".csv"
 fileNames = []
@@ -19,23 +20,38 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Italy", "Spain", "Germany"]
+regions = ["Argentina", "Chile", "Brazil", "Uruguay"]
 regionsIndexes = [[],[]]
-groupbyCountry = False
+groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
 #If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
 
+
+print("###########################################")
+print("    Visualization of COVID-19 Outbreak")
+print("-------------------------------------------")
+print("https://github.com/rvalla/COVID-19")
+print("Data from John Hopkins University:")
+print("https://github.com/CSSEGISandData/COVID-19")
+print("------------------------------------------")
+print()
+print("Ploting data of ", end=" ")
+print(regions, end="\r")
+
 #Selecting data to display
-startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 50 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 
 #Loading data...
 databases = []
+
 for i in range(len(fileCompletePaths)):
 	databases.append(pd.read_csv(fileCompletePaths[i]))
+	if regionReference == "Country/Region":
+		del	databases[i]["Province/State"]
 	databases[i] = databases[i].T
 
 #Function to look for selected regions in Data Frame
@@ -60,7 +76,6 @@ if groupbyCountry == True:
 				if databases[d].loc[regionReference, i] == regions[r]:
 					ls.append(i)
 			databases[d][databases[d].shape[1]] = databases[d][:][ls].sum(axis=1)
-			print(databases[d].shape[1])
 			regionsIndexes[d][r] = databases[d].shape[1] - 1
 
 #Function to plot cases for regions by date. Use 0, 1 or 2 to select Confirmed, Deaths or Recovered
@@ -68,7 +83,7 @@ def plotbyDate(datalocation, datatype):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		databases[datatype][startDate:][datalocation[datatype][i]].plot(kind='line', label=regions[i], linewidth=2.5)
-	plt.title("COVID-19: " + dataSelection[datatype] + " cases since " + startDate)
+	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
 	plt.legend()
 	plt.grid(which='both', axis='both')
 	plt.yscale(plotScale)
@@ -85,7 +100,6 @@ def regionsStartPoints(regions):
 			for e in range(databases[d].shape[0]-4):
 				if databases[d].iloc[4 + e, regionsIndexes[d][i]] >= caseCount:
 					startPoints[d].append(e + 4)
-					print(e + 4)
 					break
 	return startPoints
 
@@ -99,7 +113,7 @@ def plotbyOutbreak(datalocation, datatype):
 		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
 		plt.plot(datalist, label=regions[i], linewidth=2.5)
 
-	plt.title("COVID-19: " + dataSelection[datatype] + " cases since number " + str(caseCount))
+	plt.title("COVID-19: " + dataTitles[datatype] + " cases since number " + str(caseCount))
 	plt.legend()	
 	plt.grid()
 	plt.ylabel("Number of cases")
@@ -133,8 +147,9 @@ def plotDeathRate(datalocation):
 	plt.xlabel("Time in days")
 	plt.tight_layout()
 	plt.show()
-
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType)
 plotDeathRate(regionsIndexes)
+
+print("That's all. If you want more plots, edit the code and run again.", end="\n")
