@@ -5,8 +5,8 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["confirmed_global", "deaths_global"]
-dataTitles = ["Confirmed", "Deaths"]
+dataSelection = ["confirmed_global", "deaths_global", "recovered_global"]
+dataTitles = ["Confirmed", "Deaths", "Recovered"]
 fileNamePrefix = "time_series_covid19_"
 fileExtension = ".csv"
 fileNames = []
@@ -20,7 +20,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Chile", "Brazil", "Uruguay"]
+regions = ["China", "Korea, South", "Japan"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -40,8 +40,8 @@ print("Ploting data of ", end=" ")
 print(regions, end="\r")
 
 #Selecting data to display
-startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 50 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 
