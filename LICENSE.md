@@ -3,7 +3,7 @@ This software is open-sourced and is licensed under __GNU GPL v3__. You can use 
 Remember that the data comes from this repository: [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns
 Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19).
 Contact me at [rodrigovalla[at]yahoo.com.ar](mailto:rodrigovalla@yahoo.com.ar).
-I am on telegram too ([@rvalla](https://t.me/rvalla))
+I am on telegram too ([@rvalla](https://t.me/rvalla)).
 
 -------
 
