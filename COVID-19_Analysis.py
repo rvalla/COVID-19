@@ -20,7 +20,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Italy", "Spain", "US", "Germany"]
+regions = ["Argentina", "Brazil", "Colombia", "Chile", "Peru", "Ecuador"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -40,11 +40,11 @@ print("Ploting data of ", end=" ")
 print(regions, end="\r")
 
 #Selecting data to display
-startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "2/15/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
-dataGuide = 1 #Data type to calculate startpoints (confirmed, deaths, recovered)
+dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 #Loading data...
 databases = []
@@ -148,9 +148,31 @@ def plotDeathRate(datalocation):
 	plt.xlabel("Time in days")
 	plt.tight_layout()
 	plt.show()
+
+def plotNewCases(datalocation, datatype, dataguide):
+	startPoints = regionsStartPoints(regions)
+	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
+	for i in range(len(datalocation[datatype])):
+		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
+		datalistsub = []
+		for e in range(len(datalist) - 1):
+			datalistsub.append(datalist[e+1] - datalist[e])
+		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
+	plt.title("COVID-19: New " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide])
+	plt.legend()	
+	plt.grid()
+	plt.ylabel("Number of new cases")
+	plt.xlabel("Time in days")
+	plt.yscale(plotScale)
+	plt.tight_layout()
+	plt.show()
+
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+plotNewCases(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
 
 print("That's all. If you want more plots, edit the code and run again.", end="\n")
