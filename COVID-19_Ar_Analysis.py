@@ -5,7 +5,7 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["confirmed_global", "deaths_global", "recovered_global"]
+dataSelection = ["confirmed_arg", "deaths_arg", "recovered_arg"]
 dataTitles = ["Confirmed", "Deaths", "Recovered"]
 fileNamePrefix = "time_series_covid19_"
 fileExtension = ".csv"
@@ -13,34 +13,33 @@ fileNames = []
 fileCompletePaths = []
 for i in range(len(dataSelection)):
 	fileNames.append(fileNamePrefix + dataSelection[i] + fileExtension)
-	fileCompletePaths.append("COVID-19/csse_covid_19_data/csse_covid_19_time_series/" + fileNames[i])
+	fileCompletePaths.append("argcovidapi/dataviz/" + fileNames[i])
 
 #Selecting plot scale: "linear" or "log"
 plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Colombia", "Chile"]
+regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA"]
 regionsIndexes = [[],[]]
-groupbyCountry = True
-#You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
-#If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
+
+plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
 
 
 print("###########################################")
 print("    Visualization of COVID-19 Outbreak")
 print("-------------------------------------------")
 print("https://github.com/rvalla/COVID-19")
-print("Data from John Hopkins University:")
-print("https://github.com/CSSEGISandData/COVID-19")
+print("Data from argcovidapi:")
+print("https://github.com/mariano22/argcovidapi")
 print("------------------------------------------")
 print()
 print("Ploting data of ", end=" ")
 print(regions, end="\r")
 
 #Selecting data to display
-startDate = "2/15/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "3/3/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
@@ -67,17 +66,6 @@ def getRegionsIndexes(regions):
 	return indexes
 
 regionsIndexes = getRegionsIndexes(regions)
-
-#Grouping data by country if needed (sum added at the end of the Data Frame)
-if groupbyCountry == True:
-	for d in range(len(dataSelection)):
-		for r in range(len(regions)):
-			ls = []
-			for i in range(databases[d].shape[1]):
-				if databases[d].loc[regionReference, i] == regions[r]:
-					ls.append(i)
-			databases[d][databases[d].shape[1]] = databases[d][:][ls].sum(axis=1)
-			regionsIndexes[d][r] = databases[d].shape[1] - 1
 
 #Function to plot cases for regions by date. Use 0, 1 or 2 to select Confirmed, Deaths or Recovered
 def plotbyDate(datalocation, datatype):
@@ -148,7 +136,7 @@ def plotDeathRate(datalocation):
 	plt.xlabel("Time in days")
 	plt.tight_layout()
 	plt.show()
-
+	
 def getNewCases(datalist):
 	ls = []
 	for e in range(len(datalist) - 1):
@@ -196,11 +184,38 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 	plt.yscale(plotScale)
 	plt.tight_layout()
 	plt.show()
+
+#Grouping data of all country
+def sumAllData():
+	for d in range(len(databases)):
+		databases[d][databases[d].shape[1]] = databases[d][:][:].sum(axis=1)
+	
+def plotAllCountryData():
+	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure.suptitle("Total cases in Argentina", fontsize=13)
+	plt.subplot2grid((2, 1), (0, 0))
+	for d in range(len(databases)):
+		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d])
+	total.legend(loc=2, prop={'size': 8})
+	total.set_title("Total cases", fontsize=10)
+	plt.subplot2grid((2, 1), (1, 0))
+	for d in range(len(databases)):
+		auxlist = databases[d][startDate:][databases[d].shape[1] - 1].values.tolist()
+		ls = getNewCasesAv(getNewCases(auxlist))
+		plt.plot(ls, linewidth=2.5, label=dataTitles[d])
+	plt.legend(loc=2, prop={'size': 8})
+	plt.title("New cases trend (3 days average)", fontsize=10)
+	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+	plt.show()
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
 plotNewCases(regionsIndexes, dataType, dataGuide)
 plotNewCases3Av(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
+if plotAllCountry == True:
+	sumAllData()
+	print("caca")
+	plotAllCountryData()
 
 print("That's all. If you want more plots, edit the code and run again.", end="\n")
