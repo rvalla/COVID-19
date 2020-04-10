@@ -5,24 +5,32 @@ import numpy as nu
 import pandas as pd
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["confirmed_arg", "deaths_arg", "recovered_arg"]
-dataTitles = ["Confirmed", "Deaths", "Recovered"]
-fileNamePrefix = "time_series_covid19_"
-fileExtension = ".csv"
-fileNames = []
-fileCompletePaths = []
+dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS"]
+dataTitles = ["Confirmed", "Active", "Deaths", "Recovered"]
+
+fileName = "Argentina_Provinces.csv"
+fileCompletePath = "argcovidapi/csvs/" + fileName
+
+#Loading data...
+databases = []
+dataframe = pd.read_csv(fileCompletePath)
+
 for i in range(len(dataSelection)):
-	fileNames.append(fileNamePrefix + dataSelection[i] + fileExtension)
-	fileCompletePaths.append("argcovidapi/dataviz/" + fileNames[i])
+	databases.append(dataframe[dataframe['TYPE'] == dataSelection[i]])
+	del	databases[i]["TYPE"]
+	databases[i] = databases[i].T
+	databases[i].columns = range(databases[i].shape[1])
+
+del dataframe
 
 #Selecting plot scale: "linear" or "log"
 plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA"]
+regions = ["CABA", "CHACO", "BUENOS AIRES", "SANTA FE", "CORDOBA", "JUJUY", "LA PAMPA", "RAO NEGRO", "TUCUMAN"]
 regionsIndexes = [[],[]]
-regionReference = "Country/Region"
+regionReference = "PROVINCIA"
 
 plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
 
@@ -39,20 +47,12 @@ print("Ploting data of ", end=" ")
 print(regions, end="\r")
 
 #Selecting data to display
-startDate = "3/3/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
-dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
+dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
+dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
-#Loading data...
-databases = []
-
-for i in range(len(fileCompletePaths)):
-	databases.append(pd.read_csv(fileCompletePaths[i]))
-	if regionReference == "Country/Region":
-		del	databases[i]["Province/State"]
-	databases[i] = databases[i].T
 
 #Function to look for selected regions in Data Frame
 def getRegionsIndexes(regions):
@@ -115,7 +115,7 @@ def getDeathRates(datalocation):
 	deathRates = [[] for c in range(len(regions))]
 	for r in range(len(regions)):
 		confirmed = databases[0][startDate:][datalocation[0][r]].values.tolist()
-		deaths = databases[1][startDate:][datalocation[1][r]].values.tolist()
+		deaths = databases[2][startDate:][datalocation[1][r]].values.tolist()
 		for d in range(len(confirmed)):
 			if confirmed[d] > 0:
 				deathRates[r].append(deaths[d]/confirmed[d])
@@ -193,18 +193,34 @@ def sumAllData():
 def plotAllCountryData():
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
 	figure.suptitle("Total cases in Argentina", fontsize=13)
-	plt.subplot2grid((2, 1), (0, 0))
-	for d in range(len(databases)):
+	plt.subplot2grid((2, 2), (0, 0))
+	for d in range(len(databases)-2):
 		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d])
 	total.legend(loc=2, prop={'size': 8})
 	total.set_title("Total cases", fontsize=10)
-	plt.subplot2grid((2, 1), (1, 0))
-	for d in range(len(databases)):
+	plt.yscale(plotScale)
+	plt.subplot2grid((2, 2), (0, 1))
+	for d in range(len(databases)-2):
 		auxlist = databases[d][startDate:][databases[d].shape[1] - 1].values.tolist()
 		ls = getNewCasesAv(getNewCases(auxlist))
 		plt.plot(ls, linewidth=2.5, label=dataTitles[d])
 	plt.legend(loc=2, prop={'size': 8})
 	plt.title("New cases trend (3 days average)", fontsize=10)
+	plt.yscale(plotScale)
+	plt.subplot2grid((2, 2), (1, 0))
+	for d in range(len(databases)-2):
+		deathandrecovered = databases[d+2][startDate:][databases[d+2].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d+2])
+	deathandrecovered.legend(loc=2, prop={'size': 8})
+	deathandrecovered.set_title("Total cases", fontsize=10)
+	plt.yscale(plotScale)
+	plt.subplot2grid((2, 2), (1, 1))
+	for d in range(len(databases)-2):
+		auxlist = databases[d+2][startDate:][databases[d+2].shape[1] - 1].values.tolist()
+		ls = getNewCasesAv(getNewCases(auxlist))
+		plt.plot(ls, linewidth=2.5, label=dataTitles[d+2])
+	plt.legend(loc=2, prop={'size': 8})
+	plt.title("New cases trend (3 days average)", fontsize=10)
+	plt.yscale(plotScale)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	plt.show()
 	
