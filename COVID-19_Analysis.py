@@ -20,7 +20,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Chile", "Brazil", "Ecuador", "Colombia", "Argentina"]
+regions = ["Argentina", "Brazil", "Chile", "Colombia", "Ecuador", "Uruguay"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -40,10 +40,10 @@ print("Ploting data of ", end=" ")
 print(regions, end="\r")
 
 #Selecting data to display
-startDate = "1/22/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
+dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 #Loading data...
@@ -85,11 +85,13 @@ def plotbyDate(datalocation, datatype):
 	for i in range(len(datalocation[datatype])):
 		databases[datatype][startDate:][datalocation[datatype][i]].plot(kind='line', label=regions[i], linewidth=2.5)
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
-	plt.legend()
+	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
 	plt.yscale(plotScale)
 	plt.ylabel("Number of cases")
 	plt.xlabel("Time in days")
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.tight_layout()
 	plt.show()
 
@@ -115,11 +117,13 @@ def plotbyOutbreak(datalocation, datatype, dataguide):
 		plt.plot(datalist, label=regions[i], linewidth=2.5)
 
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide])
-	plt.legend()	
+	plt.legend(loc=0, prop={'size': 8})	
 	plt.grid()
 	plt.ylabel("Number of cases")
 	plt.xlabel("Time in days")
 	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.tight_layout()
 	plt.show()
 
@@ -141,24 +145,30 @@ def plotDeathRate(datalocation):
 	for i in range(len(regions)):
 		plt.plot(deathRates[i], label=regions[i], linewidth=2.5)
 	plt.title("COVID-19: Death rate evolution since " + startDate)
-	plt.legend()
+	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
 	plt.yscale(plotScale)
 	plt.ylabel("Death ratio")
 	plt.xlabel("Time in days")
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.tight_layout()
 	plt.show()
 
 def getNewCases(datalist):
 	ls = []
+	ls.append(datalist[0])
 	for e in range(len(datalist) - 1):
 		ls.append(datalist[e+1] - datalist[e])
 	return ls
 
 def getNewCasesAv(datalist):
 	ls = []
+	ls.append((datalist[0] + datalist[1])/2)
 	for e in range(len(datalist) - 2):
 		ls.append((datalist[e+2] + datalist[e+1] + datalist[e])/3)
+	index = len(datalist)
+	ls.append((datalist[index-1]+datalist[index-2])/2)
 	return ls
 
 def plotNewCases(datalocation, datatype, dataguide):
@@ -171,10 +181,12 @@ def plotNewCases(datalocation, datatype, dataguide):
 		datalistsub = getNewCases(datalist)
 		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
 	plt.title("COVID-19: New " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide])
-	plt.legend()	
+	plt.legend(loc=0, prop={'size': 8})	
 	plt.grid()
 	plt.ylabel("Number of new cases")
 	plt.xlabel("Time in days")
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.yscale(plotScale)
 	plt.tight_layout()
 	plt.show()
@@ -189,18 +201,66 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 		datalistsub = getNewCasesAv(getNewCases(datalist))
 		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
 	plt.title("COVID-19: New " + dataTitles[datatype] + " cases trend since number " + str(caseCount) + " " + dataTitles[dataguide])
-	plt.legend()	
+	plt.legend(loc=0, prop={'size': 8})	
 	plt.grid()
 	plt.ylabel("Average of new cases (3 days)")
 	plt.xlabel("Time in days")
 	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.tight_layout()
+	plt.show()
+
+def getDuplicationTimes(datalist, type):
+	newcases = getNewCases(datalist)
+	duplicationtimes = []
+	if type == "average":
+		newcases = getNewCasesAv(newcases)
+	for e in range(len(datalist)-1):
+		if newcases[e+1] > 0:
+			duplicationtimes.append(datalist[e]/newcases[e+1])
+		else:
+			duplicationtimes.append(0)
+	return duplicationtimes
+
+def plotDuplicationTimes(datalocation, datatype, dataguide):
+	startPoints = regionsStartPoints(regions)
+	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
+	plt.subplot2grid((2, 1), (0, 0))
+	for i in range(len(datalocation[datatype])):
+		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
+		duplicationtimes = getDuplicationTimes(datalist, " ")
+		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
+	plt.title("Duplication speed in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
+	plt.legend(loc=0, prop={'size': 8})	
+	plt.grid()
+	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
+	plt.xlabel("Days", fontsize=8)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.subplot2grid((2, 1), (1, 0))
+	for i in range(len(datalocation[datatype])):
+		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
+		duplicationtimes = getDuplicationTimes(datalist, "average")
+		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
+	plt.title("Duplication speed trend in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
+	plt.legend(loc=0, prop={'size': 8})	
+	plt.grid()
+	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
+	plt.xlabel("Values for 3 days average", fontsize=8)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.tight_layout(rect=[0, 0.03, 1, 1])
 	plt.show()
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-plotNewCases(regionsIndexes, dataType, dataGuide)
+#plotNewCases(regionsIndexes, dataType, dataGuide)
 plotNewCases3Av(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
+plotDuplicationTimes(regionsIndexes,dataType, dataGuide)
 
 print("That's all. If you want more plots, edit the code and run again.", end="\n")

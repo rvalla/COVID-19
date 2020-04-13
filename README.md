@@ -19,10 +19,20 @@ Then you need **Python 3** and this packages to use it:
 - pandas
 - numpy
 
-You can plot cases' data (confirmed cases, deaths, recovered patients) by date or
+###With *COVID-19_Analysis.py*...
+You can visualize the data from [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns
+Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19). Is possible to:
+- Plot cases' data (confirmed cases, deaths, recovered patients) by date or
 since _n_ case appearance.
-You can use linear or logarithmic scales.
-You can group data by country or study states/province data.
-You can plot death rate evolution too.
+- Use linear or logarithmic scales.
+- Group data by country or study states/province data.
+- Plot death rate evolution too.
+
+###With *COVID-19_Ar_Analysis.py*...
+You can visualize the data from National Reports published in Argentina. Is possible to:
+- Plot cases' data (confirmed cases, deaths, recovered patients).
+- Plot death rate evolution.
+- See outbreak evolution in Argentina in a synthetic chart.
+- Plot duplication time evolution (how many days would be need for total cases being duplicated).
 
 Contact [rodrigovalla[at]yahoo.com.ar](mailto:rodrigovalla@yahoo.com.ar)
