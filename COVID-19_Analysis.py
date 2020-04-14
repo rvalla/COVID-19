@@ -20,7 +20,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Argentina", "Brazil", "Chile", "Colombia", "Ecuador", "Uruguay"]
+regions = ["Sweden", "Germany", "Italy", "Spain", "France", "Finland", "Norway"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -234,7 +234,7 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 		duplicationtimes = getDuplicationTimes(datalist, " ")
 		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
 	plt.title("Duplication speed in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
-	plt.legend(loc=0, prop={'size': 8})	
+	plt.legend(loc=2, prop={'size': 8})	
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Days", fontsize=8)
@@ -247,7 +247,7 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 		duplicationtimes = getDuplicationTimes(datalist, "average")
 		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
 	plt.title("Duplication speed trend in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
-	plt.legend(loc=0, prop={'size': 8})	
+	plt.legend(loc=2, prop={'size': 8})	
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Values for 3 days average", fontsize=8)

@@ -28,9 +28,11 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "CHACO", "BUENOS AIRES", "SANTA FE", "CORDOBA", "NEUQUEN"]
+regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
+quarentineStart = "20/03"
+quarentineLocation = []
 
 plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
 
