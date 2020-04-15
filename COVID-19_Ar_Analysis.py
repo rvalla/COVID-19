@@ -4,6 +4,16 @@ from matplotlib.ticker import NullFormatter, FixedLocator
 import numpy as nu
 import pandas as pd
 
+print("###########################################")
+print("    Visualization of COVID-19 Outbreak")
+print("-------------------------------------------")
+print("https://github.com/rvalla/COVID-19")
+print("Data from argcovidapi:")
+print("https://github.com/mariano22/argcovidapi")
+print("------------------------------------------")
+print()
+print("Ploting data of ", end=" ")
+
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
 dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS"]
 dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested"]
@@ -28,7 +38,8 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA"]
+regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA", "CHACO"]
+#regions = ["CHACO", "RIO NEGRO", "NEUQUEN", "MENDOZA", "SALTA"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
 quarentineStart = "20/03"
@@ -36,25 +47,15 @@ quarentineLocation = []
 
 plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
 
-
-print("###########################################")
-print("    Visualization of COVID-19 Outbreak")
-print("-------------------------------------------")
-print("https://github.com/rvalla/COVID-19")
-print("Data from argcovidapi:")
-print("https://github.com/mariano22/argcovidapi")
-print("------------------------------------------")
-print()
-print("Ploting data of ", end=" ")
-print(regions, end="\r")
-
 #Selecting data to display
 startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
-caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 2 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
+#Printing selected regions on console
+print(regions, end="\r")
 
 #Function to look for selected regions in Data Frame
 def getRegionsIndexes(regions):
@@ -127,6 +128,17 @@ def getDeathRates(datalocation):
 				deathRates[r].append(deaths[d]/confirmed[d])
 			else:
 				deathRates[r].append(0)
+	return deathRates
+
+def getCountryDeathRate():
+	deathRates = []
+	confirmed = databases[0][startDate:][databases[0].shape[1]-1].values.tolist()
+	deaths = databases[2][startDate:][databases[2].shape[1]-1].values.tolist()
+	for d in range(len(confirmed)):
+		if confirmed[d] > 0:
+			deathRates.append(deaths[d]/confirmed[d])
+		else:
+			deathRates.append(0)
 	return deathRates
 	
 def plotDeathRate(datalocation):
@@ -223,35 +235,30 @@ def plotAllCountryData():
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.subplot2grid((3, 2), (1, 0))
-	deathandrecovered = databases[2][startDate:][databases[2].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2])
-	deathandrecovered.legend(loc=0, prop={'size': 7})
-	deathandrecovered.set_title("Deaths", fontsize=10)
-	plt.yscale(plotScale)
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.subplot2grid((3, 2), (2, 0))
-	deathandrecovered = databases[3][startDate:][databases[3].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[3])
-	deathandrecovered.legend(loc=0, prop={'size': 7})
-	deathandrecovered.set_title("Recovered", fontsize=10)
+	deaths = databases[2][startDate:][databases[2].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2], color="orangered")
+	deaths.set_title("Deaths", fontsize=10)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.subplot2grid((3, 2), (1, 1))
-	auxlist = databases[2][startDate:][databases[2].shape[1] - 1].values.tolist()
-	ls = getNewCasesAv(getNewCases(auxlist))
-	plt.plot(ls, linewidth=2.5, label=dataTitles[2], color="orange")
-	plt.legend(loc=0, prop={'size': 7})
-	plt.title("New cases trend (deaths)", fontsize=10)
+	deathrate = getCountryDeathRate()
+	plt.plot(deathrate, linewidth=2.0, label="Death rate", color="orangered")
+	plt.title("Death rate evolution", fontsize=10)
+	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.subplot2grid((3, 2), (2, 0))
+	tests = databases[4][startDate:][databases[4].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2], color="orange")
+	plt.title("Testing evolution", fontsize=10)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.subplot2grid((3, 2), (2, 1))
-	auxlist = databases[3][startDate:][databases[3].shape[1] - 1].values.tolist()
-	ls = getNewCasesAv(getNewCases(auxlist))
-	plt.plot(ls, linewidth=2.5, label=dataTitles[3], color="orange")
-	plt.legend(loc=0, prop={'size': 7})
-	plt.title("New cases trend (recovered)", fontsize=10)
-	plt.yscale(plotScale)
+	datalist = databases[0][startDate:][databases[0].shape[1] - 1].values.tolist()
+	duplicationtimes = getDuplicationTimes(datalist, "average")
+	plt.bar(range(len(duplicationtimes)), duplicationtimes)
+	plt.title("Duplication speed trend (3 days av.)", fontsize=10)
+	plt.grid()
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -326,14 +333,14 @@ def plotAllCountryDT(datatype):
 	plt.tight_layout(rect=[0, 0.03, 1, 1])
 	plt.show()
 	
-plotbyDate(regionsIndexes, dataType)
-plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+#plotbyDate(regionsIndexes, dataType)
+#plotbyOutbreak(regionsIndexes, dataType, dataGuide)
 #plotNewCases(regionsIndexes, dataType, dataGuide)
-plotNewCases3Av(regionsIndexes, dataType, dataGuide)
-plotDeathRate(regionsIndexes)
+#plotNewCases3Av(regionsIndexes, dataType, dataGuide)
+#plotDeathRate(regionsIndexes)
 #plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
 if plotAllCountry == True:
 	plotAllCountryData()
 	plotAllCountryDT(dataType)
 
-print("That's all. If you want more plots, edit the code and run again.", end="\n")
+print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")

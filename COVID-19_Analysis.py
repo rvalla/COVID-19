@@ -4,6 +4,16 @@ from matplotlib.ticker import NullFormatter, FixedLocator
 import numpy as nu
 import pandas as pd
 
+print("###########################################")
+print("    Visualization of COVID-19 Outbreak")
+print("-------------------------------------------")
+print("https://github.com/rvalla/COVID-19")
+print("Data from John Hopkins University:")
+print("https://github.com/CSSEGISandData/COVID-19")
+print("------------------------------------------")
+print()
+print("Ploting data of ", end=" ")
+
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
 dataSelection = ["confirmed_global", "deaths_global", "recovered_global"]
 dataTitles = ["Confirmed", "Deaths", "Recovered"]
@@ -20,31 +30,22 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Sweden", "Germany", "Italy", "Spain", "France", "Finland", "Norway"]
+regions = ["Germany", "Italy", "United Kingdom"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
 #If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
 
-
-print("###########################################")
-print("    Visualization of COVID-19 Outbreak")
-print("-------------------------------------------")
-print("https://github.com/rvalla/COVID-19")
-print("Data from John Hopkins University:")
-print("https://github.com/CSSEGISandData/COVID-19")
-print("------------------------------------------")
-print()
-print("Ploting data of ", end=" ")
-print(regions, end="\r")
-
 #Selecting data to display
-startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
+caseCount = 20 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
-dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
+dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
+dataGuide = 1 #Data type to calculate startpoints (confirmed, deaths, recovered)
+
+#Printing selected regions to console
+print(regions, end="\r")
 
 #Loading data...
 databases = []
@@ -109,7 +110,7 @@ def regionsStartPoints(regions):
 #Function to plot cases for regions since first case
 def plotbyOutbreak(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[datatype].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
@@ -258,9 +259,9 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-#plotNewCases(regionsIndexes, dataType, dataGuide)
+plotNewCases(regionsIndexes, dataType, dataGuide)
 plotNewCases3Av(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
 plotDuplicationTimes(regionsIndexes,dataType, dataGuide)
 
-print("That's all. If you want more plots, edit the code and run again.", end="\n")
+print("That's all. If you want more plots, edit the code and run again.                         ", end="\n")
