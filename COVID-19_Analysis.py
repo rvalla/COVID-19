@@ -30,7 +30,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Germany", "Italy", "United Kingdom"]
+regions = ["Argentina", "Chile", "Uruguay", "Colombia", "Ecuador"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -39,10 +39,10 @@ regionReference = "Country/Region"
 
 #Selecting data to display
 startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 20 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
-dataGuide = 1 #Data type to calculate startpoints (confirmed, deaths, recovered)
+dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
+dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 #Printing selected regions to console
 print(regions, end="\r")

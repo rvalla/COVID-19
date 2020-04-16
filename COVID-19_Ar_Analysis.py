@@ -42,13 +42,14 @@ regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA", "CHACO"]
 #regions = ["CHACO", "RIO NEGRO", "NEUQUEN", "MENDOZA", "SALTA"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
-quarentineStart = "20/03"
-quarentineLocation = []
+quarantineStart = "20/03"
+quarantineIndex = databases[0].index.get_loc(quarantineStart)
 
 plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
 
 #Selecting data to display
 startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
+startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
 caseCount = 2 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
@@ -70,11 +71,23 @@ def getRegionsIndexes(regions):
 
 regionsIndexes = getRegionsIndexes(regions)
 
+#Method to draw a mark in social isolation start date
+def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
+	if startDateIndex < quarantineIndex:
+		plt.annotate(tag, fontsize=font, xy=(x, y + yshift),  xycoords='data',
+    		xytext=(x, y + ytshift), textcoords='data',
+			arrowprops=dict(facecolor='orangered', edgecolor="none", width=w, headwidth=hw, headlength=hl),
+        	horizontalalignment='center', verticalalignment='top')
+
 #Function to plot cases for regions by date. Use 0, 1 or 2 to select Confirmed, Deaths or Recovered
 def plotbyDate(datalocation, datatype):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		databases[datatype][startDate:][datalocation[datatype][i]].plot(kind='line', label=regions[i], linewidth=2.5)
+		if i == 0:
+			x = quarantineIndex - startDateIndex
+			y = databases[datatype].iloc[x, datalocation[datatype][i]]
+			markQuarantine("Social\nisolation", 50, 220, 8, x, y, 5, 9, 7)
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
 	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
@@ -106,7 +119,6 @@ def plotbyOutbreak(datalocation, datatype, dataguide):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
 		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
 		plt.plot(datalist, label=regions[i], linewidth=2.5)
-
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide])
 	plt.legend(loc=0, prop={'size': 8})	
 	plt.grid()
@@ -219,6 +231,10 @@ def plotAllCountryData():
 	plt.subplot2grid((3, 2), (0, 0))
 	for d in range(len(databases)-3):
 		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d])
+		if d == 0:
+			x = quarantineIndex - startDateIndex
+			y = databases[0].iloc[x, databases[0].shape[1] - 1]
+			markQuarantine("", 180, 630, 8, x, y, 3, 6, 5)
 	total.legend(loc=0, prop={'size': 7})
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
@@ -229,6 +245,10 @@ def plotAllCountryData():
 		auxlist = databases[d][startDate:][databases[d].shape[1] - 1].values.tolist()
 		ls = getNewCasesAv(getNewCases(auxlist))
 		plt.plot(ls, linewidth=2.5, label=dataTitles[d])
+		if d == 0:
+			x = quarantineIndex - startDateIndex
+			y = ls[x]
+			markQuarantine("", 10, 30, 8, x, y, 3, 6, 5)
 	plt.legend(loc=0, prop={'size': 7})
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
@@ -333,7 +353,7 @@ def plotAllCountryDT(datatype):
 	plt.tight_layout(rect=[0, 0.03, 1, 1])
 	plt.show()
 	
-#plotbyDate(regionsIndexes, dataType)
+plotbyDate(regionsIndexes, dataType)
 #plotbyOutbreak(regionsIndexes, dataType, dataGuide)
 #plotNewCases(regionsIndexes, dataType, dataGuide)
 #plotNewCases3Av(regionsIndexes, dataType, dataGuide)
@@ -341,6 +361,6 @@ def plotAllCountryDT(datatype):
 #plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
 if plotAllCountry == True:
 	plotAllCountryData()
-	plotAllCountryDT(dataType)
+	#plotAllCountryDT(dataType)
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
