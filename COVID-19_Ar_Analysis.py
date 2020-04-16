@@ -38,7 +38,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA", "CHACO"]
+regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA", "CHACO", "RIO NEGRO", "NEUQUEN"]
 #regions = ["CHACO", "RIO NEGRO", "NEUQUEN", "MENDOZA", "SALTA"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
@@ -50,7 +50,7 @@ plotAllCountry = True #Decide if you want a final plot of total cases in Argenti
 #Selecting data to display
 startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
-caseCount = 2 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 50 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
@@ -307,7 +307,7 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 		duplicationtimes = getDuplicationTimes(datalist, " ")
 		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
 	plt.title("Duplication speed in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
-	plt.legend(loc=0, prop={'size': 8})	
+	plt.legend(loc=0, prop={'size': 6})	
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Days", fontsize=8)
@@ -320,7 +320,7 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 		duplicationtimes = getDuplicationTimes(datalist, "average")
 		plt.plot(duplicationtimes, label=regions[i], linewidth=2.0)
 	plt.title("Duplication speed trend in days for " + dataTitles[datatype] + " cases since number " + str(caseCount) + " " + dataTitles[dataguide], fontsize=11)
-	plt.legend(loc=0, prop={'size': 8})	
+	plt.legend(loc=0, prop={'size': 6})	
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Values for 3 days average", fontsize=8)
@@ -354,13 +354,13 @@ def plotAllCountryDT(datatype):
 	plt.show()
 	
 plotbyDate(regionsIndexes, dataType)
-#plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+plotbyOutbreak(regionsIndexes, dataType, dataGuide)
 #plotNewCases(regionsIndexes, dataType, dataGuide)
-#plotNewCases3Av(regionsIndexes, dataType, dataGuide)
-#plotDeathRate(regionsIndexes)
-#plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
+plotNewCases3Av(regionsIndexes, dataType, dataGuide)
+plotDeathRate(regionsIndexes)
+plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
 if plotAllCountry == True:
 	plotAllCountryData()
-	#plotAllCountryDT(dataType)
+	plotAllCountryDT(dataType)
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
