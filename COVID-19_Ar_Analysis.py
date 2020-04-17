@@ -38,8 +38,8 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "SANTA FE", "CORDOBA", "CHACO", "RIO NEGRO", "NEUQUEN"]
-#regions = ["CHACO", "RIO NEGRO", "NEUQUEN", "MENDOZA", "SALTA"]
+regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "SANTA FE"]
+#regions = ["NEUQUEN", "MENDOZA", "SALTA", "LA RIOJA", "ENTRE RIOS", "SAN JUAN"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
 quarantineStart = "20/03"
@@ -50,9 +50,9 @@ plotAllCountry = True #Decide if you want a final plot of total cases in Argenti
 #Selecting data to display
 startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
-caseCount = 50 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
+dataType = 2 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
 #Printing selected regions on console
@@ -87,7 +87,8 @@ def plotbyDate(datalocation, datatype):
 		if i == 0:
 			x = quarantineIndex - startDateIndex
 			y = databases[datatype].iloc[x, datalocation[datatype][i]]
-			markQuarantine("Social\nisolation", 50, 220, 8, x, y, 5, 9, 7)
+			s = plt.ylim()
+			markQuarantine("Social\nisolation", s[1]/16, s[1]/4, 8, x, y, 5, 9, 7)
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
 	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
@@ -113,7 +114,7 @@ def regionsStartPoints(regions):
 #Function to plot cases for regions since first case
 def plotbyOutbreak(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
@@ -187,7 +188,7 @@ def getNewCasesAv(datalist):
 
 def plotNewCases(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
@@ -207,7 +208,7 @@ def plotNewCases(datalocation, datatype, dataguide):
 
 def plotNewCases3Av(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
@@ -298,7 +299,7 @@ def getDuplicationTimes(datalist, type):
 
 def plotDuplicationTimes(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[datatype].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
 	plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datalocation[datatype])):
