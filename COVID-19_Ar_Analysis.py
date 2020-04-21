@@ -38,7 +38,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "SANTA FE", "RIO NEGRO"]
 #regions = ["CABA", "BUENOS AIRES"]
 #regions = ["NEUQUEN", "MENDOZA", "SALTA", "LA RIOJA", "ENTRE RIOS", "SAN JUAN"]
 regionsIndexes = [[],[]]
@@ -178,14 +178,12 @@ def plotDeathRate(datalocation):
 	
 def getNewCases(datalist):
 	ls = []
-	ls.append(datalist[0])
 	for e in range(len(datalist) - 1):
 		ls.append(datalist[e+1] - datalist[e])
 	return ls
 
 def getNewCasesAv(datalist):
 	ls = []
-	ls.append((datalist[0] + datalist[1])/2)
 	for e in range(len(datalist) - 2):
 		ls.append((datalist[e+2] + datalist[e+1] + datalist[e])/3)
 	index = len(datalist)
@@ -198,6 +196,8 @@ def plotNewCases(datalocation, datatype, dataguide):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		if startPoint > 0:
+			startPoint -= 1
 		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
 		datalistsub = getNewCases(datalist)
 		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
@@ -218,6 +218,8 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
 	for i in range(len(datalocation[datatype])):
 		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		if startPoint > 0:
+			startPoint -= 1
 		datalist = databases[datatype][startPoint:startPoint + period][regionsIndexes[datatype][i]].values.tolist()
 		datalistsub = getNewCasesAv(getNewCases(datalist))
 		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
@@ -325,7 +327,7 @@ def getDuplicationTimes(datalist, type):
 	duplicationtimes = []
 	if type == "average":
 		newcases = getNewCasesAv(newcases)
-	for e in range(len(datalist)-1):
+	for e in range(len(newcases)-1):
 		if newcases[e+1] > 0:
 			duplicationtimes.append(datalist[e]/newcases[e+1])
 		else:
@@ -405,7 +407,7 @@ def plotAllCountryDT(datatype):
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-#plotNewCases(regionsIndexes, dataType, dataGuide)
+plotNewCases(regionsIndexes, dataType, dataGuide)
 plotNewCases3Av(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
 plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
