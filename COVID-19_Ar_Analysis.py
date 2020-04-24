@@ -15,11 +15,12 @@ print()
 print("Ploting data of ", end=" ")
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS", "NEGATIVOS"]
-dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Negatives"]
+dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS", "DESCARTADOS"]
+dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Dropped"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
+colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 #Loading data...
 databases = []
@@ -53,7 +54,7 @@ startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
 caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
+dataType = 2 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
 #Printing selected regions on console
@@ -239,7 +240,7 @@ def plotAllCountryData():
 	figure.suptitle("Total cases in Argentina", fontsize=13)
 	plt.subplot2grid((3, 2), (0, 0))
 	for d in range(len(databases)-3):
-		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d])
+		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d], color=colorlist[d])
 		if d == 0:
 			x = quarantineIndex - startDateIndex
 			y = databases[0].iloc[x, databases[0].shape[1] - 1]
@@ -258,7 +259,7 @@ def plotAllCountryData():
 	for d in range(len(databases)-3):
 		auxlist = databases[d][startDate:][databases[d].shape[1] - 1].values.tolist()
 		ls = getNewCasesAv(getNewCases(auxlist))
-		plt.plot(ls, linewidth=2.5, label=dataTitles[d])
+		plt.plot(ls, linewidth=2.0, label=dataTitles[d], color=colorlist[d])
 		if d == 0:
 			x = quarantineIndex - startDateIndex
 			y = ls[x]
@@ -274,7 +275,7 @@ def plotAllCountryData():
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((3, 2), (1, 0))
-	deaths = databases[2][startDate:][databases[2].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2], color="orangered")
+	deaths = databases[2][startDate:][databases[2].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2], color=colorlist[2])
 	deaths.set_title("Deaths", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
@@ -286,7 +287,7 @@ def plotAllCountryData():
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((3, 2), (1, 1))
 	deathrate = getCountryDeathRate()
-	plt.plot(deathrate, linewidth=2.0, label="Death rate", color="orangered")
+	plt.plot(deathrate, linewidth=2.0, label="Death rate", color=colorlist[2])
 	plt.title("Death rate evolution", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
@@ -297,9 +298,9 @@ def plotAllCountryData():
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((3, 2), (2, 0))
-	tests = databases[4][startDate:][databases[4].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[4], color="orange")
-	tests = databases[5][startDate:][databases[5].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[5], color="green")
-	plt.title("Testing & negative evolution", fontsize=10)
+	tests = databases[4][startDate:][databases[4].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[4], color=colorlist[0])
+	tests = databases[5][startDate:][databases[5].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[5], color=colorlist[3])
+	plt.title("Testing & dropped cases evolution", fontsize=10)
 	plt.legend(loc=0, prop={'size': 7})
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
