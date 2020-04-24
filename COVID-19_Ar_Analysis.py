@@ -15,8 +15,8 @@ print()
 print("Ploting data of ", end=" ")
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS"]
-dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested"]
+dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS", "NEGATIVOS"]
+dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Negatives"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
@@ -53,7 +53,7 @@ startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
 caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 2 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
+dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
 #Printing selected regions on console
@@ -248,7 +248,7 @@ def plotAllCountryData():
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 1000))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 1500))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -267,7 +267,7 @@ def plotAllCountryData():
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 50))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 75))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -278,7 +278,7 @@ def plotAllCountryData():
 	deaths.set_title("Deaths", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 50))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 75))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -297,11 +297,13 @@ def plotAllCountryData():
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((3, 2), (2, 0))
-	tests = databases[4][startDate:][databases[4].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[2], color="orange")
-	plt.title("Testing evolution", fontsize=10)
+	tests = databases[4][startDate:][databases[4].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[4], color="orange")
+	tests = databases[5][startDate:][databases[5].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[5], color="green")
+	plt.title("Testing & negative evolution", fontsize=10)
+	plt.legend(loc=0, prop={'size': 7})
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 10000))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 15000))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
