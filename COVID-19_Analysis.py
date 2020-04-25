@@ -30,7 +30,7 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Canada", "Portugal", "Spain", "Italy"]
+regions = ["India", "Brazil", "Australia", "Portugal", "Argentina"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -38,10 +38,10 @@ groupbyCountry = True
 regionReference = "Country/Region"
 
 #Selecting data to display
-startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
+dataType = 0 #0 = Confirmed, 1 = Deaths, 2 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 #Printing selected regions to console
@@ -230,7 +230,7 @@ def getDuplicationTimes(datalist, type):
 
 def plotDuplicationTimes(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
-	period = databases[dataguide].shape[0] - startPoints[datatype][0] - outbreakDayCount
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
 	plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datalocation[datatype])):
@@ -263,7 +263,7 @@ def plotDuplicationTimes(datalocation, datatype, dataguide):
 	
 plotbyDate(regionsIndexes, dataType)
 plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-plotNewCases(regionsIndexes, dataType, dataGuide)
+#plotNewCases(regionsIndexes, dataType, dataGuide)
 plotNewCases3Av(regionsIndexes, dataType, dataGuide)
 plotDeathRate(regionsIndexes)
 plotDuplicationTimes(regionsIndexes,dataType, dataGuide)

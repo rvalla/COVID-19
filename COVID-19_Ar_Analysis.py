@@ -54,7 +54,7 @@ startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
 caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataType = 2 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
+dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
 
 #Printing selected regions on console
@@ -90,7 +90,7 @@ def plotbyDate(datalocation, datatype):
 			x = quarantineIndex - startDateIndex
 			y = databases[datatype].iloc[x, datalocation[datatype][i]]
 			s = plt.ylim()
-			markQuarantine("Social\nisolation", s[1]/16, s[1]/4, 8, x, y, 5, 9, 7)
+			markQuarantine("Social\nisolation", s[1]/20, s[1]/4, 8, x, y, 5, 9, 7)
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
 	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
@@ -244,7 +244,7 @@ def plotAllCountryData():
 		if d == 0:
 			x = quarantineIndex - startDateIndex
 			y = databases[0].iloc[x, databases[0].shape[1] - 1]
-			markQuarantine("", 180, 630, 8, x, y, 3, 6, 5)
+			markQuarantine("", 180, 900, 8, x, y, 3, 6, 5)
 	total.legend(loc=0, prop={'size': 7})
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
@@ -263,7 +263,7 @@ def plotAllCountryData():
 		if d == 0:
 			x = quarantineIndex - startDateIndex
 			y = ls[x]
-			markQuarantine("", 10, 30, 8, x, y, 3, 6, 5)
+			markQuarantine("", 10, 40, 8, x, y, 3, 6, 5)
 	plt.legend(loc=0, prop={'size': 7})
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
