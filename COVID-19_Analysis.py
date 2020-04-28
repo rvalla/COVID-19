@@ -30,7 +30,9 @@ plotScale = "linear"
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["India", "Brazil", "Australia", "Portugal", "Argentina"]
+regions = ["Germany", "Italy", "Spain", "United Kingdom", "Switzerland"]
+#regions = ["Sweden", "Norway", "Finland", "Denmark"]
+#regions = ["Argentina", "Chile", "Uruguay", "Colombia"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
