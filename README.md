@@ -34,6 +34,7 @@ You can visualize the data from National Reports published in Argentina. Is poss
 - Plot death rate evolution.
 - See outbreak evolution in Argentina in a synthetic chart.
 - Plot duplication time evolution (how many days would be need for total cases being duplicated).
+- Plot the confirmed cases distribution by day of the week.
 
 ### Definitions
 In the charts that the code generates you will see a lot of categories. Pay attention to these descriptions

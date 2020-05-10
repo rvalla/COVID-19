@@ -4,13 +4,13 @@ from matplotlib.ticker import NullFormatter, FixedLocator
 import numpy as nu
 import pandas as pd
 
-print("###########################################")
-print("    Visualization of COVID-19 Outbreak")
-print("-------------------------------------------")
+print("####################################################")
+print("       Visualization of COVID-19 Outbreak")
+print("----------------------------------------------------")
 print("https://github.com/rvalla/COVID-19")
-print("Data from argcovidapi:")
-print("https://github.com/mariano22/argcovidapi")
-print("------------------------------------------")
+print("Data loaded from official national reports")
+print("https://argentina.gob.ar/coronavirus/informe-diario")
+print("----------------------------------------------------")
 print()
 print("Ploting data of ", end=" ")
 
@@ -36,11 +36,13 @@ del dataframe
 
 #Selecting plot scale: "linear" or "log"
 plotScale = "linear"
+dayTags = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+startDateDay = 1
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "SANTA FE", "RIO NEGRO"]
 #regions = ["CABA", "BUENOS AIRES"]
+regions = ["CABA", "BUENOS AIRES", "SANTA FE", "RIO NEGRO", "CHACO", "CORDOBA"]
 #regions = ["NEUQUEN", "MENDOZA", "SALTA", "LA RIOJA", "ENTRE RIOS", "SAN JUAN"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
@@ -48,11 +50,12 @@ quarantineStart = "20/03"
 quarantineIndex = databases[0].index.get_loc(quarantineStart)
 
 plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
+plotWeeklyCases = True #Decide if you want to plot week day data
 
 #Selecting data to display
-startDate = "03/03" #Starting point for plotbyDate. Default: 03/03
+startDate = "07/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
-caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
@@ -71,6 +74,12 @@ def getRegionsIndexes(regions):
 					break
 	return indexes
 
+def getStartDateDay():
+	global startDateDay
+	day = (startDateIndex + 1)%7
+	startDateDay = day
+
+getStartDateDay()
 regionsIndexes = getRegionsIndexes(regions)
 
 #Method to draw a mark in social isolation start date
@@ -244,12 +253,12 @@ def plotAllCountryData():
 		if d == 0:
 			x = quarantineIndex - startDateIndex
 			y = databases[0].iloc[x, databases[0].shape[1] - 1]
-			markQuarantine("", 180, 900, 8, x, y, 3, 6, 5)
+			markQuarantine("", 250, 1100, 8, x, y, 3, 6, 5)
 	total.legend(loc=0, prop={'size': 7})
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 1500))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 2000))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -268,7 +277,7 @@ def plotAllCountryData():
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 75))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 100))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -279,7 +288,7 @@ def plotAllCountryData():
 	deaths.set_title("Deaths", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 75))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 100))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -304,7 +313,7 @@ def plotAllCountryData():
 	plt.legend(loc=0, prop={'size': 7})
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 15000))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 20000))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -316,7 +325,7 @@ def plotAllCountryData():
 	plt.bar(range(len(duplicationtimes)), duplicationtimes)
 	plt.title("Duplication speed trend (3 days av.)", fontsize=10)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 10))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 15))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -326,6 +335,18 @@ def plotAllCountryData():
 	plt.show()
 
 def getDuplicationTimes(datalist, type):
+	newcases = getNewCases(datalist)
+	duplicationtimes = []
+	if type == "average":
+		newcases = getNewCasesAv(newcases)
+	for e in range(len(newcases)-1):
+		if newcases[e+1] > 0:
+			duplicationtimes.append(datalist[e]/newcases[e+1])
+		else:
+			duplicationtimes.append(None)
+	return duplicationtimes
+
+def getDuplicationTimesBar(datalist, type):
 	newcases = getNewCases(datalist)
 	duplicationtimes = []
 	if type == "average":
@@ -378,7 +399,7 @@ def plotAllCountryDT(datatype):
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
 	plt.subplot2grid((2, 1), (0, 0))
 	datalist = databases[datatype][startDate:][databases[datatype].shape[1] - 1].values.tolist()
-	duplicationtimes = getDuplicationTimes(datalist, " ")
+	duplicationtimes = getDuplicationTimesBar(datalist, " ")
 	plt.bar(range(len(duplicationtimes)), duplicationtimes)
 	plt.title("Argentina: Duplication speed in days for " + dataTitles[datatype] + " cases since " + str(startDate), fontsize=11)
 	plt.grid()
@@ -392,7 +413,7 @@ def plotAllCountryDT(datatype):
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((2, 1), (1, 0))
-	duplicationtimes = getDuplicationTimes(datalist, "average")
+	duplicationtimes = getDuplicationTimesBar(datalist, "average")
 	plt.bar(range(len(duplicationtimes)), duplicationtimes)
 	plt.title("Argentina: Duplication speed trend in days for " + dataTitles[datatype] + " cases since " + str(startDate), fontsize=11)
 	plt.grid()
@@ -407,15 +428,99 @@ def plotAllCountryDT(datatype):
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.tight_layout(rect=[0, 0.03, 1, 1])
 	plt.show()
+		
+def getWeeklyCases(regionindex, datatype):
+	casesHistory = databases[datatype][startDate:][regionindex].values.tolist()
+	newCasesHistory = getNewCases(casesHistory)
+	weekCount = int(len(newCasesHistory)/7)
+	weeklyCases = [[] for d in range(weekCount)]
+	for w in range(weekCount):
+		for d in range(7):
+			weeklyCases[w].append(newCasesHistory[w*7 + d])
+	averages = []
+	for d in range(7):
+		aux = 0
+		for w in range(weekCount):
+			aux += weeklyCases[w][d]
+		averages.append(aux/weekCount)
+	weeklyCases.append(averages)
 	
-plotbyDate(regionsIndexes, dataType)
-plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+	return weeklyCases
+
+def getWeeklyCasesR(regionindex, datatype):
+	casesHistory = databases[datatype][startDate:][regionindex].values.tolist()
+	newCasesHistory = getNewCases(casesHistory)
+	weekCount = int(len(newCasesHistory)/7)
+	weeklyCases = [[] for d in range(weekCount)]
+	for w in range(weekCount):
+		weeklyMaximun = max(newCasesHistory[w*7:w*7+7])
+		for d in range(7):
+			weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
+	averages = []
+	for d in range(7):
+		aux = 0
+		for w in range(weekCount):
+			aux += weeklyCases[w][d]
+		averages.append(aux/weekCount)
+	weeklyCases.append(averages)
+	
+	return weeklyCases
+
+def getDaysTags(dayTags, offset):
+	daylist = []
+	for d in range(len(dayTags)):
+		daylist.append(dayTags[(d + startDateDay + offset)%7])
+	return daylist
+
+def plotWeeklyCases(regionindex, datatype):
+	figure = plt.figure(num=None, figsize=(5, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure.suptitle("Weeks analysis: " + dataTitles[datatype] + " since " + startDate, fontsize=12)
+	weeklyCases = getWeeklyCases(regionindex, datatype)
+	plt.subplot2grid((2, 1), (0, 0))
+	for w in range(len(weeklyCases) - 1):
+		plt.plot(weeklyCases[w], linewidth=2.0, color=colorlist[1], alpha=0.5)
+	plt.plot(weeklyCases[len(weeklyCases)-1], linewidth=2.5, color=colorlist[0], alpha=1.0)
+	plt.plot([0, 6], [weeklyCases[len(weeklyCases)-1][0], weeklyCases[len(weeklyCases)-1][6]], linewidth=1.0,
+						linestyle="--", color=colorlist[2], alpha=1.0)
+	plt.title("New cases by day of the week (absolute)", fontsize=10)
+	plt.grid()
+	plt.ylabel("New daily cases", fontsize=6)
+	ylimits = plt.ylim()
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, round(ylimits[1]/5,0)))
+	plt.xticks(nu.arange(0, 7, step = 1), getDaysTags(dayTags, 0), fontsize = 6, rotation = 30)
+	plt.xticks(fontsize=5)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
+	weeklyCases = getWeeklyCasesR(regionindex, datatype)
+	plt.subplot2grid((2, 1), (1, 0))
+	for w in range(len(weeklyCases) - 1):
+		plt.plot(weeklyCases[w], linewidth=2.0, color=colorlist[1], alpha=0.5)
+	plt.plot(weeklyCases[len(weeklyCases)-1], linewidth=2.5, color=colorlist[0], alpha=1.0)
+	plt.plot([0, 6], [weeklyCases[len(weeklyCases)-1][0], weeklyCases[len(weeklyCases)-1][6]], linewidth=1.0,
+						linestyle="--", color=colorlist[2], alpha=1.0)
+	plt.title("New cases by day of the week (relative)", fontsize=10)
+	plt.grid()
+	plt.ylabel("Variation relative\nto week maximun", fontsize=6)
+	ylimits = plt.ylim()
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, round(ylimits[1]/5,1)))
+	plt.xticks(nu.arange(0, 7, step = 1), getDaysTags(dayTags, 0), fontsize = 6, rotation = 30)
+	plt.xticks(fontsize=5)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
+	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+	plt.show()
+	
+#plotbyDate(regionsIndexes, dataType)
+#plotbyOutbreak(regionsIndexes, dataType, dataGuide)
 #plotNewCases(regionsIndexes, dataType, dataGuide)
-plotNewCases3Av(regionsIndexes, dataType, dataGuide)
-plotDeathRate(regionsIndexes)
-plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
+#plotNewCases3Av(regionsIndexes, dataType, dataGuide)
+#plotDeathRate(regionsIndexes)
+#plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
 if plotAllCountry == True:
-	plotAllCountryData()
-	plotAllCountryDT(dataType)
+#	plotAllCountryData()
+	#plotAllCountryDT(dataType)
+	plotWeeklyCases(databases[dataType].shape[1]-1, dataType)
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
