@@ -32,8 +32,8 @@ startDateDay = 2
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Germany", "Italy", "Spain", "United Kingdom", "Switzerland"]
-#regions = ["Sweden", "Norway", "Finland", "Denmark"]
+#regions = ["Germany", "Italy", "Spain", "United Kingdom", "Switzerland"]
+regions = ["Sweden", "Norway", "Finland", "Denmark"]
 #regions = ["Argentina", "Chile", "Uruguay", "Colombia", "Paraguay"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
@@ -41,8 +41,17 @@ groupbyCountry = True
 #If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
 
+#Deciding what to plot...
+byDate = True #Decide if you want to plot data by date for selected regions.
+byOutbreak = True #Decide if you want to plot data by notified cases for selected regions.
+newCases = False #Decide if you want to plot new daily cases for selected regions
+newCasesTrend = True #Decide if you want to plot new daily cases trend (3 day average) for selected regions
+deathRate = True #Decide if you want to plot death rate evolution for selected regions
+duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
+weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
+
 #Selecting data to display
-startDate = "2/20/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 1 #0 = Confirmed, 1 = Deaths, 2 = Recovered
@@ -297,13 +306,19 @@ def getWeeklyCasesR(regionindex, datatype):
 	for w in range(weekCount):
 		weeklyMaximun = max(newCasesHistory[w*7:w*7+7])
 		for d in range(7):
-			weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
+			if weeklyMaximun > 0:
+				weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
+			else:
+				weeklyCases[w].append(None)
 	averages = []
 	for d in range(7):
 		aux = 0
+		realWeekCount = 0
 		for w in range(weekCount):
-			aux += weeklyCases[w][d]
-		averages.append(aux/weekCount)
+			if weeklyCases[w][d] != None:
+				aux += weeklyCases[w][d]
+				realWeekCount += 1
+		averages.append(aux/realWeekCount)
 	weeklyCases.append(averages)
 	
 	return weeklyCases
@@ -357,13 +372,20 @@ def plotWeeklyCases(regionindex, datatype, region):
 def plotWeeklyAnalysis(datalocation, datatype):
 	for d in range(len(datalocation[datatype])):
 		plotWeeklyCases(datalocation[datatype][d], datatype, regions[d])
-	
-plotbyDate(regionsIndexes, dataType)
-plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-#plotNewCases(regionsIndexes, dataType, dataGuide)
-plotNewCases3Av(regionsIndexes, dataType, dataGuide)
-plotDeathRate(regionsIndexes)
-plotDuplicationTimes(regionsIndexes,dataType, dataGuide)
-#plotWeeklyAnalysis(regionsIndexes, dataType)
+
+if byDate == True:
+	plotbyDate(regionsIndexes, dataType)
+if byOutbreak == True:
+	plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+if newCases == True:
+	plotNewCases(regionsIndexes, dataType, dataGuide)
+if newCasesTrend == True:
+	plotNewCases3Av(regionsIndexes, dataType, dataGuide)
+if deathRate == True:
+	plotDeathRate(regionsIndexes)
+if duplicationTimes == True:
+	plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
+if weeklyAnalysis == True:
+	plotWeeklyAnalysis(regionsIndexes, dataType)
 
 print("That's all. If you want more plots, edit the code and run again.                         ", end="\n")

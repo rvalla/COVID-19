@@ -41,19 +41,28 @@ startDateDay = 1
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-#regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "SANTA FE", "RIO NEGRO", "CHACO", "CORDOBA"]
+regions = ["CABA", "BUENOS AIRES"]
+#regions = ["SANTA FE", "RIO NEGRO", "CHACO", "CORDOBA"]
 #regions = ["NEUQUEN", "MENDOZA", "SALTA", "LA RIOJA", "ENTRE RIOS", "SAN JUAN"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
 quarantineStart = "20/03"
 quarantineIndex = databases[0].index.get_loc(quarantineStart)
 
-plotAllCountry = True #Decide if you want a final plot of total cases in Argentina.
-plotWeeklyCases = True #Decide if you want to plot week day data
+#Deciding what to plot...
+byDate = True #Decide if you want to plot data by date for selected regions.
+byOutbreak = True #Decide if you want to plot data by notified cases for selected regions.
+newCases = False #Decide if you want to plot new daily cases for selected regions
+newCasesTrend = True #Decide if you want to plot new daily cases trend (3 day average) for selected regions
+deathRate = True #Decide if you want to plot death rate evolution for selected regions
+duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
+weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
+plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
+duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
+weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Selecting data to display
-startDate = "07/03" #Starting point for plotbyDate. Default: 03/03
+startDate = "08/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
@@ -455,12 +464,17 @@ def getWeeklyCasesR(regionindex, datatype):
 	for w in range(weekCount):
 		weeklyMaximun = max(newCasesHistory[w*7:w*7+7])
 		for d in range(7):
-			weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
+			if weeklyMaximun > 0:
+				weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
+			else:
+				weeklyCases[w].append(None)
 	averages = []
 	for d in range(7):
 		aux = 0
 		for w in range(weekCount):
-			aux += weeklyCases[w][d]
+			if weeklyCases[w][d] != None:
+				aux += weeklyCases[w][d]
+				realWeekCount += 1
 		averages.append(aux/weekCount)
 	weeklyCases.append(averages)
 	
@@ -472,9 +486,9 @@ def getDaysTags(dayTags, offset):
 		daylist.append(dayTags[(d + startDateDay + offset)%7])
 	return daylist
 
-def plotWeeklyCases(regionindex, datatype):
+def plotWeeklyCases(regionindex, datatype, region):
 	figure = plt.figure(num=None, figsize=(5, 4), dpi=150, facecolor='w', edgecolor='k')
-	figure.suptitle("Weeks analysis: " + dataTitles[datatype] + " since " + startDate, fontsize=12)
+	figure.suptitle(region + ": Weeks analysis (" + dataTitles[datatype] + " since " + startDate + ")", fontsize=12)
 	weeklyCases = getWeeklyCases(regionindex, datatype)
 	plt.subplot2grid((2, 1), (0, 0))
 	for w in range(len(weeklyCases) - 1):
@@ -511,16 +525,30 @@ def plotWeeklyCases(regionindex, datatype):
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	plt.show()
-	
-#plotbyDate(regionsIndexes, dataType)
-#plotbyOutbreak(regionsIndexes, dataType, dataGuide)
-#plotNewCases(regionsIndexes, dataType, dataGuide)
-#plotNewCases3Av(regionsIndexes, dataType, dataGuide)
-#plotDeathRate(regionsIndexes)
-#plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
+
+def plotWeeklyAnalysis(datalocation, datatype):
+	for d in range(len(datalocation[datatype])):
+		plotWeeklyCases(datalocation[datatype][d], datatype, regions[d])
+
+if byDate == True:
+	plotbyDate(regionsIndexes, dataType)
+if byOutbreak == True:
+	plotbyOutbreak(regionsIndexes, dataType, dataGuide)
+if newCases == True:
+	plotNewCases(regionsIndexes, dataType, dataGuide)
+if newCasesTrend == True:
+	plotNewCases3Av(regionsIndexes, dataType, dataGuide)
+if deathRate == True:
+	plotDeathRate(regionsIndexes)
+if duplicationTimes == True:
+	plotDuplicationTimes(regionsIndexes, dataType, dataGuide)
+if weeklyAnalysis == True:
+	plotWeeklyAnalysis(regionsIndexes, dataType)
 if plotAllCountry == True:
-#	plotAllCountryData()
-	#plotAllCountryDT(dataType)
-	plotWeeklyCases(databases[dataType].shape[1]-1, dataType)
+	plotAllCountryData()
+	if duplicationTimesAC == True:
+		plotAllCountryDT(dataType)
+	if weeklyAnalysisAC == True:
+		plotWeeklyCases(databases[dataType].shape[1]-1, dataType, "Argentina")
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
