@@ -471,6 +471,7 @@ def getWeeklyCasesR(regionindex, datatype):
 	averages = []
 	for d in range(7):
 		aux = 0
+		realWeekCount = 0
 		for w in range(weekCount):
 			if weeklyCases[w][d] != None:
 				aux += weeklyCases[w][d]
