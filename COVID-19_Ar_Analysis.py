@@ -43,7 +43,7 @@ startDateDay = 1
 #Note that the first one will be used as reference to decide periods of time to plot
 regions = ["CABA", "BUENOS AIRES"]
 #regions = ["SANTA FE", "RIO NEGRO", "CHACO", "CORDOBA"]
-#regions = ["NEUQUEN", "MENDOZA", "SALTA", "LA RIOJA", "ENTRE RIOS", "SAN JUAN"]
+#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
 quarantineStart = "20/03"
@@ -59,12 +59,12 @@ duplicationTimes = False #Decide if you want to plot cases duplication times for
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
+weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Selecting data to display
 startDate = "08/03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
-caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
@@ -102,13 +102,15 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
 #Function to plot cases for regions by date. Use 0, 1 or 2 to select Confirmed, Deaths or Recovered
 def plotbyDate(datalocation, datatype):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
+	yquarantine = []
+	x = quarantineIndex - startDateIndex
 	for i in range(len(datalocation[datatype])):
 		databases[datatype][startDate:][datalocation[datatype][i]].plot(kind='line', label=regions[i], linewidth=2.5)
-		if i == 0:
-			x = quarantineIndex - startDateIndex
-			y = databases[datatype].iloc[x, datalocation[datatype][i]]
+		yquarantine.append(databases[datatype].iloc[x, datalocation[datatype][i]])
+		if i == len(datalocation[datatype]) - 1:
+			y = max(yquarantine)
 			s = plt.ylim()
-			markQuarantine("Social\nisolation", s[1]/20, s[1]/4, 8, x, y, 5, 9, 7)
+			markQuarantine("Social\nisolation", s[1]/25, s[1]/5, 8, x, y, 5, 9, 7)
 	plt.title("COVID-19: " + dataTitles[datatype] + " cases since " + startDate)
 	plt.legend(loc=0, prop={'size': 8})
 	plt.grid(which='both', axis='both')
@@ -257,12 +259,15 @@ def plotAllCountryData():
 	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=150, facecolor='w', edgecolor='k')
 	figure.suptitle("Total cases in Argentina", fontsize=13)
 	plt.subplot2grid((3, 2), (0, 0))
+	x = quarantineIndex - startDateIndex
+	yquarantine = []
 	for d in range(len(databases)-3):
 		total = databases[d][startDate:][databases[d].shape[1] - 1].plot(kind="line", linewidth=2.0, label=dataTitles[d], color=colorlist[d])
-		if d == 0:
-			x = quarantineIndex - startDateIndex
-			y = databases[0].iloc[x, databases[0].shape[1] - 1]
-			markQuarantine("", 250, 1100, 8, x, y, 3, 6, 5)
+		yquarantine.append(databases[0].iloc[x, databases[0].shape[1] - 1])
+		if d == len(databases)-4:
+			y = max(yquarantine)
+			s = plt.ylim()			
+			markQuarantine("", s[1]/20, s[1]/4.5, 8, x, y, 3, 6, 5)
 	total.legend(loc=0, prop={'size': 7})
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
@@ -274,14 +279,16 @@ def plotAllCountryData():
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
 	plt.subplot2grid((3, 2), (0, 1))
+	yquarantine = []
 	for d in range(len(databases)-3):
 		auxlist = databases[d][startDate:][databases[d].shape[1] - 1].values.tolist()
 		ls = getNewCasesAv(getNewCases(auxlist))
 		plt.plot(ls, linewidth=2.0, label=dataTitles[d], color=colorlist[d])
+		yquarantine.append(ls[x])
 		if d == 0:
-			x = quarantineIndex - startDateIndex
-			y = ls[x]
-			markQuarantine("", 10, 40, 8, x, y, 3, 6, 5)
+			y = max(yquarantine)
+			s = plt.ylim()			
+			markQuarantine("", s[1]/20, s[1]/4.5, 8, x, y, 3, 6, 5)
 	plt.legend(loc=0, prop={'size': 7})
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
@@ -410,12 +417,15 @@ def plotAllCountryDT(datatype):
 	datalist = databases[datatype][startDate:][databases[datatype].shape[1] - 1].values.tolist()
 	duplicationtimes = getDuplicationTimesBar(datalist, " ")
 	plt.bar(range(len(duplicationtimes)), duplicationtimes)
+	x = quarantineIndex - startDateIndex
+	y = duplicationtimes[x]
+	s = plt.ylim()
+	markQuarantine("", s[1]/20, s[1]/5, 6, x, y, 3, 6, 5)
 	plt.title("Argentina: Duplication speed in days for " + dataTitles[datatype] + " cases since " + str(startDate), fontsize=11)
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Days", fontsize=8)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 10))
+	plt.yticks(nu.arange(0, s[1] * 1.2, 10))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -424,12 +434,15 @@ def plotAllCountryDT(datatype):
 	plt.subplot2grid((2, 1), (1, 0))
 	duplicationtimes = getDuplicationTimesBar(datalist, "average")
 	plt.bar(range(len(duplicationtimes)), duplicationtimes)
+	x = quarantineIndex - startDateIndex
+	y = duplicationtimes[x]
+	s = plt.ylim()
+	markQuarantine("", s[1]/20, s[1]/5, 6, x, y, 3, 6, 5)
 	plt.title("Argentina: Duplication speed trend in days for " + dataTitles[datatype] + " cases since " + str(startDate), fontsize=11)
 	plt.grid()
 	plt.ylabel("Days needed\nfor cases to double", fontsize=8)
 	plt.xlabel("Values for 3 days average", fontsize=8)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 10))
+	plt.yticks(nu.arange(0, s[1] * 1.2, 10))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
