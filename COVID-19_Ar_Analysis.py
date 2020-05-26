@@ -41,12 +41,12 @@ startDateDay = 1
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["CABA", "BUENOS AIRES"]
-#regions = ["SANTA FE", "RIO NEGRO", "CHACO", "CORDOBA"]
-#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CHACO"]
+#regions = ["CHACO", "SANTA FE", "RIO NEGRO", "CORDOBA"]
+#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
 regionsIndexes = [[],[]]
 regionReference = "PROVINCIA"
-quarantineStart = "20/03"
+quarantineStart = "2020-03-03"
 quarantineIndex = databases[0].index.get_loc(quarantineStart)
 
 #Deciding what to plot...
@@ -55,16 +55,16 @@ byOutbreak = True #Decide if you want to plot data by notified cases for selecte
 newCases = False #Decide if you want to plot new daily cases for selected regions
 newCasesTrend = True #Decide if you want to plot new daily cases trend (3 day average) for selected regions
 deathRate = True #Decide if you want to plot death rate evolution for selected regions
-duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
+duplicationTimes = True #Decide if you want to plot cases duplication times for selected regions
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
 weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Selecting data to display
-startDate = "08/03" #Starting point for plotbyDate. Default: 03/03
+startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
 startDateIndex = databases[0].index.get_loc(startDate) #Saving the startDate index for annotations
-caseCount = 1 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataType = 0 #0 = Confirmed, 1 = Active, 2 = Deaths, 3 = Recovered
 dataGuide = 0 #Data type to calculate startpoints (confirmed, active, deaths, recovered)
@@ -272,7 +272,7 @@ def plotAllCountryData():
 	total.set_title("Total cases", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 2000))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 3000))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -293,7 +293,7 @@ def plotAllCountryData():
 	plt.title("New cases trend (3 days average)", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 100))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 150))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -304,7 +304,7 @@ def plotAllCountryData():
 	deaths.set_title("Deaths", fontsize=10)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 100))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 150))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
@@ -329,7 +329,7 @@ def plotAllCountryData():
 	plt.legend(loc=0, prop={'size': 7})
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 20000))
+	plt.yticks(nu.arange(0, ylimits[1] * 1.2, 30000))
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
