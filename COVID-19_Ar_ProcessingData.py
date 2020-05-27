@@ -23,7 +23,7 @@ fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-05-25"
+dataEndDate = "2020-05-26"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -133,5 +133,5 @@ print("Dataframes for data analysis were build...                       ", end="
 print("Saving data to csv files...", end="\r")
 for d in range(len(databases)):
 	datanumber = "{:02d}".format(d)
-	databases[d].to_csv(datapath + "Argentina_COVID19_" + datanumber + dataTitles[d] + ".csv")
+	databases[d].to_csv(datapath + "Argentina_COVID19_" + datanumber + "_" + dataTitles[d] + ".csv")
 print("That's all. CSV files were saved.                          ", end="\n")
