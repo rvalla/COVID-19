@@ -16,14 +16,15 @@ dataSelection = ["CONFIRMADOS", "ACTIVOS", "MUERTOS", "RECUPERADOS", "TESTEADOS"
 dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Dropped",
 				"Deathrate", "NewConfirmed", "NewConfirmed3dAv", "ActiveVariation", "ActiveVariation3dAv",
 				"NewDeaths", "NewDeaths3dAv", "NewRecovered", "NewRecovered3dAv", "NewTested", "NewTested3dAv",
-				"PositiveTestsRatio", "PositiveTestsRatio3dAv", "DuplicationTimes", "DuplicationTimes3dAv",
-				"DeathDuplicationTimes", "DeathDuplicationTimes3dAv"]
+				"PositiveTestsRatio", "PositiveTestsRatio3dAv", "CumulativePositiveTestsRatio",
+				"DuplicationTimes", "DuplicationTimes3dAv", "DeathDuplicationTimes", "DeathDuplicationTimes3dAv",
+				"NewDropped", "NewDropped3dAv", "NewConfirmed5dAv", "Newdeaths5dAv"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-05-26"
+dataEndDate = "2020-06-01"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -40,6 +41,7 @@ for i in range(len(dataSelection)):
 	databases[i].columns = databases[i].loc["PROVINCIA"]
 	databases[i] = databases[i].drop(databases[i].index[0], axis=0)
 	databases[i].index = pd.DatetimeIndex(databases[i].index)
+	databases[i].index.name = "FECHA"
 
 print("Original dataframes created...                                ", end="\n")
 
@@ -67,6 +69,21 @@ def getNewCases3dAv(dataframe):
 			d1 = dataframe.loc[dataframe.index[d+1],columns[c]]
 			d2 = dataframe.loc[dataframe.index[d+2],columns[c]]
 			newCases.loc[newCases.index[d+1],columns[c]] = (d0 + d1+ d2) / 3
+	newCases.index = pd.DatetimeIndex(dataframe.index)
+	return newCases
+
+def getNewCases5dAv(dataframe):
+	print("Calculating new cases taking 5 day average...                   ", end="\r")
+	newCases = pd.DataFrame(index = dataPeriod, columns=dataframe.columns)
+	columns = dataframe.columns
+	for c in range(len(columns)):
+		for d in range(dataframe.shape[0] - 4):
+			d0 = dataframe.loc[dataframe.index[d],columns[c]]
+			d1 = dataframe.loc[dataframe.index[d+1],columns[c]]
+			d2 = dataframe.loc[dataframe.index[d+2],columns[c]]
+			d3 = dataframe.loc[dataframe.index[d+2],columns[c]]
+			d4 = dataframe.loc[dataframe.index[d+2],columns[c]]
+			newCases.loc[newCases.index[d+2],columns[c]] = (d0 + d1+ d2 + d3 + d4) / 5
 	newCases.index = pd.DatetimeIndex(dataframe.index)
 	return newCases
 
@@ -115,7 +132,7 @@ databases.append(getRatios(databases[2], databases[1])) # 6: Deathrate
 databases.append(getNewCases(databases[0])) # 7: New daily confirmed cases
 databases.append(getNewCases3dAv(databases[7])) #8: New confirmed cases trend (3 day average)
 databases.append(getNewCases(databases[1])) # 9: Active cases daily variation
-databases.append(getNewCases3dAv(databases[1])) # 10: Active cases variation trend (3 day average)
+databases.append(getNewCases3dAv(databases[9])) # 10: Active cases variation trend (3 day average)
 databases.append(getNewCases(databases[2])) # 11: New daily deaths
 databases.append(getNewCases3dAv(databases[11])) # 12: New deaths cases trend (3 day average)
 databases.append(getNewCases(databases[3])) # 13: New daily recovered cases
@@ -124,10 +141,17 @@ databases.append(getNewCases(databases[4])) # 15: Daily tests
 databases.append(getNewCases3dAv(databases[15])) # 16: Test trend (3 day average)
 databases.append(getRatios(databases[7], databases[15])) # 17: Positive tests ratio (positive/total)
 databases.append(getRatios(databases[8], databases[16])) # 18: Positive tests ratio trend (3 day average)
-databases.append(getLinearDuplicationTimes(databases[0], databases[7])) # 19: Linear duplication time
-databases.append(getLinearDuplicationTimes3dAv(databases[0], databases[8])) # 20: Linear duplication time trend
-databases.append(getLinearDuplicationTimes(databases[2], databases[11])) # 21: Linear deaths duplication time
-databases.append(getLinearDuplicationTimes3dAv(databases[2], databases[12])) # 22: Linear deaths duplication trend
+databases.append(getRatios(databases[0], databases[4])) # 19: Cumulative positive tests ratio trend
+databases.append(getLinearDuplicationTimes(databases[0], databases[7])) # 20: Linear duplication time
+databases.append(getLinearDuplicationTimes3dAv(databases[0], databases[8])) # 21: Linear duplication time trend
+databases.append(getLinearDuplicationTimes(databases[2], databases[11])) # 22: Linear deaths duplication time
+databases.append(getLinearDuplicationTimes3dAv(databases[2], databases[12])) # 23: Linear deaths duplication trend
+databases.append(getNewCases(databases[5])) # 24: New daily dropped cases
+databases.append(getNewCases3dAv(databases[24])) # 25: New daily dropped cases trend
+databases.append(getNewCases5dAv(databases[7])) # 26: New daily cases trend (5 days average)
+databases.append(getNewCases5dAv(databases[11])) # 27: New deaths trend (5 days average)
+
+
 print("Dataframes for data analysis were build...                       ", end="\n")
 
 print("Saving data to csv files...", end="\r")
