@@ -18,13 +18,14 @@ dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Dropped",
 				"NewDeaths", "NewDeaths3dAv", "NewRecovered", "NewRecovered3dAv", "NewTested", "NewTested3dAv",
 				"PositiveTestsRatio", "PositiveTestsRatio3dAv", "CumulativePositiveTestsRatio",
 				"DuplicationTimes", "DuplicationTimes3dAv", "DeathDuplicationTimes", "DeathDuplicationTimes3dAv",
-				"NewDropped", "NewDropped3dAv", "NewConfirmed5dAv", "Newdeaths5dAv"]
+				"NewDropped", "NewDropped3dAv", "NewConfirmed5dAv", "ActiveVariation5dAv", "Newdeaths5dAv",
+				"NewRecovered5dAv", "NewTested5dAv", "NewDropped5dAv"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-06-01"
+dataEndDate = "2020-06-02"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -149,8 +150,11 @@ databases.append(getLinearDuplicationTimes3dAv(databases[2], databases[12])) # 2
 databases.append(getNewCases(databases[5])) # 24: New daily dropped cases
 databases.append(getNewCases3dAv(databases[24])) # 25: New daily dropped cases trend
 databases.append(getNewCases5dAv(databases[7])) # 26: New daily cases trend (5 days average)
-databases.append(getNewCases5dAv(databases[11])) # 27: New deaths trend (5 days average)
-
+databases.append(getNewCases5dAv(databases[9])) # 27: Active cases variation trend (5 days average)
+databases.append(getNewCases5dAv(databases[11])) # 28: New deaths trend (5 days average)
+databases.append(getNewCases5dAv(databases[13])) # 29: New recovered cases trend (5 days average)
+databases.append(getNewCases5dAv(databases[15])) # 30: New tests trend (5 days average)
+databases.append(getNewCases5dAv(databases[24])) # 31: New dropped cases trend (5 days average)
 
 print("Dataframes for data analysis were build...                       ", end="\n")
 

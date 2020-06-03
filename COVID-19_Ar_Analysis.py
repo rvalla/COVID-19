@@ -94,6 +94,7 @@ yTitles = ["Number of cases", "Número de casos", "Death rate", "Tasa de mortali
 tConector = [" since ", " desde ", " after ", " después de "]
 
 filePath = "Argentina_Data/processed_data/"
+chartPath = "Argentina_Data/actual_charts/"
 
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
@@ -138,6 +139,10 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
     		xytext=(x, y + ytshift), textcoords='data',
 			arrowprops=dict(facecolor='orangered', edgecolor="none", width=w, headwidth=hw, headlength=hl),
         	horizontalalignment='center', verticalalignment='top')
+
+def savePlot(csvName, figure):
+	chartName = csvName.split(".")
+	plt.savefig(chartPath + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
 def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval):
 	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
@@ -373,6 +378,7 @@ def plotAllCountryData():
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 	duplication.set_facecolor(backgroundPlot)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+	savePlot("Argentina.csv", figure)
 	plt.show()
 	
 def plotAllCountryDT():
