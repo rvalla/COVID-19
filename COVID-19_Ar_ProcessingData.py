@@ -81,8 +81,8 @@ def getNewCases5dAv(dataframe):
 			d0 = dataframe.loc[dataframe.index[d],columns[c]]
 			d1 = dataframe.loc[dataframe.index[d+1],columns[c]]
 			d2 = dataframe.loc[dataframe.index[d+2],columns[c]]
-			d3 = dataframe.loc[dataframe.index[d+2],columns[c]]
-			d4 = dataframe.loc[dataframe.index[d+2],columns[c]]
+			d3 = dataframe.loc[dataframe.index[d+3],columns[c]]
+			d4 = dataframe.loc[dataframe.index[d+4],columns[c]]
 			newCases.loc[newCases.index[d+2],columns[c]] = (d0 + d1+ d2 + d3 + d4) / 5
 	newCases.index = pd.DatetimeIndex(dataframe.index)
 	return newCases
