@@ -18,7 +18,7 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
+#regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 regions = ["CABA", "BUENOS AIRES", "CHACO"]
 #regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
 
@@ -52,7 +52,7 @@ weeklyAnalysisAC = False #Decide if you want to plot week day data of notified c
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -63,7 +63,8 @@ fileNames = ["00_Confirmed.csv", "01_Active.csv", "02_Deaths.csv", "03_Recovered
 				"17_PositiveTestsRatio.csv", "18_PositiveTestsRatio3dAv.csv", "19_CumulativePositiveTestsRatio.csv",
 				"20_DuplicationTimes.csv", "21_DuplicationTimes3dAv.csv", "22_DeathDuplicationTimes.csv",
 				"23_DeathDuplicationTimes3dAv.csv", "24_NewDropped.csv", "25_NewDropped3dAv.csv",
-				"26_NewConfirmed5dAv.csv", "27_Newdeaths5dAv.csv"]				
+				"26_NewConfirmed5dAv.csv", "27_ActiveVariation5dAv.csv", "28_Newdeaths5dAv.csv", "29_NewRecovered5dAv.csv",
+				"30_NewTested5dAv.csv", "31_NewDropped5dAv.csv"]				
 dataTitles = ["Confirmed cases", "Casos confirmados", "Active cases", "Casos activos", "Deaths", "Fallecimientos", 
 				"Recovered patients", "Altas", "Laboratory Tests", "Tests", "Dropped cases", "Casos descartados",
 				"Death rate", "Tasa de mortalidad", "Daily confirmed cases", "Casos diarios", "New confirmed cases trend",
@@ -78,7 +79,10 @@ dataTitles = ["Confirmed cases", "Casos confirmados", "Active cases", "Casos act
 				"Duplicación de fallecimientos (lineal)", "Deahts duplication times trend",
 				"Duplicación de fallecimientos (3 días)", "Daily dropped cases", "Casos descartados diariamente",
 				"Daily dropped cases trend", "Casos descartados diariamente (3 días)", "New confirmed cases trend (5 days)",
-				"Casos diarios (5 días)", "New deaths trend (5 days)", "Fallecimientos diarios (5 días)"]
+				"Casos diarios (5 días)", "Active cases variation trend (5 days)", "Evolución de casos activos (5 días)",
+				"New deaths trend (5 days)", "Fallecimientos diarios (5 días)", "New recovered trend (5 days)",
+				"Altas diarias (5 días)", "Daily tests trend (5 days)", "Tests diarios (5 días)",
+				"Daily dropped cases trend (5 days)", "Casos descartados diariamente (5 días)"]
 plotTitles = ["COVID-19 outbreak in Argentina", "COVID-19: el brote en Argentina", "Total cases", "Totales",
 				"New cases trend (3 days average)", "Tendencia diaria (promedio 3 días)", "Deaths", "Fallecimientos",
 				"Daily deaths (3 days average)", "Fallecimientos diarios (promedio 3 días)", "Deaths & positive tests ratios",
@@ -99,13 +103,17 @@ chartPath = "Argentina_Data/actual_charts/"
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
-colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green"] #Default colors for data
+colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple", "tab:pink", "olivedrab",
+				"crimson", "darkcyan", "aqua", "dodgerblue", "palegreen", "seagreen", "limegreen", "indianred",
+				"slategrey", "royalblue", "navy", "slateblue", "goldenrod", "greenyellow", "darkturquoise",
+				"coral"] #Default colors for data
 backgroundPlot = "silver" #Default background color for charts
 backgroundFigure = "lightgrey" #Default background color for figures
 majorGridColor = "dimgrey" #Default colors for grids...
 minorGridColor = "dimgray"
 alphaMGC = 0.7
 alphamGC = 0.9
+imageResolution = 150
 
 #Loading data...
 databases = []
@@ -145,40 +153,42 @@ def savePlot(csvName, figure):
 	plt.savefig(chartPath + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
 def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval):
-	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Saving y values for markQ...
 	yquarantine = []
 	x = quarantineIndex
 	#Plotting selected data...
 	for i in range(len(regions)):
-		databases[datatype][startDate:][regions[i]].plot(kind='line', label=regions[i], linewidth=2.5)
+		databases[datatype][startDate:][regions[i]].plot(kind='line', label=regions[i], color=colorlist[i], linewidth=2.5)
 		yquarantine.append(databases[datatype].loc[quarantineStart, regions[i]])
 	s = plt.ylim()
 	if markQ == True:
 		y = max(yquarantine) #Drawing a mark on quarantineStartDate
 		markQuarantine("Social\nisolation", s[1]/25, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
 	#Setting up titles	
-	plt.title("COVID-19: " + dataTitles[2*(datatype)+lg] + tConector[lg] + startDateTime.strftime(dateFormatString))
+	plt.title("COVID-19: " + dataTitles[2*(datatype)+lg] + tConector[lg] + startDateTime.strftime(dateFormatString), fontname=defaultFont)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitle)
-	plt.xlabel(xtitle)
+	plt.ylabel(ytitle, fontname=legendFont)
+	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
 	plt.grid(which='both', axis='both')
 	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
 	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c="black", alpha=0.5)
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	#Setting date format...
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
+	plt.gca().set_facecolor(backgroundPlot)
 	#Setting axis labels font and legend
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
 	if len(regions) > 1:
-		plt.legend(loc=2, prop={'size': 8})
+		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
+	savePlot(fileNames[datatype], figure)
 	plt.show()
 
 #Function to look for certain case count in each region
@@ -195,39 +205,41 @@ startPoints = regionsStartPoints(regions, dataGuide)
 
 #Function to plot cases for regions since first case
 def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ticksInterval):
-	figure(num=None, figsize=(8, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	period = 0
 	#Plotting selected data...
 	for i in range(len(regions)):
 		datalist = databases[datatype][startPoints[i]:][regions[i]].values.tolist()
 		if i == 0:
 			period = len(datalist)
-		plt.plot(datalist[0:period-1], label=regions[i], linewidth=2.5)
+		plt.plot(datalist[0:period-1], label=regions[i], linewidth=2.5, color=colorlist[i])
 	#Setting up titles
-	plt.title("COVID-19: " + dataTitles[2*datatype+lg] + tConector[2 + lg] + str(caseCount) + " " + dataTitles[2*dataguide+lg])
+	plt.title("COVID-19: " + dataTitles[2*datatype+lg] + tConector[2 + lg] + str(caseCount) + " " + dataTitles[2*dataguide+lg], fontname=defaultFont)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitle)
-	plt.xlabel(xtitle)
+	plt.ylabel(ytitle, fontname=legendFont)
+	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
 	plt.grid(which='both', axis='both')
 	s = plt.ylim()
 	d = plt.xlim()
 	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
 	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c="black", alpha=0.5)
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	#Setting axis labels font and legend
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
+	plt.gca().set_facecolor(backgroundPlot)
 	if len(regions) > 1:
-		plt.legend(loc=2, prop={'size': 8})
+		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
+	savePlot(fileNames[datatype], figure)
 	plt.show()
 
 def plotAllCountryData():
-	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(plotTitles[0+lg], fontsize=12, fontname=defaultFont)
 	#Setting up totals chart...
 	plt.subplot2grid((3, 2), (0, 0))
@@ -313,7 +325,7 @@ def plotAllCountryData():
 	ratios = databases[19][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*5+lg], color=colorlist[1])
 	ratios = databases[18][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
 	ratios = databases[6][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*3+lg], color=colorlist[2])
-	ratios.legend(loc=2, shadow = False, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	ratios.set_title(plotTitles[2*5+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
@@ -333,7 +345,7 @@ def plotAllCountryData():
 	plt.subplot2grid((3, 2), (2, 0))
 	tests = databases[4][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*6+lg], color=colorlist[0])
 	tests = databases[5][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*7+lg], color=colorlist[1])
-	tests.legend(loc=2, shadow = False, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	tests.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	tests.set_title(plotTitles[2*6+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	ylimits = plt.ylim()
@@ -356,7 +368,7 @@ def plotAllCountryData():
 	plt.subplot2grid((3, 2), (2, 1))
 	duplication = databases[23][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2], zorder=2)
 	duplication = databases[21][startDate:]["TOTAL"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[1], zorder=3)
-	duplication.legend(loc=2, shadow = False, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	duplication.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.fill_between(databases[23][startDate:].index.values, databases[23][startDate:]["TOTAL"], 0, facecolor=colorlist[2],
 					alpha=0.5, zorder=2)
 	plt.fill_between(databases[21][startDate:].index.values, databases[21][startDate:]["TOTAL"], 0, facecolor=colorlist[1],
@@ -382,7 +394,7 @@ def plotAllCountryData():
 	plt.show()
 	
 def plotAllCountryDT():
-	figure = plt.figure(num=None, figsize=(7, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure = plt.figure(num=None, figsize=(7, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up first subplot...
 	plt.subplot2grid((2, 1), (0, 0))
 	#Plotting the data...
@@ -487,7 +499,7 @@ def getDaysTags(dayTags, offset):
 	return daylist
 
 def plotWeeklyCases(regionindex, datatype, region):
-	figure = plt.figure(num=None, figsize=(5, 4), dpi=150, facecolor='w', edgecolor='k')
+	figure = plt.figure(num=None, figsize=(5, 4), dpi=imageResolution, facecolor='w', edgecolor='k')
 	figure.suptitle(region + ": Weeks analysis (" + dataTitles[datatype] + " since " + startDate + ")", fontsize=12)
 	weeklyCases = getWeeklyCases(regionindex, datatype)
 	plt.subplot2grid((2, 1), (0, 0))
@@ -559,7 +571,7 @@ if newDeathsTrend == True:
 	plotbyDate(regions, 12, xTitles[0+lg], yTitles[0+lg], True, 5)
 if newDeathsTrend5 == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 27, xTitles[0+lg], yTitles[0+lg], True, 5)
+	plotbyDate(regions, 28, xTitles[0+lg], yTitles[0+lg], True, 5)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
 	plotbyDate(regions, 6, xTitles[0+lg], yTitles[0+lg], False, 0.02)
