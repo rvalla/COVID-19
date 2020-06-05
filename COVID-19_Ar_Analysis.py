@@ -44,15 +44,16 @@ confirmedDuplicationTrend = True #Decide if you want to plot linear confirmed ca
 deathsDuplication = False #Decide if you want to plot linear deaths duplication times
 deathsDuplicationTrend = True #Decide if you want to plot linear deaths duplication times trend
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
+weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
-duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
+duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
+weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -92,10 +93,12 @@ shortLabels = ["Confirmed", "Confirmados", "Active", "Activos", "Deaths", "Falle
 				"Tasa de mortalidad", "Positive trend", "Positividad (3 días)", "Positive ratio", "Positividad acumulada",
 				"Laboratory tests", "Pruebas de diagnóstico", "Dropped cases", "Casos descartados"]
 xTitles = ["Time in days", "Tiempo en días"]
-yTitles = ["Number of cases", "Número de casos", "Death rate", "Tasa de mortalidad", "Laboratory tests",
-			"Pruebas de laboratorio", "Positive tests ratio", "Tasa de positividad", "Duplication times in days",
-			"Tiempos de duplicación en días"]
-tConector = [" since ", " desde ", " after ", " después de "]
+yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecimientos", "Death rate", "Tasa de mortalidad",
+			"Laboratory tests", "Pruebas de laboratorio", "Positive tests ratio", "Tasa de positividad",
+			"Days needed for\nconfirmed cases to double", "Días necesarios para\nque los casos se dupliquen",
+			"Days needed\nfor deaths to double", "Días necesarios para que\nlos fallecimientos se dupliquen"]
+tConector = [" since ", " desde ", " after ", " después de ", " (absolute)", " (valores absolutos)",
+				" (relative)", " (valores relativos)"]
 
 filePath = "Argentina_Data/processed_data/"
 chartPath = "Argentina_Data/actual_charts/"
@@ -406,8 +409,8 @@ def plotAllCountryDT():
 	q = plt.xlim()
 	markQuarantine("", s[1]/20, s[1]/6, 6, x, y, 3, 6, 5)
 	#Setting up titles	
-	plt.title("Argentina: " + dataTitles[(2*21)+lg] + tConector[lg] + startDateTime.strftime(dateFormatString), fontsize=11)
-	plt.ylabel("Days needed for\ntotal cases to double", fontsize=7)
+	plt.title("Argentina: " + dataTitles[(2*21)+lg] + tConector[lg] + startDateTime.strftime(dateFormatString), fontsize=11, fontname=defaultFont)
+	plt.ylabel(yTitles[10+lg], fontsize=9, fontname=legendFont)
 	plt.xlabel("")
 	#Setting up grid...
 	plt.grid(which='both', axis='both')
@@ -431,8 +434,8 @@ def plotAllCountryDT():
 	y = databases[23].loc[quarantineStart, "TOTAL"]
 	s = plt.ylim()
 	markQuarantine("", s[1]/20, s[1]/6, 6, x, y, 3, 6, 5)
-	plt.ylabel("Days needed for\ntotal deaths to double", fontsize=7)
-	plt.xlabel("Time in days", fontsize=8)
+	plt.ylabel(yTitles[12+lg], fontsize=9, fontname=legendFont)
+	plt.xlabel(xTitles[0+lg], fontsize=9, fontname=legendFont)
 	#Setting up grid...
 	plt.grid(which='both', axis='both')
 	plt.yticks(nu.arange(0, s[1] * 1.1, 10))
@@ -447,113 +450,117 @@ def plotAllCountryDT():
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 	plt.tight_layout()
+	savePlot("ArgentinaDT.csv", figure)
 	plt.show()
-		
-def getWeeklyCases(regionindex, datatype):
-	casesHistory = databases[datatype][startDate:][regionindex].values.tolist()
-	newCasesHistory = getNewCases(casesHistory)
-	weekCount = int(len(newCasesHistory)/7)
-	weeklyCases = [[] for d in range(weekCount)]
-	for w in range(weekCount):
-		for d in range(7):
-			weeklyCases[w].append(newCasesHistory[w*7 + d])
-	averages = []
-	for d in range(7):
-		aux = 0
-		for w in range(weekCount):
-			aux += weeklyCases[w][d]
-		averages.append(aux/weekCount)
-	weeklyCases.append(averages)
 	
-	return weeklyCases
-
-def getWeeklyCasesR(regionindex, datatype):
-	casesHistory = databases[datatype][startDate:][regionindex].values.tolist()
-	newCasesHistory = getNewCases(casesHistory)
-	weekCount = int(len(newCasesHistory)/7)
-	weeklyCases = [[] for d in range(weekCount)]
-	for w in range(weekCount):
-		weeklyMaximun = max(newCasesHistory[w*7:w*7+7])
-		for d in range(7):
-			if weeklyMaximun > 0:
-				weeklyCases[w].append(newCasesHistory[w*7 + d]/weeklyMaximun)
-			else:
-				weeklyCases[w].append(None)
-	averages = []
-	for d in range(7):
-		aux = 0
-		realWeekCount = 0
-		for w in range(weekCount):
-			if weeklyCases[w][d] != None:
-				aux += weeklyCases[w][d]
-				realWeekCount += 1
-		averages.append(aux/weekCount)
-	weeklyCases.append(averages)
-	
-	return weeklyCases
-
 def getDaysTags(dayTags, offset):
 	daylist = []
 	for d in range(len(dayTags)):
 		daylist.append(dayTags[(d + startDateDay + offset)%7])
 	return daylist
 
-def plotWeeklyCases(regionindex, datatype, region):
-	figure = plt.figure(num=None, figsize=(5, 4), dpi=imageResolution, facecolor='w', edgecolor='k')
-	figure.suptitle(region + ": Weeks analysis (" + dataTitles[datatype] + " since " + startDate + ")", fontsize=12)
-	weeklyCases = getWeeklyCases(regionindex, datatype)
+weekCount = int(databases[0][startDate:].shape[0]/7)
+days = getDaysTags(dayTags, 0)
+
+def getWeeklyCases(region, datatype):
+	weeklyCases = pd.DataFrame(index=nu.arange(0, weekCount + 3, 1), columns=days)
+	for d in range(7):
+		for w in range(weekCount):
+			weeklyCases.loc[w,days[d]] = databases[datatype].loc[databases[datatype].index[w*7 + d], region]
+		weeklyCases.loc[weekCount,days[d]] = weeklyCases[0:weekCount][days[d]].min()
+		weeklyCases.loc[weekCount+1,days[d]] = weeklyCases[0:weekCount][days[d]].max()
+		weeklyCases.loc[weekCount+2,days[d]] = weeklyCases[0:weekCount][days[d]].mean()
+	return weeklyCases
+
+def getWeeklyCasesR(weeklyCases):
+	weeklyCasesR = pd.DataFrame(index=weeklyCases.index, columns=weeklyCases.columns)
+	for w in range(weekCount):
+		weekMax = weeklyCases.loc[weeklyCases.index[w],:].max()
+		if weekMax > 0:
+			for d in range(7):
+				weeklyCasesR.loc[w,days[d]] = weeklyCases.loc[weeklyCases.index[w], days[d]]/weekMax
+	for d in range(7):
+		weeklyCasesR.loc[weekCount,days[d]] = weeklyCasesR[0:weekCount][days[d]].min()
+		weeklyCasesR.loc[weekCount+1,days[d]] = weeklyCasesR[0:weekCount][days[d]].max()
+		weeklyCasesR.loc[weekCount+2,days[d]] = weeklyCasesR[0:weekCount][days[d]].mean()
+	return weeklyCasesR
+
+def buildWeeklyData(regions, datatype):
+	weeklyData = []
+	for d in range(len(regions)):
+		weeklyData.append(getWeeklyCases(regions[d], datatype))
+	return weeklyData
+
+def buildWeeklyDataR(weeklyCases):
+	weeklyDataR = []
+	for d in range(len(weeklyCases)):
+		weeklyDataR.append(getWeeklyCasesR(weeklyCases[d]))
+	return weeklyDataR
+
+def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aType, saveChart):
+	figure = plt.figure(num=None, figsize=(5, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle(region + ": Weeks analysis" + tConector[lg] + startDateTime.strftime(dateFormatString) + 
+					aType, fontsize=12, fontname=defaultFont)
+	weekCount = weeklyConfirmed.shape[0]-3
+	#Plotting analysis for confirmed cases...
 	plt.subplot2grid((2, 1), (0, 0))
-	for w in range(len(weeklyCases) - 1):
-		plt.plot(weeklyCases[w], linewidth=2.0, color=colorlist[1], alpha=0.5)
-	plt.plot(weeklyCases[len(weeklyCases)-1], linewidth=2.5, color=colorlist[0], alpha=1.0)
-	plt.plot([0, 6], [weeklyCases[len(weeklyCases)-1][0], weeklyCases[len(weeklyCases)-1][6]], linewidth=1.0,
-						linestyle="--", color=colorlist[2], alpha=1.0)
-	plt.title("New cases by day of the week (absolute)", fontsize=10)
+	for w in range(weekCount):
+		weeklyConfirmed.loc[weeklyConfirmed.index[w],:].plot(linewidth=2.0, color=colorlist[3], alpha=0.3)
+	weeklyConfirmed.loc[weeklyConfirmed.index[weekCount],:].plot(linewidth=2.0, color=colorlist[1], alpha=0.6)
+	weeklyConfirmed.loc[weeklyConfirmed.index[weekCount + 1],:].plot(linewidth=2.0, color=colorlist[1], alpha=0.6)
+	weeklyConfirmed.loc[weeklyConfirmed.index[weekCount + 2],:].plot(linewidth=2.0, color=colorlist[2], alpha=1.0)
+	plt.title(dataTitles[0+lg] , fontsize=10, fontname=defaultFont)
 	plt.grid()
-	plt.ylabel("New daily cases", fontsize=6)
+	plt.ylabel(yTitleC, fontsize=6)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, round(ylimits[1]/5,0)))
-	plt.xticks(nu.arange(0, 7, step = 1), getDaysTags(dayTags, 0), fontsize = 6, rotation = 30)
+	plt.yticks(nu.arange(0, ylimits[1] * 1.1, ylimits[1]/5))
+	plt.xticks(nu.arange(0, 7, 1))
+	plt.gca().xaxis.set_ticklabels([])
 	plt.xticks(fontsize=5)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	weeklyCases = getWeeklyCasesR(regionindex, datatype)
+	plt.gca().set_facecolor(backgroundPlot)
+	#Plotting analysis for deahts...
 	plt.subplot2grid((2, 1), (1, 0))
-	for w in range(len(weeklyCases) - 1):
-		plt.plot(weeklyCases[w], linewidth=2.0, color=colorlist[1], alpha=0.5)
-	plt.plot(weeklyCases[len(weeklyCases)-1], linewidth=2.5, color=colorlist[0], alpha=1.0)
-	plt.plot([0, 6], [weeklyCases[len(weeklyCases)-1][0], weeklyCases[len(weeklyCases)-1][6]], linewidth=1.0,
-						linestyle="--", color=colorlist[2], alpha=1.0)
-	plt.title("New cases by day of the week (relative)", fontsize=10)
+	for w in range(weekCount):
+		weeklyDeaths.loc[weeklyDeaths.index[w],:].plot(linewidth=2.0, color=colorlist[3], alpha=0.3)
+	weeklyDeaths.loc[weeklyDeaths.index[weekCount],:].plot(linewidth=2.0, color=colorlist[1], alpha=1.0)
+	weeklyDeaths.loc[weeklyDeaths.index[weekCount + 1],:].plot(linewidth=2.0, color=colorlist[1], alpha=1.0)
+	weeklyDeaths.loc[weeklyDeaths.index[weekCount + 2],:].plot(linewidth=2.0, color=colorlist[2], alpha=1.0)
+	plt.title(dataTitles[4+lg] , fontsize=10, fontname=defaultFont)
 	plt.grid()
-	plt.ylabel("Variation relative\nto week maximun", fontsize=6)
+	plt.ylabel(yTitleD, fontsize=6)
 	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.2, round(ylimits[1]/5,1)))
-	plt.xticks(nu.arange(0, 7, step = 1), getDaysTags(dayTags, 0), fontsize = 6, rotation = 30)
+	plt.yticks(nu.arange(0, ylimits[1] * 1.1, ylimits[1]/5))
+	plt.xticks(nu.arange(0, 7, step = 1), days, fontsize = 6, rotation = 30, fontname=legendFont)
 	plt.xticks(fontsize=5)
 	plt.yticks(fontsize=6)
 	plt.minorticks_on()
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
+	plt.gca().set_facecolor(backgroundPlot)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+	if saveChart == True:
+		savePlot(region + "_WA.csv", figure)
 	plt.show()
 
-def plotWeeklyAnalysis(datalocation, datatype):
-	for d in range(len(datalocation[datatype])):
-		plotWeeklyCases(datalocation[datatype][d], datatype, regions[d])
+def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, regions, saveChart):
+	for d in range(len(regions)):
+		plotWeeklyCases(weeklyConfirmed[d], weeklyDeaths[d], yTitleC, yTitleD, regions[d], aType, saveChart)
 
+#Calling the functions to build selected charts...
 if confirmedByDate == True:
 	print("Plotting confirmed cases data by date...", end="\n")
 	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000)
 if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
-	plotbyDate(regions, 2, xTitles[0+lg], yTitles[0+lg], True, 50)
+	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
 	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000)
 if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 50)
+	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
 	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100)
@@ -565,38 +572,64 @@ if newConfirmedCasesTrend5 == True:
 	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100)
 if newDeaths == True:
 	print("Plotting daily deaths cases data...", end="\n")
-	plotbyDate(regions, 11, xTitles[0+lg], yTitles[0+lg], True, 5)
+	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5)
 if newDeathsTrend == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 12, xTitles[0+lg], yTitles[0+lg], True, 5)
+	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 5)
 if newDeathsTrend5 == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 28, xTitles[0+lg], yTitles[0+lg], True, 5)
+	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
-	plotbyDate(regions, 6, xTitles[0+lg], yTitles[0+lg], False, 0.02)
+	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02)
 if confirmedDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 20, xTitles[0+lg], yTitles[8+lg], False, 15)
+	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15)
 if confirmedDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times trend by date...", end="\n")
-	plotbyDate(regions, 21, xTitles[0+lg], yTitles[8+lg], False, 15)
+	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15)
 if deathsDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 22, xTitles[0+lg], yTitles[8+lg], False, 25)
+	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25)
 if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 23, xTitles[0+lg], yTitles[8+lg], False, 25)
-
-
-
+	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25)
+weeklyConfirmed = []
+weeklyDeaths = []
+weeklyConfirmedR = []
+weeklyDeaths = []
+if weeklyAnalysis == True or weeklyAnalysisAC == True:
+	print("Ordening data by day of the week", end="\n")
+	weeklyConfirmed = buildWeeklyData(regions, 7)
+	weeklyDeaths = buildWeeklyData(regions, 11)
+	weeklyConfirmedR = buildWeeklyDataR(weeklyConfirmed)
+	weeklyDeathsR = buildWeeklyDataR(weeklyDeaths)
 if weeklyAnalysis == True:
-	plotWeeklyAnalysis(regionsIndexes, dataType)
+	if weeklyAnalysisType == "both":
+		print("Plotting week analysis (absolute and relative)", end="\n")
+		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False)
+		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False)
+	elif weeklyAnalysisType == "relative":
+		print("Plotting week analysis (relative)", end="\n")
+		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False)		
+	elif weeklyAnalysisType == "absolute":
+		print("Plotting week analysis (absolute)", end="\n")
+		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False)
 if plotAllCountry == True:
 	plotAllCountryData()
 	if duplicationTimesAC == True:
 		plotAllCountryDT()
 	if weeklyAnalysisAC == True:
-		plotWeeklyCases(databases[dataType].shape[1]-1, dataType, "Argentina")
+		if weeklyAnalysisType == "both":
+			print("Plotting week analysis for Argentina (absolute and relative)", end="\n")
+			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["TOTAL"], True)
+			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["TOTAL"], True)
+		elif weeklyAnalysisType == "relative":
+			print("Plotting week analysis for Argentina (relative)", end="\n")
+			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["TOTAL"], True)		
+		elif weeklyAnalysisType == "absolute":
+			print("Plotting week analysis for Argentina (absolute)", end="\n")
+			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["TOTAL"], True)
 
+#Saying good bye...
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
