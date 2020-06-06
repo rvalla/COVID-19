@@ -47,7 +47,7 @@ weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
+weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
@@ -124,6 +124,7 @@ for d in range(len(fileNames)):
 	databases.append(pd.read_csv(filePath + fileNamePrefix + fileNames[d]))
 	databases[d].set_index("FECHA", inplace = True)
 	databases[d].index = pd.DatetimeIndex(databases[d].index)
+	databases[d].index.name = "FECHA"
 
 #Constant configurations...
 dayTags = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -177,6 +178,7 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval):
 	plt.grid(which='both', axis='both')
 	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
 	plt.minorticks_on()
+	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
@@ -227,6 +229,7 @@ def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ti
 	d = plt.xlim()
 	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
 	plt.minorticks_on()
+	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
