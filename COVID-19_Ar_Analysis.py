@@ -27,6 +27,12 @@ startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
+#Deciding language for titles and tags...
+lg = 0 # 0 for english, 1 for spanish
+
+#Deciding if you want to save charts to .png images...
+saveChart = False
+
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
 deathsByDate = True #Decide if you want to plot deaths data by date for selected regions.
@@ -46,14 +52,11 @@ deathsDuplicationTrend = True #Decide if you want to plot linear deaths duplicat
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
-duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
+duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
+weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
-
-#Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -156,7 +159,24 @@ def savePlot(csvName, figure):
 	chartName = csvName.split(".")
 	plt.savefig(chartPath + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
-def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval):
+def gridAndTicks(yMax, ticksInterval):
+	plt.grid(which='both', axis='both')
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.yticks(nu.arange(0, yMax, ticksInterval))
+	plt.gca().set_facecolor(backgroundPlot)
+
+def ticksLocator(weekInterval):
+	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
+	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
+	plt.gca().xaxis.set_major_formatter(dateFormat)
+
+def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechart):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Saving y values for markQ...
 	yquarantine = []
@@ -175,25 +195,14 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval):
 	plt.ylabel(ytitle, fontname=legendFont)
 	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
-	plt.grid(which='both', axis='both')
-	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
-	plt.minorticks_on()
-	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	#Setting date format...
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	plt.gca().set_facecolor(backgroundPlot)
+	gridAndTicks(s[1]*1.1, ticksInterval)
+	ticksLocator(1)
 	#Setting axis labels font and legend
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
 	if len(regions) > 1:
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
-	savePlot(fileNames[datatype], figure)
+	if savechart == True:
+		savePlot(fileNames[datatype], figure)
 	plt.show()
 
 #Function to look for certain case count in each region
@@ -209,7 +218,7 @@ def regionsStartPoints(regions, dataguide):
 startPoints = regionsStartPoints(regions, dataGuide)
 
 #Function to plot cases for regions since first case
-def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ticksInterval):
+def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ticksInterval, savechart):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	period = 0
 	#Plotting selected data...
@@ -224,27 +233,17 @@ def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ti
 	plt.ylabel(ytitle, fontname=legendFont)
 	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
-	plt.grid(which='both', axis='both')
 	s = plt.ylim()
-	d = plt.xlim()
-	plt.yticks(nu.arange(0, s[1]*1.2, ticksInterval))
-	plt.minorticks_on()
-	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	#Setting axis labels font and legend
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.gca().set_facecolor(backgroundPlot)
+#	d = plt.xlim()
+	gridAndTicks(s[1]*1.1, ticksInterval)
 	if len(regions) > 1:
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
-	savePlot(fileNames[datatype], figure)
+	if savechart == True:
+		savePlot(fileNames[datatype], figure)
 	plt.show()
 
-def plotAllCountryData():
+def plotAllCountryData(savechart):
 	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(plotTitles[0+lg], fontsize=12, fontname=defaultFont)
 	#Setting up totals chart...
@@ -264,21 +263,14 @@ def plotAllCountryData():
 	total.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	ylabels = nu.arange(0, ylimits[1]/1000*1.1, 3).tolist()
+	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 4000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 3).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 3000), ylabels)
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.xlabel("")
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	total.set_facecolor(backgroundPlot)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 4000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((3, 2), (0, 1))
@@ -295,36 +287,22 @@ def plotAllCountryData():
 	newtrend.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	newtrend.set_title(plotTitles[2*2+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 150))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
+	s = plt.ylim()
 	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 200)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	newtrend.set_facecolor(backgroundPlot)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new deaths chart...
 	plt.subplot2grid((3, 2), (1, 0))
 	newdeaths = databases[12][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2])
 	newdeaths.set_title(plotTitles[2*4+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 5))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
+	s = plt.ylim()
 	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 5)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	newdeaths.set_facecolor(backgroundPlot)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up ratios chart...
 	plt.subplot2grid((3, 2), (1, 1))
@@ -334,18 +312,11 @@ def plotAllCountryData():
 	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	ratios.set_title(plotTitles[2*5+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 0.1))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
+	s = plt.ylim()
 	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 0.1)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	ratios.set_facecolor(backgroundPlot)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up Tested vs Dropped...
 	plt.subplot2grid((3, 2), (2, 0))
@@ -354,22 +325,16 @@ def plotAllCountryData():
 	tests.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	tests.set_title(plotTitles[2*6+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	ylabels = nu.arange(0, ylimits[1]/1000*1.1, 30).tolist()
+	s = plt.ylim()
+	gridAndTicks(s[1]*1.1, 40000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 40).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 30000), ylabels)
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 40000), ylabels)
 	plt.xlabel("")
 	plt.xlim(a[0], a[1])
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	tests.set_facecolor(backgroundPlot)
 	#Plotting duplication times...
 	plt.subplot2grid((3, 2), (2, 1))
 	duplication = databases[23][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2], zorder=2)
@@ -385,21 +350,15 @@ def plotAllCountryData():
 	plt.xlim(a[0], a[1])
 	plt.grid(which='both', axis='both')
 	plt.yscale(plotScale)
-	ylimits = plt.ylim()
-	plt.yticks(nu.arange(0, ylimits[1] * 1.1, 15))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
-	duplication.set_facecolor(backgroundPlot)
+	s = plt.ylim()
+	gridAndTicks(s[1]*1.1, 15)
+	ticksLocator(2)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-	savePlot("Argentina.csv", figure)
+	if savechart == True:
+		savePlot("Argentina.csv", figure)
 	plt.show()
 	
-def plotAllCountryDT():
+def plotAllCountryDT(savechart):
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up first subplot...
 	plt.subplot2grid((2, 1), (0, 0))
@@ -416,18 +375,8 @@ def plotAllCountryDT():
 	plt.ylabel(yTitles[10+lg], fontsize=9, fontname=legendFont)
 	plt.xlabel("")
 	#Setting up grid...
-	plt.grid(which='both', axis='both')
-	plt.yticks(nu.arange(0, s[1] * 1.1, 10))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c="black", alpha=0.5)
-	#Setting date format...
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
+	gridAndTicks(s[1]*1.1, 10)
+	ticksLocator(2)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up second subplot...
 	plt.subplot2grid((2, 1), (1, 0))
@@ -440,20 +389,11 @@ def plotAllCountryDT():
 	plt.ylabel(yTitles[12+lg], fontsize=9, fontname=legendFont)
 	plt.xlabel(xTitles[0+lg], fontsize=9, fontname=legendFont)
 	#Setting up grid...
-	plt.grid(which='both', axis='both')
-	plt.yticks(nu.arange(0, s[1] * 1.1, 10))
-	plt.xticks(fontsize=6)
-	plt.yticks(fontsize=6)
-	plt.minorticks_on()
-	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "y", ls="--", lw=0.3, c="black", alpha=0.5)
-	plt.grid(True, "major", "x", ls="-", lw=0.8, c="dimgray", alpha=0.5)
-	plt.grid(True, "minor", "x", ls="--", lw=0.3, c="black", alpha=0.5)
-	#Setting date format...
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))
-	plt.gca().xaxis.set_major_formatter(dateFormat)
+	gridAndTicks(s[1]*1.1, 10)
+	ticksLocator(2)
 	plt.tight_layout()
-	savePlot("ArgentinaDT.csv", figure)
+	if savechart == True:
+		savePlot("ArgentinaDT.csv", figure)
 	plt.show()
 	
 def getDaysTags(dayTags, offset):
@@ -500,7 +440,7 @@ def buildWeeklyDataR(weeklyCases):
 		weeklyDataR.append(getWeeklyCasesR(weeklyCases[d]))
 	return weeklyDataR
 
-def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aType, saveChart):
+def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aType, savechart):
 	figure = plt.figure(num=None, figsize=(5, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(region + ": Weeks analysis" + tConector[lg] + startDateTime.strftime(dateFormatString) + 
 					aType, fontsize=12, fontname=defaultFont)
@@ -543,7 +483,7 @@ def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aTy
 	plt.grid(True, "major", "y", ls="-", lw=0.8, c="dimgray", alpha=0.5)
 	plt.gca().set_facecolor(backgroundPlot)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-	if saveChart == True:
+	if savechart == True:
 		savePlot(region + "_WA.csv", figure)
 	plt.show()
 
@@ -554,49 +494,49 @@ def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, r
 #Calling the functions to build selected charts...
 if confirmedByDate == True:
 	print("Plotting confirmed cases data by date...", end="\n")
-	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000)
+	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000, saveChart)
 if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
-	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50)
+	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50, saveChart)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000)
+	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000, saveChart)
 if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50)
+	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50, saveChart)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
-	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100)
+	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
 if newConfirmedCasesTrend == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 100)
+	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
 if newConfirmedCasesTrend5 == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100)
+	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
 if newDeaths == True:
 	print("Plotting daily deaths cases data...", end="\n")
-	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5)
+	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
 if newDeathsTrend == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 5)
+	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
 if newDeathsTrend5 == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5)
+	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
-	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02)
+	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02, saveChart)
 if confirmedDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15)
+	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart)
 if confirmedDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times trend by date...", end="\n")
-	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15)
+	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart)
 if deathsDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25)
+	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart)
 if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25)
+	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart)
 weeklyConfirmed = []
 weeklyDeaths = []
 weeklyConfirmedR = []
@@ -619,9 +559,9 @@ if weeklyAnalysis == True:
 		print("Plotting week analysis (absolute)", end="\n")
 		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False)
 if plotAllCountry == True:
-	plotAllCountryData()
+	plotAllCountryData(saveChart)
 	if duplicationTimesAC == True:
-		plotAllCountryDT()
+		plotAllCountryDT(saveChart)
 	if weeklyAnalysisAC == True:
 		if weeklyAnalysisType == "both":
 			print("Plotting week analysis for Argentina (absolute and relative)", end="\n")
