@@ -146,7 +146,7 @@ def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 
 def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval):
-	figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
 	for i in range(len(datatoplot)):
 		datatoplot[i][wantedStartDate:wantedEndDate][tag].plot(kind='line', label=regions[i], linewidth=2.0)
 	plt.title(ptitle, fontname=defaultFont)
@@ -178,6 +178,6 @@ if plotPositives == True:
 	plotData(databases, "positivos", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], 100)
 if plotCumulativePositives == True:
 	print("Plotting cumularive positive tests ratio since date...", end="\n")
-	plotData(cumulative_databases, "positivos", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], 500)
+	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], 500)
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")

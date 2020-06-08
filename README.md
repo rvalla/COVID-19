@@ -28,11 +28,17 @@ since _n_ case appearance.
 - Group data by country or study states/province data.
 - Plot death rate evolution too.
 
+### With *COVID-19_Ar_ProcessingData.py*...
+You can load data on *Argentina.csv* and save information to a group of csv files then used by
+*COVID-19_Ar_Analysis.py* to visualize it. The files are stored in *Argentina_Data/Processed_data*. That
+files are updated every time I push new data to the repository.
+
 ### With *COVID-19_Ar_Analysis.py*...
 You can visualize the data from National Reports published in Argentina. Is possible to:
 - Plot cases' data (confirmed cases, deaths, recovered patients).
 - Plot death rate evolution.
-- See outbreak evolution in Argentina in a synthetic chart.
+- See outbreak evolution in Argentina in a synthetic chart (that shows confirmed and active cases, deaths,
+daily trends, laboratory tests and positive tests ratio among others).
 - Plot duplication time evolution (how many days would be need for total cases being duplicated).
 - Plot the confirmed cases distribution by day of the week.
 
@@ -53,6 +59,10 @@ Tuesday and 25 on Wednesday... Then you have a new cases trend of 33.33 for Tues
 but we don't know them)
 - Duplication speed: days needed to duplicate a cumulative cases until the day before if new cases per day remain constant
 - Duplication speed tren: duplication speed taking 3 days average
+
+### Actual charts
+If you don't want to run the code but are curious about the outbreak status in Argentina you can download
+the charts in *Argentina_Data/actual_charts* folder.
  
 
 Contact [rodrigovalla[at]yahoo.com.ar](mailto:rodrigovalla@yahoo.com.ar)
