@@ -30,30 +30,32 @@ dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths
 #Deciding language for titles and tags...
 lg = 0 # 0 for english, 1 for spanish
 
-#Deciding if you want to save charts to .png images...
-saveChart = False
+#Deciding if you want to save and show charts...
+saveChart = True
+showChart = True
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
 deathsByDate = True #Decide if you want to plot deaths data by date for selected regions.
-confirmedByOutbreak = True #Decide if you want to plot confirmed cases since dataGuide.
-deathsByOutbreak = True #Decide if you want to plot deaths since dataGuide.
+confirmedAndDeathsbyDate = True
+confirmedByOutbreak = False #Decide if you want to plot confirmed cases since dataGuide.
+deathsByOutbreak = False #Decide if you want to plot deaths since dataGuide.
 newConfirmedCases = False #Decide if you want to plot new daily confirmed cases for selected regions
 newConfirmedCasesTrend = True #Decide if you want to plot new daily cases trend (3 day average)
 newConfirmedCasesTrend5 = False #Decide if you want to plot new daily cases trend (5 day average)
 newDeaths = False #Decide if you want to plot new daily deaths for selected regions
 newDeathsTrend = True #Decide if you want to plot new daily deaths trend (3 day average)
 newDeathsTrend5 = False #Decide if you want to plot new daily deaths trend (5 day average)
-deathRate = True #Decide if you want to plot death rate evolution for selected regions
+deathRate = False #Decide if you want to plot death rate evolution for selected regions
 confirmedDuplication = False #Decide if you want to plot linear confirmed cases duplication times
-confirmedDuplicationTrend = True #Decide if you want to plot linear confirmed cases duplication times trend
+confirmedDuplicationTrend = False #Decide if you want to plot linear confirmed cases duplication times trend
 deathsDuplication = False #Decide if you want to plot linear deaths duplication times
-deathsDuplicationTrend = True #Decide if you want to plot linear deaths duplication times trend
+deathsDuplicationTrend = False #Decide if you want to plot linear deaths duplication times trend
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
-duplicationTimesAC = True #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
+duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
+weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
@@ -101,7 +103,7 @@ yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecimientos", "D
 			"Days needed for\nconfirmed cases to double", "Días necesarios para\nque los casos se dupliquen",
 			"Days needed\nfor deaths to double", "Días necesarios para que\nlos fallecimientos se dupliquen"]
 tConector = [" since ", " desde ", " after ", " después de ", " (absolute)", " (valores absolutos)",
-				" (relative)", " (valores relativos)"]
+				" (relative)", " (valores relativos)", " and ", " y "]
 
 filePath = "Argentina_Data/processed_data/"
 chartPath = "Argentina_Data/actual_charts/"
@@ -176,7 +178,7 @@ def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 
-def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechart):
+def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechart, show):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Saving y values for markQ...
 	yquarantine = []
@@ -203,7 +205,8 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechar
 	plt.tight_layout()
 	if savechart == True:
 		savePlot(fileNames[datatype], figure)
-	plt.show()
+	if show == True:
+		plt.show()
 
 #Function to look for certain case count in each region
 def regionsStartPoints(regions, dataguide):
@@ -218,7 +221,7 @@ def regionsStartPoints(regions, dataguide):
 startPoints = regionsStartPoints(regions, dataGuide)
 
 #Function to plot cases for regions since first case
-def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ticksInterval, savechart):
+def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ticksInterval, savechart, show):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	period = 0
 	#Plotting selected data...
@@ -241,9 +244,67 @@ def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ti
 	plt.tight_layout()
 	if savechart == True:
 		savePlot(fileNames[datatype], figure)
-	plt.show()
+	if show == True:
+		plt.show()
 
-def plotAllCountryData(savechart):
+def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
+	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle("COVID-19: " + dataTitles[2*(datatypeA)+lg] + tConector[8+lg] + dataTitles[2*(datatypeB)+lg] +
+					 tConector[lg] + startDateTime.strftime(dateFormatString), fontsize=12, fontname=defaultFont)
+	plt.subplot2grid((2, 1), (0, 0))
+	#Saving y values for markQ...
+	yquarantine = []
+	x = quarantineIndex
+	#Plotting selected data...
+	for i in range(len(regions)):
+		plotA = databases[datatypeA][startDate:][regions[i]].plot(kind='line', label=regions[i], color=colorlist[i], linewidth=2.5)
+		yquarantine.append(databases[datatypeA].loc[quarantineStart, regions[i]])
+	s = plt.ylim()
+	a = plt.xlim()
+	if markQ == True:
+		y = max(yquarantine) #Drawing a mark on quarantineStartDate
+		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
+	#Setting up titles	
+	plotA.set_title(dataTitles[2*(datatypeA)+lg], fontname=defaultFont)
+	plt.yscale(plotScale)
+	plt.ylabel(ytitleA, fontname=legendFont)
+	plt.xlabel("")
+	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	#Setting up grid...
+	gridAndTicks(s[1]*1.1, ticksIntervalA)
+	ticksLocator(1)
+	plt.gca().xaxis.set_ticklabels([])
+	#Setting axis labels font and legend
+	plt.subplot2grid((2, 1), (1, 0))
+	#Saving y values for markQ...
+	yquarantine = []
+	x = quarantineIndex
+	#Plotting selected data...
+	for i in range(len(regions)):
+		plotB = databases[datatypeB][startDate:][regions[i]].plot(kind='line', label=regions[i], color=colorlist[i], linewidth=2.5)
+		yquarantine.append(databases[datatypeB].loc[quarantineStart, regions[i]])
+	s = plt.ylim()
+	plt.xlim(a[0], a[1])
+	if markQ == True:
+		y = max(yquarantine) #Drawing a mark on quarantineStartDate
+		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
+	#Setting up titles	
+	plotB.set_title(dataTitles[2*(datatypeB)+lg], fontname=defaultFont)
+	plt.yscale(plotScale)
+	plt.ylabel(ytitleB, fontname=legendFont)
+	plt.xlabel(xtitle, fontname=legendFont)
+	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	#Setting up grid...
+	gridAndTicks(s[1]*1.1, ticksIntervalB)
+	ticksLocator(1)
+	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+	if savechart == True:
+		auxName = fileNames[datatypeA].split(".")
+		savePlot(auxName[0] + "_" + fileNames[datatypeB], figure)
+	if show == True:
+		plt.show()
+
+def plotAllCountryData(savechart, show):
 	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(plotTitles[0+lg], fontsize=12, fontname=defaultFont)
 	#Setting up totals chart...
@@ -356,9 +417,10 @@ def plotAllCountryData(savechart):
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
 		savePlot("Argentina.csv", figure)
-	plt.show()
+	if show == True:
+		plt.show()
 	
-def plotAllCountryDT(savechart):
+def plotAllCountryDT(savechart, show):
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up first subplot...
 	plt.subplot2grid((2, 1), (0, 0))
@@ -394,7 +456,8 @@ def plotAllCountryDT(savechart):
 	plt.tight_layout()
 	if savechart == True:
 		savePlot("ArgentinaDT.csv", figure)
-	plt.show()
+	if show == True:
+		plt.show()
 	
 def getDaysTags(dayTags, offset):
 	daylist = []
@@ -440,7 +503,7 @@ def buildWeeklyDataR(weeklyCases):
 		weeklyDataR.append(getWeeklyCasesR(weeklyCases[d]))
 	return weeklyDataR
 
-def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aType, savechart):
+def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aType, savechart, show):
 	figure = plt.figure(num=None, figsize=(5, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(region + ": Weeks analysis" + tConector[lg] + startDateTime.strftime(dateFormatString) + 
 					aType, fontsize=12, fontname=defaultFont)
@@ -485,7 +548,8 @@ def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aTy
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
 		savePlot(region + "_WA.csv", figure)
-	plt.show()
+	if show == True:
+		plt.show()
 
 def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, regions, saveChart):
 	for d in range(len(regions)):
@@ -494,49 +558,51 @@ def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, r
 #Calling the functions to build selected charts...
 if confirmedByDate == True:
 	print("Plotting confirmed cases data by date...", end="\n")
-	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000, saveChart)
+	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000, saveChart, showChart)
 if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
-	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50, saveChart)
+	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50, saveChart, showChart)
+if confirmedAndDeathsbyDate == True:
+	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 2000, 100, saveChart, showChart)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000, saveChart)
+	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000, saveChart, showChart)
 if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50, saveChart)
+	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50, saveChart, showChart)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
-	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
+	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
 if newConfirmedCasesTrend == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
+	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
 if newConfirmedCasesTrend5 == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart)
+	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
 if newDeaths == True:
 	print("Plotting daily deaths cases data...", end="\n")
-	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
+	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart, showChart)
 if newDeathsTrend == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
+	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart, showChart)
 if newDeathsTrend5 == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart)
+	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart, showChart)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
-	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02, saveChart)
+	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02, saveChart, showChart)
 if confirmedDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart)
+	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart, showChart)
 if confirmedDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times trend by date...", end="\n")
-	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart)
+	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart, showChart)
 if deathsDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart)
+	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
 if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart)
+	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
 weeklyConfirmed = []
 weeklyDeaths = []
 weeklyConfirmedR = []
@@ -550,29 +616,29 @@ if weeklyAnalysis == True or weeklyAnalysisAC == True:
 if weeklyAnalysis == True:
 	if weeklyAnalysisType == "both":
 		print("Plotting week analysis (absolute and relative)", end="\n")
-		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False)
-		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False)
+		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False, showChart)
+		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False, showChart)
 	elif weeklyAnalysisType == "relative":
 		print("Plotting week analysis (relative)", end="\n")
-		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False)		
+		plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], regions, False, showChart)		
 	elif weeklyAnalysisType == "absolute":
 		print("Plotting week analysis (absolute)", end="\n")
-		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False)
+		plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], regions, False, showChart)
 if plotAllCountry == True:
-	plotAllCountryData(saveChart)
+	plotAllCountryData(saveChart, showChart)
 	if duplicationTimesAC == True:
-		plotAllCountryDT(saveChart)
+		plotAllCountryDT(saveChart, showChart)
 	if weeklyAnalysisAC == True:
 		if weeklyAnalysisType == "both":
 			print("Plotting week analysis for Argentina (absolute and relative)", end="\n")
-			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["ARGENTINA"], True)
-			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["ARGENTINA"], True)
+			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["ARGENTINA"], True, showChart)
+			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["ARGENTINA"], True, showChart)
 		elif weeklyAnalysisType == "relative":
 			print("Plotting week analysis for Argentina (relative)", end="\n")
-			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["ARGENTINA"], True)		
+			plotWeeklyAnalysis(weeklyConfirmedR, weeklyDeathsR, yTitles[0+lg], yTitles[2+lg], tConector[6+lg], ["ARGENTINA"], True, showChart)		
 		elif weeklyAnalysisType == "absolute":
 			print("Plotting week analysis for Argentina (absolute)", end="\n")
-			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["ARGENTINA"], True)
+			plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitles[0+lg], yTitles[2+lg], tConector[4+lg], ["ARGENTINA"], True, showChart)
 
 #Saying good bye...
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
