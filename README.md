@@ -42,6 +42,14 @@ daily trends, laboratory tests and positive tests ratio among others).
 - Plot duplication time evolution (how many days would be need for total cases being duplicated).
 - Plot the confirmed cases distribution by day of the week.
 
+### With *COVID-19_DataGobAr_TestsAnalysis.py*...
+You can visualize the laboratory tests data published in
+[datos.gob.ar](https://datos.gob.ar/dataset/salud-covid-19-determinaciones-registradas-republica-argentina).
+Is possible to:
+- Plot daily and cumulative tests by province.
+- Plot daily and cumulative positive tests by province.
+- Plot daily and cumulative positive test ratio (positive/total).
+
 ### Definitions
 In the charts that the code generates you will see a lot of categories. Pay attention to these descriptions
 to know exactly what each one represents.
