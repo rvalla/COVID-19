@@ -15,8 +15,8 @@ print("-----------------------------------------------")
 print()
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-regions = ["Santa Fe", "Córdoba", "Río Negro", "Chubut", "Mendoza", "Chaco", "Misiones"]
-#regions = ["CABA", "Buenos Aires"]
+#regions = ["Santa Fe", "Córdoba", "Río Negro", "Chubut", "Mendoza", "Chaco", "Misiones"]
+regions = ["CABA", "Buenos Aires"]
 
 fileName = "Covid19Determinaciones.csv"
 fileCompletePath = "Argentina_Data/datos.gob.ar/" + fileName
@@ -24,9 +24,9 @@ chartPath = "Argentina_Data/actual_charts/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-06-10"
-wantedStartDate = "2020-04-10"
-wantedEndDate = "2020-06-10"
+dataEndDate = "2020-06-11"
+wantedStartDate = "2020-02-11"
+wantedEndDate = "2020-06-11"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
@@ -145,7 +145,7 @@ def gridAndTicks(yMax, ticksinterval):
 	plt.gca().set_facecolor(backgroundPlot)
 
 def ticksLocator(weekInterval):
-#	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
+	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 

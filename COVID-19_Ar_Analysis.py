@@ -19,11 +19,12 @@ print("Loading data...", end="\n")
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
+#regions = ["CABA", "BUENOS AIRES"]
 regions = ["CABA", "BUENOS AIRES", "CHACO"]
 #regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
 
 #Selecting data to display
-startDate = "2020-03-15" #Starting point for plotbyDate. Default: 03/03
+startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
@@ -35,7 +36,7 @@ saveChart = False
 showChart = True
 
 #Deciding what to plot...
-confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
+confirmedByDate = False #Decide if you want to plot confirmed data by date for selected regions.
 deathsByDate = False #Decide if you want to plot deaths data by date for selected regions.
 confirmedAndDeathsbyDate = True
 confirmedByOutbreak = False #Decide if you want to plot confirmed cases since dataGuide.
@@ -43,10 +44,10 @@ deathsByOutbreak = False #Decide if you want to plot deaths since dataGuide.
 confirmedAndDeathsbyOutbreak = True
 newConfirmedCases = False #Decide if you want to plot new daily confirmed cases for selected regions
 newConfirmedCasesTrend = False #Decide if you want to plot new daily cases trend (3 day average)
-newConfirmedCasesTrend5 = False #Decide if you want to plot new daily cases trend (5 day average)
+newConfirmedCasesTrend5 = True #Decide if you want to plot new daily cases trend (5 day average)
 newDeaths = False #Decide if you want to plot new daily deaths for selected regions
 newDeathsTrend = False #Decide if you want to plot new daily deaths trend (3 day average)
-newDeathsTrend5 = False #Decide if you want to plot new daily deaths trend (5 day average)
+newDeathsTrend5 = True #Decide if you want to plot new daily deaths trend (5 day average)
 newConfirmedAndDeathsTrend = True
 deathRate = False #Decide if you want to plot death rate evolution for selected regions
 deathsAndDeathRate = True
@@ -178,7 +179,7 @@ def gridAndTicks(yMax, ticksInterval):
 	plt.gca().set_facecolor(backgroundPlot)
 
 def ticksLocator(weekInterval):
-#	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
+	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
 
@@ -377,13 +378,13 @@ def plotAllCountryData(savechart, show):
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 4000)
+	gridAndTicks(s[1]*1.1, 6000)
 	ticksLocator(2)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 3).tolist()
+	ylabels = nu.arange(0, s[1]/1000*1.1, 6).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 4000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 6000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((3, 2), (0, 1))
@@ -402,7 +403,7 @@ def plotAllCountryData(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 200)
+	gridAndTicks(s[1]*1.1, 300)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
@@ -610,29 +611,29 @@ def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, r
 #Calling the functions to build selected charts...
 if confirmedByDate == True:
 	print("Plotting confirmed cases data by date...", end="\n")
-	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1000, saveChart, showChart)
+	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 1500, saveChart, showChart)
 if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
-	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 50, saveChart, showChart)
+	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 75, saveChart, showChart)
 if confirmedAndDeathsbyDate == True:
 	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 2000, 100, saveChart, showChart)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1000, saveChart, showChart)
+	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 1500, saveChart, showChart)
 if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 50, saveChart, showChart)
+	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 75, saveChart, showChart)
 if confirmedAndDeathsbyOutbreak == True:
 	plotDoublebyOutbreak(regions, 0, 2, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], 2000, 100, saveChart, showChart)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
-	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
+	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 150, saveChart, showChart)
 if newConfirmedCasesTrend == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
+	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 150, saveChart, showChart)
 if newConfirmedCasesTrend5 == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 100, saveChart, showChart)
+	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 150, saveChart, showChart)
 if newDeaths == True:
 	print("Plotting daily deaths cases data...", end="\n")
 	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart, showChart)
@@ -643,12 +644,12 @@ if newDeathsTrend5 == True:
 	print("Plotting daily deahts trend...", end="\n")
 	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 5, saveChart, showChart)
 if newConfirmedAndDeathsTrend == True:
-	plotDoublebyDate(regions, 8, 12, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 150, 10, saveChart, showChart)
+	plotDoublebyDate(regions, 8, 12, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 200, 5, saveChart, showChart)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
 	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02, saveChart, showChart)
 if deathsAndDeathRate == True:
-	plotDoublebyDate(regions, 2, 6, xTitles[0+lg], yTitles[2+lg], yTitles[4+lg], True, 100, 0.25, saveChart, showChart)
+	plotDoublebyDate(regions, 2, 6, xTitles[0+lg], yTitles[2+lg], yTitles[4+lg], True, 100, 0.02, saveChart, showChart)
 if confirmedDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
 	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart, showChart)
@@ -662,7 +663,7 @@ if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
 	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
 if confirmedAndDeathsDuplicationTrend == True:
-	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 15, 25, saveChart, showChart)
+	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 10, 10, saveChart, showChart)
 weeklyConfirmed = []
 weeklyDeaths = []
 weeklyConfirmedR = []
