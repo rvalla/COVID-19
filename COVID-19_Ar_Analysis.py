@@ -20,7 +20,7 @@ print("Loading data...", end="\n")
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "CHACO"]
+regions = ["CABA", "BUENOS AIRES", "CHACO"] #, "CORDOBA", "RIO NEGRO", "SANTA FE"]
 #regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
 
 #Selecting data to display
@@ -36,8 +36,8 @@ saveChart = False
 showChart = True
 
 #Deciding what to plot...
-confirmedByDate = False #Decide if you want to plot confirmed data by date for selected regions.
-deathsByDate = False #Decide if you want to plot deaths data by date for selected regions.
+confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
+deathsByDate = True #Decide if you want to plot deaths data by date for selected regions.
 confirmedAndDeathsbyDate = True
 confirmedByOutbreak = False #Decide if you want to plot confirmed cases since dataGuide.
 deathsByOutbreak = False #Decide if you want to plot deaths since dataGuide.
@@ -116,10 +116,10 @@ chartPath = "Argentina_Data/actual_charts/"
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
-colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple", "tab:pink", "olivedrab",
+colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple", "olivedrab",
 				"crimson", "darkcyan", "aqua", "dodgerblue", "palegreen", "seagreen", "limegreen", "indianred",
 				"slategrey", "royalblue", "navy", "slateblue", "goldenrod", "greenyellow", "darkturquoise",
-				"coral"] #Default colors for data
+				"coral", "tab:pink"] #Default colors for data
 backgroundPlot = "silver" #Default background color for charts
 backgroundFigure = "lightgrey" #Default background color for figures
 majorGridColor = "dimgrey" #Default colors for grids...
@@ -156,7 +156,7 @@ print("Plotting data of " + str(regions), end="\n")
 
 #Method to draw a mark in social isolation start date
 def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
-	if startDate < quarantineStart:
+	if startDate < quarantineStart and plotScale == "linear":
 		plt.annotate(tag, fontsize=font, xy=(x, y + yshift),  xycoords='data',
     		xytext=(x, y + ytshift), textcoords='data',
 			arrowprops=dict(facecolor='orangered', edgecolor="none", width=w, headwidth=hw, headlength=hl),
@@ -175,13 +175,15 @@ def gridAndTicks(yMax, ticksInterval):
 	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	plt.xticks(fontsize=6)
 	plt.yticks(fontsize=6)
-	plt.yticks(nu.arange(0, yMax, ticksInterval))
+	if plotScale == "linear":
+		plt.yticks(nu.arange(0, yMax, ticksInterval))
 	plt.gca().set_facecolor(backgroundPlot)
 
 def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
-	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
+	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=weekInterval))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
+	plt.gca().xaxis.set_minor_formatter(tk.NullFormatter())
 
 def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechart, show):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -663,7 +665,7 @@ if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
 	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
 if confirmedAndDeathsDuplicationTrend == True:
-	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 10, 10, saveChart, showChart)
+	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 30, 10, saveChart, showChart)
 weeklyConfirmed = []
 weeklyDeaths = []
 weeklyConfirmedR = []

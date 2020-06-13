@@ -25,7 +25,7 @@ colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
 dataEndDate = "2020-06-11"
-wantedStartDate = "2020-02-11"
+wantedStartDate = "2020-04-01"
 wantedEndDate = "2020-06-11"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
@@ -148,6 +148,7 @@ def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_minor_locator(tk.AutoMinorLocator(7))
 	plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval = weekInterval))
 	plt.gca().xaxis.set_major_formatter(dateFormat)
+	plt.gca().xaxis.set_minor_formatter(tk.NullFormatter())
 
 def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, show, csvname):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')

@@ -21,18 +21,21 @@ confirmedByOutbreak = True #Decide if you want to plot data by notified cases fo
 deathsByOutbreak = True
 newConfirmed = False #Decide if you want to plot new daily cases for selected regions
 newDeaths = False
-newConfirmedTrend = True #Decide if you want to plot new daily cases trend (3 day average) for selected regions
-newDeathsTrend = True
+newConfirmedTrend = False #Decide if you want to plot new daily cases trend (3 day average) for selected regions
+newDeathsTrend = False
 deathRate = True #Decide if you want to plot death rate evolution for selected regions
-duplicationTimes = True #Decide if you want to plot cases duplication times for selected regions
+duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisR = False
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-#regions = ["Germany", "Italy", "Spain", "United Kingdom", "Switzerland", "France"]
-#regions = ["Sweden", "Norway", "Finland", "Denmark"]
-regions = ["Chile", "Argentina", "Uruguay", "Colombia", "Paraguay"]
+#regions = ["Peru", "Germany", "Italy", "Spain", "United Kingdom", "France", "India"]
+#regions = ["Chile", "Mexico", "Iran", "Turkey"]
+#regions = ["Sweden", "Netherlands", "Norway", "Finland", "Denmark", "Portugal", "Switzerland"]
+#regions = ["Israel", "Korea, South", "Japan", "Singapore"]
+#regions = ["Uruguay", "Taiwan*", "New Zealand", "Costa Rica", "Paraguay"]
+regions = ["Argentina", "Colombia", "Panama", "Poland"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
