@@ -34,7 +34,7 @@ plotScale = "linear"
 lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = False
+saveChart = True
 showChart = True
 
 #Deciding what to plot...
@@ -151,6 +151,24 @@ def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_minor_formatter(tk.NullFormatter())
 
 def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, show, csvname):
+	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+	for i in range(len(datatoplot)):
+		datatoplot[i][wantedStartDate:wantedEndDate][tag].plot(kind='line', label=regions[i], linewidth=2.0)
+	plt.title(ptitle, fontname=defaultFont)
+	s = plt.ylim()
+	plt.yscale(plotScale)
+	plt.ylabel(ytitle, fontname=legendFont)
+	plt.xlabel(xtitle, fontname=legendFont)
+	gridAndTicks(s[1]*1.1, ticksinterval)
+	ticksLocator(1)
+	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	plt.tight_layout()
+	if savechart == True:
+		savePlot(csvname, figure)
+	if show == True:
+		plt.show()
+		
+def plotDoubleData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, show, csvname):
 	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
 	for i in range(len(datatoplot)):
 		datatoplot[i][wantedStartDate:wantedEndDate][tag].plot(kind='line', label=regions[i], linewidth=2.0)
