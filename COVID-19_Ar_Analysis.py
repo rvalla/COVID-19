@@ -20,7 +20,7 @@ print("Loading data...", end="\n")
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO"]
+regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "SANTA FE"]
 #regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
 
 #Selecting data to display
@@ -32,7 +32,7 @@ dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths
 lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = True
+saveChart = False
 showChart = True
 
 #Deciding what to plot...
