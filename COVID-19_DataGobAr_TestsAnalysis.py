@@ -15,8 +15,8 @@ print("-----------------------------------------------")
 print()
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-#regions = ["Santa Fe", "Córdoba", "Río Negro", "Chubut", "Mendoza", "Chaco", "Misiones"]
-regions = ["CABA", "Buenos Aires"]
+regions = ["CABA", "Buenos Aires", "Santa Fe", "Córdoba", "Río Negro", "Chubut", "Mendoza", "Chaco", "Misiones"]
+#regions = ["CABA", "Buenos Aires"]
 
 fileName = "Covid19Determinaciones.csv"
 fileCompletePath = "Argentina_Data/datos.gob.ar/" + fileName
@@ -24,9 +24,9 @@ chartPath = "Argentina_Data/actual_charts/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-06-11"
-wantedStartDate = "2020-04-01"
-wantedEndDate = "2020-06-11"
+dataEndDate = "2020-06-16"
+wantedStartDate = "2020-04-15"
+wantedEndDate = "2020-06-14"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
@@ -115,8 +115,8 @@ ptitles = ["Daily tests by region", "Testeos diarios por provincia", "Cumulative
 			"Testeos acumulados por provincia", "Daily positive tests ratio", "Tasa de positividad diaria",
 			"Cumulative positive tests ratio", "Tasa de positividad acumulada", "Daily positive tests",
 			"Testeos positivos diarios", "Cumulative positive tests", "Testeos positivos acumulados"]
-filenames = ["dailytests", "cumulativetests", "dailypositiveratio", "positiveratio", "dailypositives",
-				"cumulativepositives"]
+filenames = ["T_00_dailytests", "T_01_cumulativetests", "T_02_dailypositiveratio", "T_03_positiveratio",
+			"T_04_dailypositives", "T_05_cumulativepositives"]
 xtitles = ["Time in days", "Tiempo en días"]
 ytitles = ["Number of tests", "Cantidad de tests", "Positive tests ratio", "Tasa de positividad",
 			"Positive tests", "Tests positivos"]
@@ -130,7 +130,7 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
         	horizontalalignment='center', verticalalignment='top')
 
 def savePlot(csvname, figure):
-	plt.savefig(chartPath + csvName + ".png", facecolor=figure.get_facecolor())
+	plt.savefig(chartPath + csvname + ".png", facecolor=figure.get_facecolor())
 
 def gridAndTicks(yMax, ticksinterval):
 	plt.grid(which='both', axis='both')
