@@ -34,13 +34,13 @@ ratioticks = 0.1
 estimationticks = 10000
 
 #Deciding if you want to save and show charts...
-saveChart = False
+saveChart = True
 showChart = True
 
 #Deciding what to plot...
 realCasesEstimation = False
 testedRatio = False
-realCasesAndRatio = False
+ratioAndEstimation = True
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
@@ -150,7 +150,7 @@ def buildData():
 
 buildData()
 
-def plotDoublebyDate(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
+def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
 	figure = plt.figure(num=None, figsize=(7, 5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle("COVID-19: " + plotTitles[0+lg] + " (" + tConector[6+lg] + str(realMortality) + ")", fontname = defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
@@ -200,12 +200,13 @@ def plotDoublebyDate(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, t
 	ticksLocator(1)
 	plt.tight_layout(rect=[0, 0, 1, 0.95])
 	if savechart == True:
-		auxName = fileNames[datatypeA].split(".")
-		savePlot("E_" + auxName[0] + "_" + fileNames[datatypeB], figure)
+		auxName = fileNames[0].split(".")
+		savePlot("E_00_KnownRatioAndEstimation.csv", figure)
 	if show == True:
 		plt.show()
-		
-plotDoublebyDate(regions, xTitles[0+lg], yTitles[6+lg], yTitles[0+lg], True, ratioticks, estimationticks, False, True)
+	
+if ratioAndEstimation == True:	
+	plotRatioAndEstimation(regions, xTitles[0+lg], yTitles[6+lg], yTitles[0+lg], True, ratioticks, estimationticks, saveChart, showChart)
 
 #Saying good bye...
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")

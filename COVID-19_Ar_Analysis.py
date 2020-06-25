@@ -20,8 +20,8 @@ print("Loading data...", end="\n")
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "SANTA FE"]
-#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "SAN JUAN", "CHUBUT"]
+regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO"]
+#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "CHUBUT"]
 
 #Selecting data to display
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
