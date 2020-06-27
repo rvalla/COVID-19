@@ -1,4 +1,4 @@
-This software is open-sourced and is licensed under __GNU GPL v3__. You can use and modify it freely.
+You can use and modify this software freely.
 
 Remember that the data comes from this repository: [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns
 Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19) or from [National
@@ -6,7 +6,7 @@ Reports](https://www.argentina.gob.ar/coronavirus/informe-diario) published in A
 Contact me at [rodrigovalla[at]yahoo.com.ar](mailto:rodrigovalla@yahoo.com.ar).
 I am on telegram too ([@rvalla](https://t.me/rvalla)).
 
--------
+---------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
