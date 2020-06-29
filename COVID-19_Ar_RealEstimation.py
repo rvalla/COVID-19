@@ -110,7 +110,7 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
 
 def savePlot(csvName, figure):
 	chartName = csvName.split(".")
-	plt.savefig(chartPath + chartName[0] + ".png", facecolor=figure.get_facecolor())
+	plt.savefig(chartPath + str(lg) + "_" + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
 def gridAndTicks(yMax, ticksInterval):
 	plt.grid(which='both', axis='both')

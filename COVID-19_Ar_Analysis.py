@@ -29,10 +29,10 @@ caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = False
+saveChart = True
 showChart = True
 
 #Deciding what to plot...
@@ -55,7 +55,7 @@ confirmedDuplication = False #Decide if you want to plot linear confirmed cases 
 confirmedDuplicationTrend = False #Decide if you want to plot linear confirmed cases duplication times trend
 deathsDuplication = False #Decide if you want to plot linear deaths duplication times
 deathsDuplicationTrend = False #Decide if you want to plot linear deaths duplication times trend
-confirmedAndDeathsDuplicationTrend = True
+confirmedAndDeathsDuplicationTrend = False
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
@@ -165,7 +165,7 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
 
 def savePlot(csvName, figure):
 	chartName = csvName.split(".")
-	plt.savefig(chartPath + chartName[0] + ".png", facecolor=figure.get_facecolor())
+	plt.savefig(chartPath + str(lg) + "_" + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
 def gridAndTicks(yMax, ticksInterval):
 	plt.grid(which='both', axis='both')
