@@ -70,12 +70,12 @@ colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple",
 				"slategrey", "royalblue", "navy", "slateblue", "goldenrod", "greenyellow", "darkturquoise",
 				"coral", "tab:pink"] #Default colors for data
 backgroundPlot = "silver" #Default background color for charts
-backgroundFigure = "lightgrey" #Default background color for figures
+backgroundFigure = "white" #Default background color for figures
 majorGridColor = "dimgrey" #Default colors for grids...
 minorGridColor = "dimgray"
 alphaMGC = 0.7
 alphamGC = 0.9
-imageResolution = 150
+imageResolution = 300
 
 #Loading data...
 databases = []
