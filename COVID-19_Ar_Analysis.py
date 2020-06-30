@@ -33,14 +33,14 @@ lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
-showChart = True
+showChart = False
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
 deathsByDate = True #Decide if you want to plot deaths data by date for selected regions.
 confirmedAndDeathsbyDate = True
-confirmedByOutbreak = False #Decide if you want to plot confirmed cases since dataGuide.
-deathsByOutbreak = False #Decide if you want to plot deaths since dataGuide.
+confirmedByOutbreak = True #Decide if you want to plot confirmed cases since dataGuide.
+deathsByOutbreak = True #Decide if you want to plot deaths since dataGuide.
 confirmedAndDeathsbyOutbreak = True
 newConfirmedCases = False #Decide if you want to plot new daily confirmed cases for selected regions
 newConfirmedCasesTrend = False #Decide if you want to plot new daily cases trend (3 day average)
@@ -49,8 +49,8 @@ newDeaths = False #Decide if you want to plot new daily deaths for selected regi
 newDeathsTrend = False #Decide if you want to plot new daily deaths trend (3 day average)
 newDeathsTrend5 = True #Decide if you want to plot new daily deaths trend (5 day average)
 newConfirmedAndDeathsTrend = True
-deathRate = False #Decide if you want to plot death rate evolution for selected regions
-deathsAndDeathRate = True
+deathRate = True #Decide if you want to plot death rate evolution for selected regions
+deathsAndDeathRate = False
 confirmedDuplication = False #Decide if you want to plot linear confirmed cases duplication times
 confirmedDuplicationTrend = False #Decide if you want to plot linear confirmed cases duplication times trend
 deathsDuplication = False #Decide if you want to plot linear deaths duplication times
@@ -60,7 +60,7 @@ weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
+weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
@@ -122,12 +122,12 @@ colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple",
 				"slategrey", "royalblue", "navy", "slateblue", "goldenrod", "greenyellow", "darkturquoise",
 				"coral", "tab:pink"] #Default colors for data
 backgroundPlot = "silver" #Default background color for charts
-backgroundFigure = "lightgrey" #Default background color for figures
+backgroundFigure = "white" #Default background color for figures
 majorGridColor = "dimgrey" #Default colors for grids...
 minorGridColor = "dimgray"
 alphaMGC = 0.7
 alphamGC = 0.9
-imageResolution = 150
+imageResolution = 300
 
 #Loading data...
 databases = []
@@ -361,6 +361,121 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 		plt.show()
 
 def plotAllCountryData(savechart, show):
+	figure = plt.figure(num=None, figsize=(4, 9), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle(plotTitles[0+lg], fontsize=12, fontname=defaultFont)
+	#Setting up totals chart...
+	plt.subplot2grid((6, 1), (0, 0))
+	x = quarantineStart
+	yquarantine = []
+	total = databases[0][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
+	yquarantine.append(databases[0].loc[x, "ARGENTINA"])
+	total = databases[1][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
+	yquarantine.append(databases[1].loc[x, "ARGENTINA"])
+	total = databases[2][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
+	yquarantine.append(databases[2].loc[x, "ARGENTINA"])
+	y = max(yquarantine)
+	s = plt.ylim()
+	a = plt.xlim()
+	markQuarantine("", s[1]/20, s[1]/4.5, 8, x, y, 3, 6, 5)
+	total.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
+	plt.yscale(plotScale)
+	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 15000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 15).tolist()
+	for l in range(len(ylabels)):
+		ylabels[l] = "{:.0f}".format(ylabels[l])
+		ylabels[l] += "K"
+	plt.yticks(nu.arange(0, s[1] * 1.1, 15000), ylabels)
+	plt.gca().xaxis.set_ticklabels([])
+	#Setting up new daily chart...
+	plt.subplot2grid((6, 1), (1, 0))
+	yquarantine = []
+	newtrend = databases[26][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
+	yquarantine.append(databases[26].loc[x, "ARGENTINA"])
+	newtrend = databases[27][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
+	yquarantine.append(databases[27].loc[x, "ARGENTINA"])
+	newtrend = databases[28][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
+	yquarantine.append(databases[28].loc[x, "ARGENTINA"])
+	y = max(yquarantine)
+	s = plt.ylim()			
+	markQuarantine("", s[1]/20, s[1]/4.5, 8, x, y, 3, 6, 5)
+	newtrend.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	newtrend.set_title(plotTitles[2*8+lg], fontsize=10, fontname=defaultFont)
+	plt.yscale(plotScale)
+	s = plt.ylim()
+	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 750)
+	ticksLocator(2)
+	plt.xlim(a[0], a[1])
+	#Setting up new deaths chart...
+	plt.subplot2grid((6, 1), (2, 0))
+	newdeaths = databases[28][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2])
+	newdeaths.set_title(plotTitles[2*9+lg], fontsize=10, fontname=defaultFont)
+	plt.yscale(plotScale)
+	s = plt.ylim()
+	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 10)
+	ticksLocator(2)
+	plt.xlim(a[0], a[1])
+	plt.gca().xaxis.set_ticklabels([])
+	#Setting up ratios chart...
+	plt.subplot2grid((6, 1), (3, 0))
+	ratios = databases[19][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*5+lg], color=colorlist[1])
+	ratios = databases[18][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
+	ratios = databases[6][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*3+lg], color=colorlist[2])
+	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	ratios.set_title(plotTitles[2*5+lg], fontsize=10, fontname=defaultFont)
+	plt.yscale(plotScale)
+	s = plt.ylim()
+	plt.xlabel("")
+	gridAndTicks(s[1]*1.1, 0.1)
+	ticksLocator(2)
+	plt.xlim(a[0], a[1])
+	#Setting up Tested vs Dropped...
+	plt.subplot2grid((6, 1), (4, 0))
+	tests = databases[4][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*6+lg], color=colorlist[0])
+	tests = databases[5][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*7+lg], color=colorlist[1])
+	tests.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	tests.set_title(plotTitles[2*6+lg], fontsize=10, fontname=defaultFont)
+	plt.yscale(plotScale)
+	s = plt.ylim()
+	gridAndTicks(s[1]*1.1, 100000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 100).tolist()
+	for l in range(len(ylabels)):
+		ylabels[l] = "{:.0f}".format(ylabels[l])
+		ylabels[l] += "K"
+	plt.yticks(nu.arange(0, s[1] * 1.1, 100000), ylabels)
+	plt.xlabel("")
+	plt.xlim(a[0], a[1])
+	plt.gca().xaxis.set_ticklabels([])
+	#Plotting duplication times...
+	plt.subplot2grid((6, 1), (5, 0))
+	duplication = databases[33][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2], zorder=2)
+	duplication = databases[32][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[1], zorder=3)
+	duplication.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	plt.fill_between(databases[33][startDate:].index.values, databases[33][startDate:]["ARGENTINA"], 0, facecolor=colorlist[2],
+					alpha=0.5, zorder=2)
+	plt.fill_between(databases[32][startDate:].index.values, databases[32][startDate:]["ARGENTINA"], 0, facecolor=colorlist[1],
+					alpha=0.5, zorder=3)
+	duplication.set_title(plotTitles[2*7+lg], fontsize=10, fontname=defaultFont)
+	plt.ylabel("")
+	plt.xlabel("")
+	plt.xlim(a[0], a[1])
+	plt.grid(which='both', axis='both')
+	plt.yscale(plotScale)
+	s = plt.ylim()
+	gridAndTicks(s[1]*1.1, 15)
+	ticksLocator(2)
+	plt.tight_layout(rect=[0, 0, 1, 0.97])
+	if savechart == True:
+		savePlot("Argentina.csv", figure)
+	if show == True:
+		plt.show()
+	
+def plotAllCountryDataWide(savechart, show):
 	figure = plt.figure(num=None, figsize=(7, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	figure.suptitle(plotTitles[0+lg], fontsize=12, fontname=defaultFont)
 	#Setting up totals chart...
@@ -474,8 +589,8 @@ def plotAllCountryData(savechart, show):
 	if savechart == True:
 		savePlot("Argentina.csv", figure)
 	if show == True:
-		plt.show()
-	
+		plt.show()	
+
 def plotAllCountryDT(savechart, show):
 	figure = plt.figure(num=None, figsize=(7, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up first subplot...

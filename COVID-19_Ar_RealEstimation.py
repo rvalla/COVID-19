@@ -29,13 +29,13 @@ realMortality = 0.015 #Real mortality to estimate infected count from deaths
 deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 ratioticks = 0.1
 estimationticks = 10000
 
 #Deciding if you want to save and show charts...
 saveChart = True
-showChart = True
+showChart = False
 
 #Deciding what to plot...
 realCasesEstimation = False
@@ -151,8 +151,8 @@ def buildData():
 buildData()
 
 def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
-	figure = plt.figure(num=None, figsize=(7, 5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: " + plotTitles[0+lg] + " (" + tConector[6+lg] + str(realMortality) + ")", fontname = defaultFont)
+	figure = plt.figure(num=None, figsize=(4, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle("COVID-19: " + plotTitles[0+lg] + "\n (" + tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=12)
 	plt.subplot2grid((2, 1), (0, 0))
 	#Saving y values for markQ...
 	yquarantine = []
@@ -160,18 +160,18 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	#Plotting selected data...
 	for i in range(len(regions)):
 		plotA = estimationsAndData[i][startDate:]["ratio"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 1.0, linewidth=2.5)
+				color=colorlist[i], alpha = 1.0, linewidth=2.0)
 	s = plt.ylim()
 	a = plt.xlim()
 	#Setting up titles	
-	plotA.set_title(dataTitles[2+lg], fontname=defaultFont)
+	plotA.set_title(dataTitles[2+lg], fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleA, fontname=legendFont)
+	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
 	plt.xlabel("")
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
-	ticksLocator(1)
+	ticksLocator(2)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting axis labels font and legend
 	plt.subplot2grid((2, 1), (1, 0))
@@ -181,9 +181,9 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	#Plotting selected data...
 	for i in range(len(regions)):
 		plotB = estimationsAndData[i][startDate:]["estimation"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 1.0, linewidth=2.5)
+				color=colorlist[i], alpha = 1.0, linewidth=2.0)
 		plotB = estimationsAndData[i][startDate:]["confirmed"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 0.5, linewidth=2.5)
+				color=colorlist[i], alpha = 0.5, linewidth=2.0)
 		yquarantine.append(estimationsAndData[i].loc[quarantineStart, "estimation"])
 	s = plt.ylim()
 	plt.xlim(a[0], a[1])
@@ -191,14 +191,19 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 		y = max(yquarantine) #Drawing a mark on quarantineStartDate
 		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
 	#Setting up titles	
-	plotB.set_title(dataTitles[0+lg] +" (" + tConector[8+lg] + str(deathOffset) + ")", fontname=defaultFont)
+	plotB.set_title(dataTitles[0+lg] +"\n (" + tConector[8+lg] + str(deathOffset) + ")", fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleB, fontname=legendFont)
-	plt.xlabel(xtitle, fontname=legendFont)
+	plt.ylabel(ytitleB, fontname=legendFont, fontsize=8)
+	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	ticksLocator(1)
-	plt.tight_layout(rect=[0, 0, 1, 0.95])
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, ticksIntervalB/1000).tolist()
+	for l in range(len(ylabels)):
+		ylabels[l] = "{:.0f}".format(ylabels[l])
+		ylabels[l] += "K"
+	plt.yticks(nu.arange(0, s[1] * 1.1, ticksIntervalB), ylabels)
+	plt.tight_layout(rect=[0, 0, 1, 0.90])
 	if savechart == True:
 		auxName = fileNames[0].split(".")
 		savePlot("E_00_KnownRatioAndEstimation.csv", figure)
