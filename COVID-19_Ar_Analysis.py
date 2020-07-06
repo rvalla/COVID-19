@@ -20,7 +20,7 @@ print("Loading data...", end="\n")
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
+regions = ["CORDOBA", "CABA", "BUENOS AIRES", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
 #regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "CHUBUT"]
 
 #Selecting data to display
@@ -29,7 +29,7 @@ caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -105,7 +105,7 @@ shortLabels = ["Confirmed", "Confirmados", "Active", "Activos", "Deaths", "Falle
 				"Tasa de mortalidad", "Positive trend", "Positividad (3 días)", "Positive ratio", "Positividad acumulada",
 				"Laboratory tests", "Pruebas de diagnóstico", "Dropped cases", "Casos descartados"]
 xTitles = ["Time in days", "Tiempo en días"]
-yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecimientos", "Death rate", "Tasa de mortalidad",
+yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecidos", "Death rate", "Tasa de mortalidad",
 			"Laboratory tests", "Pruebas de laboratorio", "Positive tests ratio", "Tasa de positividad",
 			"Days needed for\nconfirmed cases to double", "Días necesarios para\nque los casos se dupliquen",
 			"Days needed\nfor deaths to double", "Días necesarios para que\nlos fallecimientos se dupliquen"]
@@ -436,7 +436,7 @@ def plotArgentinaB(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 0.02)
+	gridAndTicks(s[1]*1.1, 0.025)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])

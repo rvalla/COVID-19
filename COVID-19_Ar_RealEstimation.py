@@ -29,9 +29,9 @@ realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 ratioticks = 0.1
-estimationticks = 10000
+estimationticks = 25000
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -166,7 +166,8 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	#Setting up titles	
 	plotA.set_title(dataTitles[2+lg], fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
+#	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
+	plt.ylabel("")
 	plt.xlabel("")
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
@@ -194,7 +195,8 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	plotB.set_title(dataTitles[0+lg] +"\n (" + tConector[8+lg] + str(deathOffset) + ", " +
 			tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleB, fontname=legendFont, fontsize=8)
+#	plt.ylabel(ytitleB, fontname=legendFont, fontsize=8)
+	plt.ylabel("")
 	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
