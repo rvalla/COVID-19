@@ -25,11 +25,11 @@ regions = ["ARGENTINA", "CABA", "BUENOS AIRES"]
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
-realMortality = 0.015 #Real mortality to estimate infected count from deaths
+realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 ratioticks = 0.1
 estimationticks = 10000
 
@@ -57,7 +57,7 @@ xTitles = ["Time in days", "Tiempo en días"]
 yTitles = ["Estimated cases", "Casos estimados", "Confirmed", "Confirmados", "Deaths", "Fallecimientos",
 				"Known ratio", "Tasa de detección"]
 tConector = [" since ", " desde ", " after ", " después de ", " and ", " y ", "mortality = ", "mortalidad = ",
-			"deaths offset = ", "corrimiento de los fallecimientos = "]
+			"deaths offset = ", "corrimiento fallecimientos = "]
 
 filePath = "Argentina_Data/processed_data/"
 chartPath = "Argentina_Data/actual_charts/"
@@ -152,7 +152,7 @@ buildData()
 
 def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
 	figure = plt.figure(num=None, figsize=(4, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: " + plotTitles[0+lg] + "\n (" + tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=12)
+	#figure.suptitle("COVID-19: " + plotTitles[0+lg] + "\n (" + tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=12)
 	plt.subplot2grid((2, 1), (0, 0))
 	#Saving y values for markQ...
 	yquarantine = []
@@ -191,7 +191,8 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 		y = max(yquarantine) #Drawing a mark on quarantineStartDate
 		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
 	#Setting up titles	
-	plotB.set_title(dataTitles[0+lg] +"\n (" + tConector[8+lg] + str(deathOffset) + ")", fontname=defaultFont, fontsize=10)
+	plotB.set_title(dataTitles[0+lg] +"\n (" + tConector[8+lg] + str(deathOffset) + ", " +
+			tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
 	plt.ylabel(ytitleB, fontname=legendFont, fontsize=8)
 	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
@@ -203,7 +204,7 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
 	plt.yticks(nu.arange(0, s[1] * 1.1, ticksIntervalB), ylabels)
-	plt.tight_layout(rect=[0, 0, 1, 0.90])
+	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		auxName = fileNames[0].split(".")
 		savePlot("E_00_KnownRatioAndEstimation.csv", figure)
