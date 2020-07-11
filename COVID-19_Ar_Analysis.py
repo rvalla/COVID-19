@@ -20,8 +20,8 @@ print("Loading data...", end="\n")
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
-regions = ["CORDOBA", "CABA", "BUENOS AIRES", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
-#regions = ["NEUQUEN", "MENDOZA", "LA RIOJA", "ENTRE RIOS", "SANTA FE", "CHUBUT"]
+regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
+#regions = ["RIO NEGRO", "JUJUY", "MENDOZA", "CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "SANTA FE"]
 
 #Selecting data to display
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
@@ -32,8 +32,8 @@ dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths
 lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = True
-showChart = False
+saveChart = False
+showChart = True
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
@@ -49,7 +49,7 @@ newDeaths = False #Decide if you want to plot new daily deaths for selected regi
 newDeathsTrend = False #Decide if you want to plot new daily deaths trend (3 day average)
 newDeathsTrend5 = True #Decide if you want to plot new daily deaths trend (5 day average)
 newConfirmedAndDeathsTrend = True
-deathRate = True #Decide if you want to plot death rate evolution for selected regions
+deathRate = False #Decide if you want to plot death rate evolution for selected regions
 deathsAndDeathRate = False
 confirmedDuplication = False #Decide if you want to plot linear confirmed cases duplication times
 confirmedDuplicationTrend = False #Decide if you want to plot linear confirmed cases duplication times trend
