@@ -26,10 +26,10 @@ startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 realMortality = 0.01 #Real mortality to estimate infected count from deaths
-deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
+deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 ratioticks = 0.1
 estimationticks = 25000
 
