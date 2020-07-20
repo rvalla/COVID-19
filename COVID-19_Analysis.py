@@ -17,7 +17,7 @@ print("Ploting data of ", end=" ")
 #Deciding what to plot...
 confirmedByDate = False #Decide if you want to plot data by date for selected regions.
 deathsByDate = False
-confirmedAndDeathsByDate = False
+confirmedAndDeathsByDate = True
 confirmedByOutbreak = False #Decide if you want to plot data by notified cases for selected regions.
 deathsByOutbreak = False
 confirmedAndDeahtsByOutbreak = True
@@ -33,12 +33,14 @@ weeklyAnalysisR = False
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-regions = ["Peru", "Germany", "Italy", "Spain", "United Kingdom", "France", "India"]
-#regions = ["Chile", "Mexico", "Iran", "Turkey"]
-#regions = ["Sweden", "Netherlands", "Norway", "Finland", "Denmark", "Portugal", "Switzerland"]
-#regions = ["Israel", "Korea, South", "Japan", "Singapore"]
-#regions = ["Uruguay", "Taiwan*", "New Zealand", "Costa Rica", "Paraguay"]
-#regions = ["Argentina", "Colombia", "Panama", "Poland"]
+#regions = ["India", "Brazil", "Russia"]
+#regions = ["Peru", "Chile", "Mexico", "South Africa", "United Kingdom", "Iran"]
+#regions = ["Spain", "Pakistan", "Italy", "France", "Saudi Arabia", "Turkey", "Germany"]
+#regions = ["Colombia", "Argentina", "Ecuador", "Canada", "Qatar"]
+#regions = ["Sweden", "Belgium", "Bolivia", "Panama", "Israel", "Singapore"]
+#regions = ["Nigeria", "Switzerland", "Japan"]
+#regions = ["Korea, South", "Denmark", "Australia", "Costa Rica"]
+regions = ["Uruguay", "Taiwan*", "New Zealand", "Iceland"]
 regionsIndexes = [[],[]]
 groupbyCountry = True
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
@@ -47,7 +49,7 @@ regionReference = "Country/Region"
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
 dataSelection = ["confirmed_global", "deaths_global", "recovered_global"]
-dataTitles = ["Confirmed", "Deaths", "Recovered"]
+dataTitles = ["Confirmed", "Deaths", "Recovered", "Known ratio", "Estimation"]
 fileNamePrefix = "time_series_covid19_"
 fileExtension = ".csv"
 fileNames = []
@@ -66,6 +68,8 @@ startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
+realMortality = 0.015 #Real mortality to estimate infected count from deaths
+deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
 
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
@@ -145,7 +149,7 @@ def plotbyDate(datalocation, datatype):
 
 def plotDoubleByDate(datalocation, datatypeA, datatypeB):
 	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: data since " + startDate, fontsize=13, fontname=defaultFont)
+	figure.suptitle("COVID-19: since " + startDate, fontsize=13, fontname=defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datalocation[datatypeA])):
 		databases[datatypeA][startDate:][datalocation[datatypeA][i]].plot(kind='line', label=regions[i], linewidth=2.5)
@@ -225,7 +229,7 @@ def plotDoubleByOutbreak(datalocation, datatypeA, datatypeB, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: data since number "  + str(caseCount) + " " + dataTitles[dataguide],
+	figure.suptitle("COVID-19: since number "  + str(caseCount) + " " + dataTitles[dataguide],
 						fontsize=13, fontname=defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datalocation[datatypeA])):

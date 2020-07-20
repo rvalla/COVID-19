@@ -18,14 +18,14 @@ dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Dropped",
 				"NewDeaths", "NewDeaths3dAv", "NewRecovered", "NewRecovered3dAv", "NewTested", "NewTested3dAv",
 				"PositiveTestsRatio", "PositiveTestsRatio3dAv", "CumulativePositiveTestsRatio",
 				"DuplicationTimes", "DuplicationTimes3dAv", "DeathDuplicationTimes", "DeathDuplicationTimes3dAv",
-				"NewDropped", "NewDropped3dAv", "NewConfirmed5dAv", "ActiveVariation5dAv", "Newdeaths5dAv",
-				"NewRecovered5dAv", "NewTested5dAv", "NewDropped5dAv", "DuplicationTimes5dAv", "DeathDuplicationTimes5dAv"]
+				"NewDropped", "NewDropped3dAv", "NewConfirmed7dAv", "ActiveVariation7dAv", "Newdeaths7dAv",
+				"NewRecovered7dAv", "NewTested7dAv", "NewDropped7dAv", "DuplicationTimes7dAv", "DeathDuplicationTimes7dAv"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-07-12"
+dataEndDate = "2020-07-19"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -73,18 +73,20 @@ def getNewCases3dAv(dataframe):
 	newCases.index = pd.DatetimeIndex(dataframe.index)
 	return newCases
 
-def getNewCases5dAv(dataframe):
-	print("Calculating new cases taking 5 day average...                   ", end="\r")
+def getNewCases7dAv(dataframe):
+	print("Calculating new cases taking 7 day average...                   ", end="\r")
 	newCases = pd.DataFrame(index = dataPeriod, columns=dataframe.columns)
 	columns = dataframe.columns
 	for c in range(len(columns)):
-		for d in range(dataframe.shape[0] - 4):
+		for d in range(dataframe.shape[0] - 6):
 			d0 = dataframe.loc[dataframe.index[d],columns[c]]
 			d1 = dataframe.loc[dataframe.index[d+1],columns[c]]
 			d2 = dataframe.loc[dataframe.index[d+2],columns[c]]
 			d3 = dataframe.loc[dataframe.index[d+3],columns[c]]
 			d4 = dataframe.loc[dataframe.index[d+4],columns[c]]
-			newCases.loc[newCases.index[d+2],columns[c]] = (d0 + d1+ d2 + d3 + d4) / 5
+			d5 = dataframe.loc[dataframe.index[d+5],columns[c]]
+			d6 = dataframe.loc[dataframe.index[d+6],columns[c]]
+			newCases.loc[newCases.index[d+3],columns[c]] = (d0 + d1+ d2 + d3 + d4 + d5 + d6) / 7
 	newCases.index = pd.DatetimeIndex(dataframe.index)
 	return newCases
 
@@ -128,16 +130,16 @@ def getLinearDuplicationTimes3dAv(cumulative, newCases3dAv):
 	duplicationtimes.index = pd.DatetimeIndex(cumulative.index)
 	return duplicationtimes
 
-def getLinearDuplicationTimes5dAv(cumulative, newCases5dAv):
-	print("Calculating cases duplication time taking 5 day average...    ", end="\r")
+def getLinearDuplicationTimes7dAv(cumulative, newCases7dAv):
+	print("Calculating cases duplication time taking 7 day average...    ", end="\r")
 	duplicationtimes = pd.DataFrame(index = dataPeriod, columns = cumulative.columns)
 	columns = cumulative.columns
 	for c in range(len(columns)):
-		for d in range(cumulative.shape[0] - 4):
+		for d in range(cumulative.shape[0] - 6):
 			count = cumulative.loc[cumulative.index[d],columns[c]]
-			variation = newCases5dAv.loc[newCases5dAv.index[d+2],columns[c]]
+			variation = newCases7dAv.loc[newCases7dAv.index[d+3],columns[c]]
 			if variation > 0:
-				duplicationtimes.loc[duplicationtimes.index[d+2],columns[c]] = count / variation
+				duplicationtimes.loc[duplicationtimes.index[d+3],columns[c]] = count / variation
 	duplicationtimes.index = pd.DatetimeIndex(cumulative.index)
 	return duplicationtimes
 
@@ -162,14 +164,14 @@ databases.append(getLinearDuplicationTimes(databases[2], databases[11])) # 22: L
 databases.append(getLinearDuplicationTimes3dAv(databases[2], databases[12])) # 23: Linear deaths duplication trend
 databases.append(getNewCases(databases[5])) # 24: New daily dropped cases
 databases.append(getNewCases3dAv(databases[24])) # 25: New daily dropped cases trend
-databases.append(getNewCases5dAv(databases[7])) # 26: New daily cases trend (5 days average)
-databases.append(getNewCases5dAv(databases[9])) # 27: Active cases variation trend (5 days average)
-databases.append(getNewCases5dAv(databases[11])) # 28: New deaths trend (5 days average)
-databases.append(getNewCases5dAv(databases[13])) # 29: New recovered cases trend (5 days average)
-databases.append(getNewCases5dAv(databases[15])) # 30: New tests trend (5 days average)
-databases.append(getNewCases5dAv(databases[24])) # 31: New dropped cases trend (5 days average)
-databases.append(getLinearDuplicationTimes5dAv(databases[0], databases[26])) # 32: Linear duplication time (5d)
-databases.append(getLinearDuplicationTimes5dAv(databases[2], databases[28])) # 33: Linear deaths duplication time (5d)
+databases.append(getNewCases7dAv(databases[7])) # 26: New daily cases trend (7 days average)
+databases.append(getNewCases7dAv(databases[9])) # 27: Active cases variation trend (7 days average)
+databases.append(getNewCases7dAv(databases[11])) # 28: New deaths trend (7 days average)
+databases.append(getNewCases7dAv(databases[13])) # 29: New recovered cases trend (7 days average)
+databases.append(getNewCases7dAv(databases[15])) # 30: New tests trend (7 days average)
+databases.append(getNewCases7dAv(databases[24])) # 31: New dropped cases trend (7 days average)
+databases.append(getLinearDuplicationTimes7dAv(databases[0], databases[26])) # 32: Linear duplication time (7d)
+databases.append(getLinearDuplicationTimes7dAv(databases[2], databases[28])) # 33: Linear deaths duplication time (7d)
 
 print("Dataframes for data analysis were build...                       ", end="\n")
 
