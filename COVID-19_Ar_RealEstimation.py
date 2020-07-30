@@ -19,7 +19,7 @@ print("Loading data...", end="\n")
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
 #regions = ["ARGENTINA", "CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "SANTA FE"]
-regions = ["ARGENTINA", "CABA", "BUENOS AIRES"]
+regions = ["CABA", "BUENOS AIRES", "ARGENTINA"]
 
 #Selecting data to display
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
@@ -29,7 +29,7 @@ realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 ratioticks = 0.1
 estimationticks = 50000
 
@@ -75,7 +75,7 @@ majorGridColor = "dimgrey" #Default colors for grids...
 minorGridColor = "dimgray"
 alphaMGC = 0.7
 alphamGC = 0.9
-imageResolution = 300
+imageResolution = 150
 
 #Loading data...
 databases = []
@@ -169,10 +169,10 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 #	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
 	plt.ylabel("")
 	plt.xlabel("")
-	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting axis labels font and legend
 	plt.subplot2grid((2, 1), (1, 0))
@@ -200,7 +200,7 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	ticksLocator(2)
+	ticksLocator(3)
 	ylabels = nu.arange(0, s[1]/1000*1.1, ticksIntervalB/1000).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
