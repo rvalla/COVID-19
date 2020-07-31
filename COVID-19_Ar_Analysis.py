@@ -30,7 +30,7 @@ caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -99,7 +99,7 @@ plotTitles = ["COVID-19 outbreak in Argentina", "COVID-19: el brote en Argentina
 				"New cases trend (3 days average)", "Tendencia diaria (promedio 3 días)", "Deaths", "Fallecimientos",
 				"Daily deaths (3 days average)", "Fallecimientos diarios (promedio 3 días)", "Deaths & positive tests ratios",
 				"Tasas de mortalidad y tests positivos", "Testing & dropped cases", "Confirmados vs. descartados",
-				"Linear duplication times (7 days)", "Tiempos de duplicación (7 days)", "New cases trend (7 days average)",
+				"Linear duplication times (7 days)", "Tiempos de duplicación (7 días)", "New cases trend (7 days average)",
 				"Tendencia diaria (promedio 7 días)", "Daily deaths (7 days average)", "Fallecimientos diarios (promedio 7 días)",
 				"Positive tests ratios", "Tasa de positividad"]
 shortLabels = ["Confirmed", "Confirmados", "Active", "Activos", "Deaths", "Fallecimientos", "Death rate",
