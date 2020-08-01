@@ -30,7 +30,7 @@ caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -409,7 +409,7 @@ def plotArgentinaA(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 1000)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
@@ -438,7 +438,7 @@ def plotArgentinaB(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 0.025)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
@@ -479,7 +479,7 @@ def plotArgentinaC(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 15)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		savePlot("ArgentinaC.csv", figure)
@@ -533,7 +533,7 @@ def plotAllCountryDataWide(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 1500)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new deaths chart...
@@ -570,7 +570,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 200000)
-	ticksLocator(2)
+	ticksLocator(3)
 	ylabels = nu.arange(0, s[1]/1000*1.1, 200).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
