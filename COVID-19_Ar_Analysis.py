@@ -21,7 +21,7 @@ print("Loading data...", end="\n")
 #regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
 #regions = ["CABA", "BUENOS AIRES"]
 regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
-#regions = ["CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
+#regions = ["CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO", "JUJUY", "MENDOZA"]
 #regions = ["RIO NEGRO", "JUJUY", "MENDOZA", "CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "SANTA FE"]
 
 #Selecting data to display
@@ -30,7 +30,7 @@ caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -61,10 +61,12 @@ weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
 plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
-weeklyAnalysisAC = True #Decide if you want to plot week day data of notified cases in Argentina.
+weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
+ticksSizes = [20000, 200, 500, 10, 0.05]
+#ticksSizes = [500, 10, 50, 3, 0.05]
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -76,7 +78,8 @@ fileNames = ["00_Confirmed.csv", "01_Active.csv", "02_Deaths.csv", "03_Recovered
 				"20_DuplicationTimes.csv", "21_DuplicationTimes3dAv.csv", "22_DeathDuplicationTimes.csv",
 				"23_DeathDuplicationTimes3dAv.csv", "24_NewDropped.csv", "25_NewDropped3dAv.csv",
 				"26_NewConfirmed7dAv.csv", "27_ActiveVariation7dAv.csv", "28_Newdeaths7dAv.csv", "29_NewRecovered7dAv.csv",
-				"30_NewTested7dAv.csv", "31_NewDropped7dAv.csv", "32_DuplicationTimes7dAv.csv", "33_DeathDuplicationTimes7dAv.csv"]
+				"30_NewTested7dAv.csv", "31_NewDropped7dAv.csv", "32_DuplicationTimes7dAv.csv", "33_DeathDuplicationTimes7dAv.csv",
+				"34_PositiveTestsRatio7dAv.csv"]
 dataTitles = ["Confirmed cases", "Casos confirmados", "Active cases", "Casos activos", "Deaths", "Fallecimientos", 
 				"Recovered patients", "Altas", "Laboratory Tests", "Tests", "Dropped cases", "Casos descartados",
 				"Death rate", "Tasa de mortalidad", "Daily confirmed cases", "Casos diarios", "New confirmed cases trend",
@@ -103,7 +106,7 @@ plotTitles = ["COVID-19 outbreak in Argentina", "COVID-19: el brote en Argentina
 				"Tendencia diaria (promedio 7 días)", "Daily deaths (7 days average)", "Fallecimientos diarios (promedio 7 días)",
 				"Positive tests ratios", "Tasa de positividad"]
 shortLabels = ["Confirmed", "Confirmados", "Active", "Activos", "Deaths", "Fallecimientos", "Death rate",
-				"Tasa de mortalidad", "Positive trend", "Positividad (3 días)", "Positive ratio", "Positividad acumulada",
+				"Tasa de mortalidad", "Positive trend (7 days)", "Positividad (7 días)", "Positive ratio", "Positividad acumulada",
 				"Laboratory tests", "Pruebas de diagnóstico", "Dropped cases", "Casos descartados"]
 xTitles = ["Time in days", "Tiempo en días"]
 yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecidos", "Death rate", "Tasa de mortalidad",
@@ -209,7 +212,7 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechar
 	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksInterval)
-	ticksLocator(1)
+	ticksLocator(2)
 	#Setting axis labels font and legend
 	if len(regions) > 1:
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
@@ -283,7 +286,7 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
-	ticksLocator(1)
+	ticksLocator(2)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting axis labels font and legend
 	plt.subplot2grid((2, 1), (1, 0))
@@ -307,7 +310,7 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	ticksLocator(1)
+	ticksLocator(2)
 	plt.tight_layout(rect=[0, 0, 1, 0.95])
 	if savechart == True:
 		auxName = fileNames[datatypeA].split(".")
@@ -384,7 +387,7 @@ def plotArgentinaA(savechart, show):
 	plt.yscale(plotScale)
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 30000)
-	ticksLocator(2)
+	ticksLocator(3)
 	ylabels = nu.arange(0, s[1]/1000*1.1, 30).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
@@ -427,7 +430,7 @@ def plotArgentinaB(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 25)
-	ticksLocator(2)
+	ticksLocator(3)
 	a = plt.xlim()
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up ratios chart...
@@ -451,14 +454,14 @@ def plotArgentinaC(savechart, show):
 	#Setting up Tested vs Dropped...
 	plt.subplot2grid((2, 1), (0, 0))
 	ratios = databases[19][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*5+lg], color=colorlist[1])
-	ratios = databases[18][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
+	ratios = databases[34][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
 	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	ratios.set_title(plotTitles[20+lg], fontsize=10, fontname=defaultFont)
 	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 0.1)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlabel("")
 	a = plt.xlim()
 	plt.gca().xaxis.set_ticklabels([])
@@ -508,7 +511,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 50000)
-	ticksLocator(2)
+	ticksLocator(3)
 	ylabels = nu.arange(0, s[1]/1000*1.1, 50).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
@@ -544,13 +547,13 @@ def plotAllCountryDataWide(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 30)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up ratios chart...
 	plt.subplot2grid((3, 2), (1, 1))
 	ratios = databases[19][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*5+lg], color=colorlist[1])
-	ratios = databases[18][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
+	ratios = databases[34][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*4+lg], color=colorlist[0])
 	ratios = databases[6][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*3+lg], color=colorlist[2])
 	ratios.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	ratios.set_title(plotTitles[2*5+lg], fontsize=10, fontname=defaultFont)
@@ -558,7 +561,7 @@ def plotAllCountryDataWide(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 0.1)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up Tested vs Dropped...
@@ -595,7 +598,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 15)
-	ticksLocator(2)
+	ticksLocator(3)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
 		savePlot("Argentina.csv", figure)
@@ -740,59 +743,59 @@ def plotWeeklyAnalysis(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, aType, r
 #Calling the functions to build selected charts...
 if confirmedByDate == True:
 	print("Plotting confirmed cases data by date...", end="\n")
-	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, 20000, saveChart, showChart)
+	plotbyDate(regions, 0, xTitles[0+lg], yTitles[0+lg], True, ticksSizes[0], saveChart, showChart)
 if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
-	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, 200, saveChart, showChart)
+	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[1], saveChart, showChart)
 if confirmedAndDeathsbyDate == True:
-	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 20000, 400, saveChart, showChart)
+	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], 20000, saveChart, showChart)
+	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], ticksSizes[0], saveChart, showChart)
 if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
-	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], 200, saveChart, showChart)
+	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], ticksSizes[1], saveChart, showChart)
 if confirmedAndDeathsbyOutbreak == True:
-	plotDoublebyOutbreak(regions, 0, 2, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], 20000, 400, saveChart, showChart)
+	plotDoublebyOutbreak(regions, 0, 2, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
-	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, 500, saveChart, showChart)
+	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, ticksSizes[2], saveChart, showChart)
 if newConfirmedCasesTrend == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, 500, saveChart, showChart)
+	plotbyDate(regions, 8, xTitles[0+lg], yTitles[0+lg], True, ticksSizes[2], saveChart, showChart)
 if newConfirmedCasesTrend7 == True:
 	print("Plotting daily confirmed cases trend data...", end="\n")
-	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, 500, saveChart, showChart)
+	plotbyDate(regions, 26, xTitles[0+lg], yTitles[0+lg], True, ticksSizes[2], saveChart, showChart)
 if newDeaths == True:
 	print("Plotting daily deaths cases data...", end="\n")
-	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, 10, saveChart, showChart)
+	plotbyDate(regions, 11, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[3], saveChart, showChart)
 if newDeathsTrend == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, 10, saveChart, showChart)
+	plotbyDate(regions, 12, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[3], saveChart, showChart)
 if newDeathsTrend7 == True:
 	print("Plotting daily deahts trend...", end="\n")
-	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, 10, saveChart, showChart)
+	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[3], saveChart, showChart)
 if newConfirmedAndDeathsTrend == True:
-	plotDoublebyDate(regions, 26, 28, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 800, 10, saveChart, showChart)
+	plotDoublebyDate(regions, 26, 28, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, ticksSizes[2], ticksSizes[3], saveChart, showChart)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
-	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, 0.02, saveChart, showChart)
+	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, ticksSizes[4]/2, saveChart, showChart)
 if deathsAndDeathRate == True:
-	plotDoublebyDate(regions, 2, 6, xTitles[0+lg], yTitles[2+lg], yTitles[4+lg], True, 400, 0.05, saveChart, showChart)
+	plotDoublebyDate(regions, 2, 6, xTitles[0+lg], yTitles[2+lg], yTitles[4+lg], True, 2*ticksSizes[1], ticksSizes[4], saveChart, showChart)
 if confirmedDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart, showChart)
+	plotbyDate(regions, 20, xTitles[0+lg], yTitles[10+lg], False, ticksSizes[3], saveChart, showChart)
 if confirmedDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times trend by date...", end="\n")
-	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, 15, saveChart, showChart)
+	plotbyDate(regions, 21, xTitles[0+lg], yTitles[10+lg], False, ticksSizes[3], saveChart, showChart)
 if deathsDuplication == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
+	plotbyDate(regions, 22, xTitles[0+lg], yTitles[12+lg], False, 2*ticksSizes[3], saveChart, showChart)
 if deathsDuplicationTrend == True:
 	print("Plotting confirmed cases duplications times by date...", end="\n")
-	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 25, saveChart, showChart)
+	plotbyDate(regions, 23, xTitles[0+lg], yTitles[12+lg], False, 2*ticksSizes[3], saveChart, showChart)
 if confirmedAndDeathsDuplicationTrend == True:
-	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 30, 10, saveChart, showChart)
+	plotDoublebyDate(regions, 21, 23, xTitles[0+lg], yTitles[10+lg], yTitles[12+lg], False, 3*ticksSizes[3], ticksSizes[3], saveChart, showChart)
 weeklyConfirmed = []
 weeklyDeaths = []
 weeklyConfirmedR = []

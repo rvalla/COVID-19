@@ -19,13 +19,14 @@ dataTitles = ["Confirmed", "Active", "Deaths", "Recovered", "Tested", "Dropped",
 				"PositiveTestsRatio", "PositiveTestsRatio3dAv", "CumulativePositiveTestsRatio",
 				"DuplicationTimes", "DuplicationTimes3dAv", "DeathDuplicationTimes", "DeathDuplicationTimes3dAv",
 				"NewDropped", "NewDropped3dAv", "NewConfirmed7dAv", "ActiveVariation7dAv", "Newdeaths7dAv",
-				"NewRecovered7dAv", "NewTested7dAv", "NewDropped7dAv", "DuplicationTimes7dAv", "DeathDuplicationTimes7dAv"]
+				"NewRecovered7dAv", "NewTested7dAv", "NewDropped7dAv", "DuplicationTimes7dAv", "DeathDuplicationTimes7dAv",
+				"PositiveTestsRatio7dAv"]
 
 fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-07-31"
+dataEndDate = "2020-08-01"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -172,6 +173,7 @@ databases.append(getNewCases7dAv(databases[15])) # 30: New tests trend (7 days a
 databases.append(getNewCases7dAv(databases[24])) # 31: New dropped cases trend (7 days average)
 databases.append(getLinearDuplicationTimes7dAv(databases[0], databases[26])) # 32: Linear duplication time (7d)
 databases.append(getLinearDuplicationTimes7dAv(databases[2], databases[28])) # 33: Linear deaths duplication time (7d)
+databases.append(getRatios(databases[26], databases[30])) # 34: Positive tests ratio trend (7 day average)
 
 print("Dataframes for data analysis were build...                       ", end="\n")
 
