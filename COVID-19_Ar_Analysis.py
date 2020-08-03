@@ -18,23 +18,20 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-#regions = ["CABA", "BUENOS AIRES", "CHACO", "SANTA FE", "CORDOBA"]
-#regions = ["CABA", "BUENOS AIRES"]
-regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO"]
-#regions = ["CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "RIO NEGRO", "JUJUY", "MENDOZA"]
-#regions = ["RIO NEGRO", "JUJUY", "MENDOZA", "CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "ENTRE RIOS", "NEUQUEN", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
+#regions = ["CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
 
 #Selecting data to display
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
-caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
-dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
+caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
+dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
 lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = True
-showChart = False
+saveChart = False
+showChart = True
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
@@ -777,6 +774,7 @@ if newDeathsTrend7 == True:
 	plotbyDate(regions, 28, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[3], saveChart, showChart)
 if newConfirmedAndDeathsTrend == True:
 	plotDoublebyDate(regions, 26, 28, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, ticksSizes[2], ticksSizes[3], saveChart, showChart)
+	plotDoublebyOutbreak(regions, 26, 28, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], ticksSizes[2], ticksSizes[3], saveChart, showChart)
 if deathRate == True:
 	print("Plotting death rate evolution...", end="\n")
 	plotbyDate(regions, 6, xTitles[0+lg], yTitles[4+lg], False, ticksSizes[4]/2, saveChart, showChart)
