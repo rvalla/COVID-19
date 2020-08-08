@@ -30,8 +30,8 @@ dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths
 lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = False
-showChart = True
+saveChart = True
+showChart = False
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
@@ -115,6 +115,7 @@ tConector = [" since ", " desde ", " after ", " después de ", " (absolute)", " 
 
 filePath = "Argentina_Data/processed_data/"
 chartPath = "Argentina_Data/actual_charts/"
+#chartPath = "aux/"
 
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
@@ -304,7 +305,7 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 	plt.yscale(plotScale)
 	plt.ylabel(ytitleB, fontname=legendFont)
 	plt.xlabel(xtitle, fontname=legendFont)
-	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	#plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
 	ticksLocator(2)
@@ -334,7 +335,7 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 	plt.yscale(plotScale)
 	plt.ylabel(ytitleA, fontname=legendFont)
 	plt.xlabel("")
-	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
+	#plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
 	plt.gca().xaxis.set_ticklabels([])
