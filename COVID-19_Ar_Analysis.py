@@ -27,7 +27,7 @@ caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -372,8 +372,6 @@ def plotArgentinaA(savechart, show):
 	yquarantine = []
 	total = databases[0][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
 	yquarantine.append(databases[0].loc[x, "ARGENTINA"])
-	total = databases[1][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
-	yquarantine.append(databases[1].loc[x, "ARGENTINA"])
 	total = databases[2][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
 	yquarantine.append(databases[2].loc[x, "ARGENTINA"])
 	y = max(yquarantine)
@@ -397,8 +395,6 @@ def plotArgentinaA(savechart, show):
 	yquarantine = []
 	newtrend = databases[26][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
 	yquarantine.append(databases[26].loc[x, "ARGENTINA"])
-	newtrend = databases[27][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
-	yquarantine.append(databases[27].loc[x, "ARGENTINA"])
 	newtrend = databases[28][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
 	yquarantine.append(databases[28].loc[x, "ARGENTINA"])
 	y = max(yquarantine)
@@ -496,8 +492,6 @@ def plotAllCountryDataWide(savechart, show):
 	yquarantine = []
 	total = databases[0][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
 	yquarantine.append(databases[0].loc[x, "ARGENTINA"])
-	total = databases[1][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
-	yquarantine.append(databases[1].loc[x, "ARGENTINA"])
 	total = databases[2][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
 	yquarantine.append(databases[2].loc[x, "ARGENTINA"])
 	y = max(yquarantine)
@@ -521,8 +515,6 @@ def plotAllCountryDataWide(savechart, show):
 	yquarantine = []
 	newtrend = databases[26][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*0+lg], color=colorlist[0])
 	yquarantine.append(databases[26].loc[x, "ARGENTINA"])
-	newtrend = databases[27][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*1+lg], color=colorlist[1])
-	yquarantine.append(databases[27].loc[x, "ARGENTINA"])
 	newtrend = databases[28][startDate:]["ARGENTINA"].plot(kind="line", linewidth=1.7, label=shortLabels[2*2+lg], color=colorlist[2])
 	yquarantine.append(databases[28].loc[x, "ARGENTINA"])
 	y = max(yquarantine)
