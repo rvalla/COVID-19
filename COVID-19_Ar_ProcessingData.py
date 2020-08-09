@@ -26,7 +26,7 @@ fileName = "Argentina.csv"
 fileCompletePath = "Argentina_Data/" + fileName
 
 dataStartDate = "2020-03-03"
-dataEndDate = "2020-08-07"
+dataEndDate = "2020-08-08"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 datapath = "Argentina_Data/processed_data/"
@@ -145,7 +145,7 @@ def getLinearDuplicationTimes7dAv(cumulative, newCases7dAv):
 	return duplicationtimes
 
 print("Ready to build dataframes for analysis...                         ", end="\n")
-databases.append(getRatios(databases[2], databases[1])) # 6: Deathrate
+databases.append(getRatios(databases[2], databases[0])) # 6: Deathrate
 databases.append(getNewCases(databases[0])) # 7: New daily confirmed cases
 databases.append(getNewCases3dAv(databases[7])) #8: New confirmed cases trend (3 day average)
 databases.append(getNewCases(databases[1])) # 9: Active cases daily variation
