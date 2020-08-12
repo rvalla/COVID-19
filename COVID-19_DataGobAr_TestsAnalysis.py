@@ -20,18 +20,18 @@ regions = ["CABA", "Buenos Aires", "Santa Fe", "Córdoba", "Río Negro", "Chubut
 
 fileName = "Covid19Determinaciones.csv"
 fileCompletePath = "Argentina_Data/datos.gob.ar/" + fileName
-chartPath = "Argentina_Data/actual_charts/"
+chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-08-08"
-wantedStartDate = "2020-04-15"
-wantedEndDate = "2020-08-07"
+dataEndDate = "2020-08-11"
+wantedStartDate = "2020-05-01"
+wantedEndDate = "2020-08-10"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -86,10 +86,30 @@ for r in range(len(regions)):
 	databases[r] = databases[r].reindex(dataPeriod, fill_value=0)
 	databases[r].loc[:,"ratio"] = databases[r][:]["positivos"].div(databases[r][:]["total"])
 	databases[r]["ratio"].fillna(0, inplace=True)
+	for d in range(databases[r].shape[0] - 6):
+			d0 = databases[r].loc[databases[r].index[d], "total"]
+			d1 = databases[r].loc[databases[r].index[d+1], "total"]
+			d2 = databases[r].loc[databases[r].index[d+2], "total"]
+			d3 = databases[r].loc[databases[r].index[d+3], "total"]
+			d4 = databases[r].loc[databases[r].index[d+4], "total"]
+			d5 = databases[r].loc[databases[r].index[d+5], "total"]
+			d6 = databases[r].loc[databases[r].index[d+6], "total"]
+			databases[r].loc[databases[r].index[d+3], "total7d"] = (d0 + d1+ d2 + d3 + d4 + d5 + d6) / 7
+			d0 = databases[r].loc[databases[r].index[d], "positivos"]
+			d1 = databases[r].loc[databases[r].index[d+1], "positivos"]
+			d2 = databases[r].loc[databases[r].index[d+2], "positivos"]
+			d3 = databases[r].loc[databases[r].index[d+3], "positivos"]
+			d4 = databases[r].loc[databases[r].index[d+4], "positivos"]
+			d5 = databases[r].loc[databases[r].index[d+5], "positivos"]
+			d6 = databases[r].loc[databases[r].index[d+6], "positivos"]
+			databases[r].loc[databases[r].index[d+3], "positivos7d"] = (d0 + d1+ d2 + d3 + d4 + d5 + d6) / 7
+	databases[r].loc[:,"ratio7d"] = databases[r][:]["positivos7d"].div(databases[r][:]["total7d"])
 	cumulative_databases.append(databases[r].cumsum())
 	cumulative_databases[r].index = pd.DatetimeIndex(cumulative_databases[r].index)
 	cumulative_databases[r].loc[:,"ratio"] = cumulative_databases[r][:]["positivos"].div(cumulative_databases[r][:]["total"])
 	cumulative_databases[r]["ratio"].fillna(0, inplace=True)
+	
+databases[0].to_csv("saraza.csv")
 
 print("The data is ready!                             ", end= "\n")
 
@@ -111,10 +131,10 @@ if lg ==1:
 	dateFormatString = "%d/%m"
 
 titleprefix = "Argentina COVID-19: "
-ptitles = ["Daily tests by region", "Testeos diarios por provincia", "Cumulative tests by region",
-			"Testeos acumulados por provincia", "Daily positive tests ratio", "Tasa de positividad diaria",
-			"Cumulative positive tests ratio", "Tasa de positividad acumulada", "Daily positive tests",
-			"Testeos positivos diarios", "Cumulative positive tests", "Testeos positivos acumulados"]
+ptitles = ["Daily tests by region (7 days)", "Testeos diarios por provincia (7 días)", "Cumulative tests by region",
+			"Testeos acumulados por provincia", "Daily positive tests ratio (7 days)", "Tasa de positividad diaria (7 días)",
+			"Cumulative positive tests ratio", "Tasa de positividad acumulada", "Daily positive tests (7 days)",
+			"Testeos positivos diarios (7 días)", "Cumulative positive tests", "Testeos positivos acumulados"]
 filenames = ["T_00_dailytests", "T_01_cumulativetests", "T_02_dailypositiveratio", "T_03_positiveratio",
 			"T_04_dailypositives", "T_05_cumulativepositives"]
 xtitles = ["Time in days", "Tiempo en días"]
@@ -160,7 +180,7 @@ def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, 
 	plt.ylabel(ytitle, fontname=legendFont)
 	plt.xlabel(xtitle, fontname=legendFont)
 	gridAndTicks(s[1]*1.1, ticksinterval)
-	ticksLocator(1)
+	ticksLocator(2)
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
 	if savechart == True:
@@ -178,7 +198,7 @@ def plotDoubleData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savec
 	plt.ylabel(ytitle, fontname=legendFont)
 	plt.xlabel(xtitle, fontname=legendFont)
 	gridAndTicks(s[1]*1.1, ticksinterval)
-	ticksLocator(1)
+	ticksLocator(2)
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
 	if savechart == True:
@@ -188,21 +208,21 @@ def plotDoubleData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savec
 
 if plotByRegions == True:
 	print("Plotting tests data by date...", end="\n")
-	plotData(databases, "total", ptitles[0+lg], xtitles[0+lg], ytitles[0+lg], 1000, saveChart, showChart, filenames[0])
+	plotData(databases, "total7d", ptitles[0+lg], xtitles[0+lg], ytitles[0+lg], 1000, saveChart, showChart, filenames[0])
 if plotCumulative == True:
 	print("Plotting cummulative tests since date...", end="\n")
-	plotData(cumulative_databases, "total", ptitles[2+lg], xtitles[0+lg], ytitles[0+lg], 30000, saveChart, showChart, filenames[1])
+	plotData(cumulative_databases, "total", ptitles[2+lg], xtitles[0+lg], ytitles[0+lg], 50000, saveChart, showChart, filenames[1])
 if plotInfectedRatio == True:
 	print("Plotting positive tests ratio since date...", end="\n")
-	plotData(databases, "ratio", ptitles[4+lg], xtitles[0+lg], ytitles[2+lg], 0.25, saveChart, showChart, filenames[2])
+	plotData(databases, "ratio7d", ptitles[4+lg], xtitles[0+lg], ytitles[2+lg], 0.25, saveChart, showChart, filenames[2])
 if plotCumulativeRatio == True:
-	print("Plotting cumularive positive tests ratio since date...", end="\n")
+	print("Plotting cummulative positive tests ratio since date...", end="\n")
 	plotData(cumulative_databases, "ratio", ptitles[6+lg], xtitles[0+lg], ytitles[2+lg], 0.05, saveChart, showChart, filenames[3])
 if plotPositives == True:
-	print("Plotting cumularive positive tests ratio since date...", end="\n")
-	plotData(databases, "positivos", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], 500, saveChart, showChart, filenames[4])
+	print("Plotting cummulative positive tests ratio since date...", end="\n")
+	plotData(databases, "positivos7d", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], 500, saveChart, showChart, filenames[4])
 if plotCumulativePositives == True:
-	print("Plotting cumularive positive tests ratio since date...", end="\n")
-	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], 10000, saveChart, showChart, filenames[5])
+	print("Plotting cummulative positive tests ratio since date...", end="\n")
+	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], 30000, saveChart, showChart, filenames[5])
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")

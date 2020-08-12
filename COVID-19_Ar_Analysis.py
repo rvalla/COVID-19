@@ -18,11 +18,12 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "JUJUY", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
 #regions = ["CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
 
 #Selecting data to display
 startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
+#startDate = "2020-04-15"
 caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
@@ -56,14 +57,14 @@ deathsDuplicationTrend = False #Decide if you want to plot linear deaths duplica
 confirmedAndDeathsDuplicationTrend = False
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
-plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
+plotAllCountry = False #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
 weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
-ticksSizes = [20000, 200, 500, 10, 0.05]
-#ticksSizes = [500, 10, 50, 3, 0.05]
+ticksSizes = [25000, 400, 1000, 20, 0.05]
+#ticksSizes = [1000, 20, 50, 3, 0.05]
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -120,10 +121,10 @@ chartPath = "Argentina_Data/actual_charts/"
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
-colorlist = ["chocolate", "tab:blue", "firebrick", "tab:green", "rebeccapurple", "olivedrab",
-				"crimson", "darkcyan", "aqua", "dodgerblue", "palegreen", "seagreen", "limegreen", "indianred",
-				"slategrey", "royalblue", "navy", "slateblue", "goldenrod", "greenyellow", "darkturquoise",
-				"coral", "tab:pink"] #Default colors for data
+colorlist = ["tab:orange", "tab:blue", "firebrick", "tab:green", "rebeccapurple", "brown",
+				"crimson", "darkcyan", "steelblue", "indianred", "seagreen", "slateblue", "dodgerblue",
+				"slategrey", "royalblue", "navy", "limegreen", "goldenrod", "greenyellow", "darkturquoise",
+				"coral", "tab:pink", "white"] #Default colors for data
 backgroundPlot = "silver" #Default background color for charts
 backgroundFigure = "white" #Default background color for figures
 majorGridColor = "dimgrey" #Default colors for grids...
@@ -166,9 +167,9 @@ def markQuarantine(tag, yshift, ytshift, font, x, y, w, hw, hl):
 			arrowprops=dict(facecolor='orangered', edgecolor="none", width=w, headwidth=hw, headlength=hl),
         	horizontalalignment='center', verticalalignment='top')
 
-def savePlot(csvName, figure):
+def savePlot(csvName, figure, directory):
 	chartName = csvName.split(".")
-	plt.savefig(chartPath + str(lg) + "_" + chartName[0] + ".png", facecolor=figure.get_facecolor())
+	plt.savefig(chartPath + directory + str(lg) + "_" + chartName[0] + ".png", facecolor=figure.get_facecolor())
 
 def gridAndTicks(yMax, ticksInterval):
 	plt.grid(which='both', axis='both')
@@ -216,7 +217,7 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechar
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
 	if savechart == True:
-		savePlot("D_" + fileNames[datatype], figure)
+		savePlot("D_" + fileNames[datatype], figure, "byDate/")
 	if show == True:
 		plt.show()
 
@@ -255,7 +256,7 @@ def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ti
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	plt.tight_layout()
 	if savechart == True:
-		savePlot("O_" + fileNames[datatype], figure)
+		savePlot("O_" + fileNames[datatype], figure, "byOutbreak/")
 	if show == True:
 		plt.show()
 	
@@ -312,7 +313,7 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 	plt.tight_layout(rect=[0, 0, 1, 0.95])
 	if savechart == True:
 		auxName = fileNames[datatypeA].split(".")
-		savePlot("D_" + auxName[0] + "_" + fileNames[datatypeB], figure)
+		savePlot("D_" + auxName[0] + "_" + fileNames[datatypeB], figure, "byDate/")
 	if show == True:
 		plt.show()
 
@@ -360,7 +361,7 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 	plt.tight_layout(rect=[0, 0, 1, 0.95])
 	if savechart == True:
 		auxName = fileNames[datatypeA].split(".")
-		savePlot("O_" + auxName[0] + "_" + fileNames[datatypeB], figure)
+		savePlot("O_" + auxName[0] + "_" + fileNames[datatypeB], figure, "byOutbreak/")
 	if show == True:
 		plt.show()
 
@@ -410,7 +411,7 @@ def plotArgentinaA(savechart, show):
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
-		savePlot("ArgentinaA.csv", figure)
+		savePlot("ArgentinaA.csv", figure, "")
 	if show == True:
 		plt.show()
 		
@@ -439,7 +440,7 @@ def plotArgentinaB(savechart, show):
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
-		savePlot("ArgentinaB.csv", figure)
+		savePlot("ArgentinaB.csv", figure, "")
 	if show == True:
 		plt.show()
 
@@ -479,7 +480,7 @@ def plotArgentinaC(savechart, show):
 	ticksLocator(3)
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
-		savePlot("ArgentinaC.csv", figure)
+		savePlot("ArgentinaC.csv", figure, "")
 	if show == True:
 		plt.show()
 	
@@ -591,7 +592,7 @@ def plotAllCountryDataWide(savechart, show):
 	ticksLocator(3)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
-		savePlot("Argentina.csv", figure)
+		savePlot("Argentina.csv", figure, "")
 	if show == True:
 		plt.show()	
 
@@ -630,7 +631,7 @@ def plotAllCountryDT(savechart, show):
 	ticksLocator(2)
 	plt.tight_layout()
 	if savechart == True:
-		savePlot("ArgentinaDT.csv", figure)
+		savePlot("ArgentinaDT.csv", figure, "byDate/")
 	if show == True:
 		plt.show()
 	
@@ -722,7 +723,7 @@ def plotWeeklyCases(weeklyConfirmed, weeklyDeaths, yTitleC, yTitleD, region, aTy
 	plt.gca().set_facecolor(backgroundPlot)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
-		savePlot(region + "_WA.csv", figure)
+		savePlot(region + "_WA.csv", figure, "weekAnalysis/")
 	if show == True:
 		plt.show()
 

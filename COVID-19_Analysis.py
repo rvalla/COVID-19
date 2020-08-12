@@ -17,7 +17,7 @@ print("Ploting data of ", end=" ")
 #Deciding what to plot...
 confirmedByDate = False #Decide if you want to plot data by date for selected regions.
 deathsByDate = False
-confirmedAndDeathsByDate = True
+confirmedAndDeathsByDate = False
 confirmedByOutbreak = False #Decide if you want to plot data by notified cases for selected regions.
 deathsByOutbreak = False
 confirmedAndDeahtsByOutbreak = True
@@ -26,23 +26,25 @@ newDeaths = False
 newConfirmedTrend = False #Decide if you want to plot new daily cases trend (3 day average) for selected regions
 newDeathsTrend = False
 newConfirmedAndDeathTrend = True
-deathRate = True #Decide if you want to plot death rate evolution for selected regions
+deathRate = False #Decide if you want to plot death rate evolution for selected regions
 duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisR = False
 
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
-#regions = ["India", "Brazil", "Russia"]
-#regions = ["Peru", "Chile", "Mexico", "South Africa", "United Kingdom", "Iran"]
+regions = ["India", "Brazil", "Russia"]
+regions = ["Peru", "Chile", "Mexico", "South Africa", "United Kingdom", "Iran", "Spain"]
 #regions = ["Spain", "Pakistan", "Italy", "France", "Saudi Arabia", "Turkey", "Germany"]
 #regions = ["Colombia", "Argentina", "Ecuador", "Canada", "Qatar"]
 #regions = ["Sweden", "Belgium", "Bolivia", "Panama", "Israel", "Singapore"]
 #regions = ["Nigeria", "Switzerland", "Japan"]
-#regions = ["Korea, South", "Denmark", "Australia", "Costa Rica"]
-regions = ["Uruguay", "Taiwan*", "New Zealand", "Iceland"]
+regions = ["Korea, South", "Denmark", "Australia", "Costa Rica"]
+#regions = ["Uruguay", "Taiwan*", "New Zealand", "Iceland"]
+
 regionsIndexes = [[],[]]
 groupbyCountry = True
+
 #You can choose 'Country/Region' or 'Province/State'. Select regions correctly though...
 #If you choose 'Province/State' then 'groupbyCountry' must be False
 regionReference = "Country/Region"
@@ -376,6 +378,59 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 	plt.tight_layout()
 	plt.show()
 
+def plotDoubleNewCases3Av(datalocation, datatypeA, datatypeB, dataguide):
+	startPoints = regionsStartPoints(regions)
+	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
+	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle("COVID-19: New cases trend since number "  + str(caseCount) + " " + dataTitles[dataguide],
+						fontsize=13, fontname=defaultFont)
+	plt.subplot2grid((2, 1), (0, 0))
+	for i in range(len(datalocation[datatypeA])):
+		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		if startPoint > 0:
+			startPoint -= 1
+		datalist = databases[datatypeA][startPoint:startPoint + period][regionsIndexes[datatypeA][i]].values.tolist()
+		datalistsub = getNewCasesAv(getNewCases(datalist))
+		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
+	plt.title(dataTitles[datatypeA])
+	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
+	plt.grid()
+	plt.ylabel("Average of new cases (3 days)", fontname=legendFont)
+	plt.xlabel("", fontname=legendFont)
+	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.gca().set_facecolor(backgroundPlot)
+	plt.subplot2grid((2, 1), (1, 0))
+	for i in range(len(datalocation[datatypeB])):
+		startPoint = startPoints[dataguide][i] + outbreakDayCount
+		if startPoint > 0:
+			startPoint -= 1
+		datalist = databases[datatypeB][startPoint:startPoint + period][regionsIndexes[datatypeB][i]].values.tolist()
+		datalistsub = getNewCasesAv(getNewCases(datalist))
+		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
+	plt.title(dataTitles[datatypeB])
+	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
+	plt.grid()
+	plt.ylabel("Average of new cases (3 days)", fontname=legendFont)
+	plt.xlabel("Time in days", fontname=legendFont)
+	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.gca().set_facecolor(backgroundPlot)
+	plt.tight_layout(rect=[0, 0, 1, 0.95])
+	plt.show()
+
 def getDuplicationTimes(datalist, type):
 	newcases = getNewCases(datalist)
 	duplicationtimes = []
@@ -595,7 +650,7 @@ if newConfirmedTrend == True:
 if newDeathsTrend == True:
 	plotNewCases3Av(regionsIndexes, 1, dataGuide)
 if newConfirmedAndDeathTrend == True:
-	print("hola")
+	plotDoubleNewCases3Av(regionsIndexes, 0, 1, dataGuide)
 if deathRate == True:
 	plotDeathRate(regionsIndexes)
 if duplicationTimes == True:

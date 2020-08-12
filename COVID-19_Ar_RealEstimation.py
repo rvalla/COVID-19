@@ -18,7 +18,7 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-#regions = ["ARGENTINA", "CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "SANTA FE"]
+#regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "MENDOZA", "NEUQUEN", "ARGENTINA", "SANTA FE", "TIERRA DEL FUEGO", "ENTRE RIOS"]
 regions = ["CABA", "BUENOS AIRES", "ARGENTINA"]
 
 #Selecting data to display
@@ -29,9 +29,9 @@ realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 ratioticks = 0.1
-estimationticks = 50000
+estimationticks = 100000
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -60,7 +60,7 @@ tConector = [" since ", " desde ", " after ", " después de ", " and ", " y ", "
 			"deaths offset = ", "corrimiento fallecimientos = "]
 
 filePath = "Argentina_Data/processed_data/"
-chartPath = "Argentina_Data/actual_charts/"
+chartPath = "Argentina_Data/actual_charts/estimation/"
 
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
