@@ -22,7 +22,7 @@ regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "JUJUY", "MENDOZA", "NEUQ
 #regions = ["CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
 
 #Selecting data to display
-startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
+startDate = "2020-05-01" #Starting point for plotbyDate. Default: 03/03
 #startDate = "2020-04-15"
 caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
@@ -57,7 +57,7 @@ deathsDuplicationTrend = False #Decide if you want to plot linear deaths duplica
 confirmedAndDeathsDuplicationTrend = False
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
 weeklyAnalysisType = "relative" # You can plot "absolute" values, "relative" to week maximum or "both"
-plotAllCountry = False #Decide if you want a final plot with summary for cases in Argentina.
+plotAllCountry = True #Decide if you want a final plot with summary for cases in Argentina.
 duplicationTimesAC = False #Decide if you want to plot Duplication Times in the country.
 weeklyAnalysisAC = False #Decide if you want to plot week day data of notified cases in Argentina.
 
@@ -112,7 +112,7 @@ yTitles = ["Number of cases", "Número de casos", "Deaths", "Fallecidos", "Death
 			"Days needed for\nconfirmed cases to double", "Días necesarios para\nque los casos se dupliquen",
 			"Days needed\nfor deaths to double", "Días necesarios para que\nlos fallecimientos se dupliquen"]
 tConector = [" since ", " desde ", " after ", " después de ", " (absolute)", " (valores absolutos)",
-				" (relative)", " (valores relativos)", " and ", " y "]
+				" (relative)", " (valores relativos)", "\nand ", "\ny "]
 
 filePath = "Argentina_Data/processed_data/"
 chartPath = "Argentina_Data/actual_charts/"
@@ -211,7 +211,7 @@ def plotbyDate(regions, datatype, xtitle, ytitle, markQ, ticksInterval, savechar
 	plt.xlabel(xtitle, fontname=legendFont)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksInterval)
-	ticksLocator(2)
+	ticksLocator(1)
 	#Setting axis labels font and legend
 	if len(regions) > 1:
 		plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
@@ -261,9 +261,10 @@ def plotbyOutbreak(regions, datatype, dataguide, startpoints, xtitle, ytitle, ti
 		plt.show()
 	
 def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
-	figure = plt.figure(num=None, figsize=(7, 5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: " + dataTitles[2*(datatypeA)+lg] + tConector[8+lg] + dataTitles[2*(datatypeB)+lg] +
-					 tConector[lg] + startDateTime.strftime(dateFormatString), fontsize=12, fontname=defaultFont)
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	#if superiorTitles == True:
+	#	figure.suptitle("COVID-19: " + dataTitles[2*(datatypeA)+lg] + tConector[8+lg] + dataTitles[2*(datatypeB)+lg] +
+	#					 tConector[lg] + startDateTime.strftime(dateFormatString), fontsize=11, fontname=defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
 	#Saving y values for markQ...
 	yquarantine = []
@@ -278,9 +279,10 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 		y = max(yquarantine) #Drawing a mark on quarantineStartDate
 		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
 	#Setting up titles	
-	plotA.set_title(dataTitles[2*(datatypeA)+lg], fontname=defaultFont)
+	plotA.set_title(dataTitles[2*(datatypeA)+lg], fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleA, fontname=legendFont)
+	#plt.ylabel(ytitleA, fontname=legendFont)
+	plt.ylabel("")
 	plt.xlabel("")
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
@@ -302,15 +304,16 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 		y = max(yquarantine) #Drawing a mark on quarantineStartDate
 		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
 	#Setting up titles	
-	plotB.set_title(dataTitles[2*(datatypeB)+lg], fontname=defaultFont)
+	plotB.set_title(dataTitles[2*(datatypeB)+lg], fontname=defaultFont, fontsize=10)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleB, fontname=legendFont)
+	#plt.ylabel(ytitleB, fontname=legendFont)
+	plt.ylabel("")
 	plt.xlabel(xtitle, fontname=legendFont)
 	#plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
 	ticksLocator(2)
-	plt.tight_layout(rect=[0, 0, 1, 0.95])
+	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		auxName = fileNames[datatypeA].split(".")
 		savePlot("D_" + auxName[0] + "_" + fileNames[datatypeB], figure, "byDate/")
@@ -318,9 +321,10 @@ def plotDoublebyDate(regions, datatypeA, datatypeB, xtitle, ytitleA, ytitleB, ma
 		plt.show()
 
 def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitleA, ytitleB, ticksIntervalA, ticksIntervalB, savechart, show):
-	figure = plt.figure(num=None, figsize=(7, 5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: " + dataTitles[2*(datatypeA)+lg] + tConector[8+lg] + dataTitles[2*(datatypeB)+lg] +
-					 tConector[2+lg] + str(caseCount)  + " " + dataTitles[2*dataguide+lg], fontsize=12, fontname=defaultFont)
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	#if superiorTitles == True:
+	#	figure.suptitle("COVID-19: " + dataTitles[2*(datatypeA)+lg] + tConector[8+lg] + dataTitles[2*(datatypeB)+lg] +
+	#					 tConector[2+lg] + str(caseCount)  + " " + dataTitles[2*dataguide+lg], fontsize=11, fontname=defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
 	period = 0
 	#Plotting selected data...
@@ -334,7 +338,8 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 	#Setting up titles	
 	plt.title(dataTitles[2*(datatypeA)+lg], fontname=defaultFont)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleA, fontname=legendFont)
+	#plt.ylabel(ytitleA, fontname=legendFont)
+	plt.ylabel("")
 	plt.xlabel("")
 	#plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
@@ -353,12 +358,13 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 	#Setting up titles	
 	plt.title(dataTitles[2*(datatypeB)+lg], fontname=defaultFont)
 	plt.yscale(plotScale)
-	plt.ylabel(ytitleB, fontname=legendFont)
+	#plt.ylabel(ytitleB, fontname=legendFont)
+	plt.ylabel("")
 	plt.xlabel(xtitle, fontname=legendFont)
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	plt.tight_layout(rect=[0, 0, 1, 0.95])
+	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		auxName = fileNames[datatypeA].split(".")
 		savePlot("O_" + auxName[0] + "_" + fileNames[datatypeB], figure, "byOutbreak/")
@@ -366,7 +372,7 @@ def plotDoublebyOutbreak(regions, datatypeA, datatypeB, dataguide, xtitle, ytitl
 		plt.show()
 
 def plotArgentinaA(savechart, show):
-	figure = plt.figure(num=None, figsize=(4, 3.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up totals chart...
 	plt.subplot2grid((2, 1), (0, 0))
 	x = quarantineStart
@@ -383,13 +389,13 @@ def plotArgentinaA(savechart, show):
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 30000)
-	ticksLocator(3)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 30).tolist()
+	gridAndTicks(s[1]*1.1, 50000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 50).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 30000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 50000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((2, 1), (1, 0))
@@ -406,8 +412,8 @@ def plotArgentinaA(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 1000)
-	ticksLocator(3)
+	gridAndTicks(s[1]*1.1, 1500)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
@@ -416,7 +422,7 @@ def plotArgentinaA(savechart, show):
 		plt.show()
 		
 def plotArgentinaB(savechart, show):
-	figure = plt.figure(num=None, figsize=(4, 3.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up new deaths chart...
 	plt.subplot2grid((2, 1), (0, 0))
 	newdeaths = databases[28][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*2+lg], color=colorlist[2])
@@ -424,8 +430,8 @@ def plotArgentinaB(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 25)
-	ticksLocator(3)
+	gridAndTicks(s[1]*1.1, 30)
+	ticksLocator(2)
 	a = plt.xlim()
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up ratios chart...
@@ -436,7 +442,7 @@ def plotArgentinaB(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 0.025)
-	ticksLocator(3)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
@@ -445,7 +451,7 @@ def plotArgentinaB(savechart, show):
 		plt.show()
 
 def plotArgentinaC(savechart, show):
-	figure = plt.figure(num=None, figsize=(4, 3.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
 	#Setting up Tested vs Dropped...
 	plt.subplot2grid((2, 1), (0, 0))
 	ratios = databases[19][startDate:]["ARGENTINA"].plot(kind="line", linewidth=2.0, label=shortLabels[2*5+lg], color=colorlist[1])
@@ -456,7 +462,7 @@ def plotArgentinaC(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 0.1)
-	ticksLocator(3)
+	ticksLocator(2)
 	plt.xlabel("")
 	a = plt.xlim()
 	plt.gca().xaxis.set_ticklabels([])
@@ -477,7 +483,7 @@ def plotArgentinaC(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 15)
-	ticksLocator(3)
+	ticksLocator(2)
 	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		savePlot("ArgentinaC.csv", figure, "")
@@ -503,13 +509,13 @@ def plotAllCountryDataWide(savechart, show):
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 50000)
-	ticksLocator(3)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 50).tolist()
+	gridAndTicks(s[1]*1.1, 100000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 100).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 50000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 100000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((3, 2), (0, 1))
@@ -526,8 +532,8 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 1500)
-	ticksLocator(3)
+	gridAndTicks(s[1]*1.1, 2000)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new deaths chart...
@@ -537,8 +543,8 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 30)
-	ticksLocator(3)
+	gridAndTicks(s[1]*1.1, 50)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up ratios chart...
@@ -552,7 +558,7 @@ def plotAllCountryDataWide(savechart, show):
 	s = plt.ylim()
 	plt.xlabel("")
 	gridAndTicks(s[1]*1.1, 0.1)
-	ticksLocator(3)
+	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up Tested vs Dropped...
@@ -563,13 +569,13 @@ def plotAllCountryDataWide(savechart, show):
 	tests.set_title(plotTitles[2*6+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	s = plt.ylim()
-	gridAndTicks(s[1]*1.1, 200000)
-	ticksLocator(3)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 200).tolist()
+	gridAndTicks(s[1]*1.1, 300000)
+	ticksLocator(2)
+	ylabels = nu.arange(0, s[1]/1000*1.1, 300).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 200000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 300000), ylabels)
 	plt.xlabel("")
 	plt.xlim(a[0], a[1])
 	#Plotting duplication times...
@@ -589,7 +595,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	gridAndTicks(s[1]*1.1, 15)
-	ticksLocator(3)
+	ticksLocator(2)
 	plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 	if savechart == True:
 		savePlot("Argentina.csv", figure, "")

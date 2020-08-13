@@ -60,7 +60,7 @@ tConector = [" since ", " desde ", " after ", " después de ", " and ", " y ", "
 			"deaths offset = ", "corrimiento fallecimientos = "]
 
 filePath = "Argentina_Data/processed_data/"
-chartPath = "Argentina_Data/actual_charts/estimation/"
+chartPath = "Argentina_Data/actual_charts/estimations/"
 
 #Some styling...
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
