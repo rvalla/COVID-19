@@ -24,14 +24,14 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-08-11"
+dataEndDate = "2020-08-17"
 wantedStartDate = "2020-05-01"
-wantedEndDate = "2020-08-10"
+wantedEndDate = "2020-08-15"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -108,8 +108,6 @@ for r in range(len(regions)):
 	cumulative_databases[r].index = pd.DatetimeIndex(cumulative_databases[r].index)
 	cumulative_databases[r].loc[:,"ratio"] = cumulative_databases[r][:]["positivos"].div(cumulative_databases[r][:]["total"])
 	cumulative_databases[r]["ratio"].fillna(0, inplace=True)
-	
-databases[0].to_csv("saraza.csv")
 
 print("The data is ready!                             ", end= "\n")
 

@@ -34,13 +34,14 @@ weeklyAnalysisR = False
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
 regions = ["India", "Brazil", "Russia"]
-regions = ["Peru", "Chile", "Mexico", "South Africa", "United Kingdom", "Iran", "Spain"]
-#regions = ["Spain", "Pakistan", "Italy", "France", "Saudi Arabia", "Turkey", "Germany"]
-#regions = ["Colombia", "Argentina", "Ecuador", "Canada", "Qatar"]
-#regions = ["Sweden", "Belgium", "Bolivia", "Panama", "Israel", "Singapore"]
-#regions = ["Nigeria", "Switzerland", "Japan"]
-regions = ["Korea, South", "Denmark", "Australia", "Costa Rica"]
-#regions = ["Uruguay", "Taiwan*", "New Zealand", "Iceland"]
+regions = ["Peru", "Chile", "Mexico", "South Africa", "Colombia"]
+regions = ["Spain", "United Kingdom", "Iran", "Pakistan", "Bangladesh", "Saudi Arabia"]
+regions = ["Argentina", "Italy", "France", "Turkey", "Germany"]
+regions = ["Ecuador", "Canada", "Qatar", "Bolivia", "Israel", "Sweden", "Panama", "Belgium"]
+regions = ["Netherlands", "Guatemala", "Singapore", "Poland", "Portugal", "Japan"]
+regions = ["Austria", "El Salvador", "Australia", "Costa Rica"]
+regions = ["Korea, South", "Norway", "Finland", "Paraguay"]
+regions = ["Taiwan*", "Vietnam", "Uruguay", "New Zealand", "Iceland"]
 
 regionsIndexes = [[],[]]
 groupbyCountry = True
@@ -67,11 +68,9 @@ startDateDay = 2
 
 #Selecting data to display
 startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 500 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
-realMortality = 0.015 #Real mortality to estimate infected count from deaths
-deathOffset = 11 #Number of days needed to reach a death since symptoms onset on average
+dataGuide = 1 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
@@ -316,10 +315,12 @@ def getNewCases(datalist):
 
 def getNewCasesAv(datalist):
 	ls = []
-	for e in range(len(datalist) - 2):
-		ls.append((datalist[e+2] + datalist[e+1] + datalist[e])/3)
-	index = len(datalist)
-	ls.append((datalist[index-1]+datalist[index-2])/2)
+	ls.append(None)
+	ls.append(None)
+	for e in range(len(datalist) - 4):
+		ls.append((datalist[e+4] + datalist[e+3] + datalist[e+2] + datalist[e+1] + datalist[e])/5)
+	ls.append(None)
+	ls.append(None)
 	return ls
 
 def plotNewCases(datalocation, datatype, dataguide):
@@ -350,7 +351,7 @@ def plotNewCases(datalocation, datatype, dataguide):
 	plt.tight_layout()
 	plt.show()
 
-def plotNewCases3Av(datalocation, datatype, dataguide):
+def plotNewCases5Av(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -364,7 +365,7 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 	plt.title("COVID-19: New " + dataTitles[datatype] + " cases trend since number " + str(caseCount) + " " + dataTitles[dataguide])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (3 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
 	plt.xlabel("Time in days", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -378,7 +379,7 @@ def plotNewCases3Av(datalocation, datatype, dataguide):
 	plt.tight_layout()
 	plt.show()
 
-def plotDoubleNewCases3Av(datalocation, datatypeA, datatypeB, dataguide):
+def plotDoubleNewCases5Av(datalocation, datatypeA, datatypeB, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -395,7 +396,7 @@ def plotDoubleNewCases3Av(datalocation, datatypeA, datatypeB, dataguide):
 	plt.title(dataTitles[datatypeA])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (3 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
 	plt.xlabel("", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -417,7 +418,7 @@ def plotDoubleNewCases3Av(datalocation, datatypeA, datatypeB, dataguide):
 	plt.title(dataTitles[datatypeB])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (3 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
 	plt.xlabel("Time in days", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -646,11 +647,11 @@ if newConfirmed == True:
 if newDeaths == True:
 	plotNewCases(regionsIndexes, 1, dataGuide)
 if newConfirmedTrend == True:
-	plotNewCases3Av(regionsIndexes, 0, dataGuide)
+	plotNewCases5Av(regionsIndexes, 0, dataGuide)
 if newDeathsTrend == True:
-	plotNewCases3Av(regionsIndexes, 1, dataGuide)
+	plotNewCases5Av(regionsIndexes, 1, dataGuide)
 if newConfirmedAndDeathTrend == True:
-	plotDoubleNewCases3Av(regionsIndexes, 0, 1, dataGuide)
+	plotDoubleNewCases5Av(regionsIndexes, 0, 1, dataGuide)
 if deathRate == True:
 	plotDeathRate(regionsIndexes)
 if duplicationTimes == True:
