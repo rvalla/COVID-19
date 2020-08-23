@@ -17,7 +17,7 @@ print("Ploting data of ", end=" ")
 #Deciding what to plot...
 confirmedByDate = False #Decide if you want to plot data by date for selected regions.
 deathsByDate = False
-confirmedAndDeathsByDate = False
+confirmedAndDeathsByDate = True
 confirmedByOutbreak = False #Decide if you want to plot data by notified cases for selected regions.
 deathsByOutbreak = False
 confirmedAndDeahtsByOutbreak = True
@@ -34,14 +34,14 @@ weeklyAnalysisR = False
 #Selecting regions to study
 #Note that the first one will be used as reference to decide periods of time to plot
 regions = ["India", "Brazil", "Russia"]
-regions = ["Peru", "Chile", "Mexico", "South Africa", "Colombia"]
-regions = ["Spain", "United Kingdom", "Iran", "Pakistan", "Bangladesh", "Saudi Arabia"]
-regions = ["Argentina", "Italy", "France", "Turkey", "Germany"]
-regions = ["Ecuador", "Canada", "Qatar", "Bolivia", "Israel", "Sweden", "Panama", "Belgium"]
-regions = ["Netherlands", "Guatemala", "Singapore", "Poland", "Portugal", "Japan"]
-regions = ["Austria", "El Salvador", "Australia", "Costa Rica"]
-regions = ["Korea, South", "Norway", "Finland", "Paraguay"]
-regions = ["Taiwan*", "Vietnam", "Uruguay", "New Zealand", "Iceland"]
+#regions = ["Peru", "Mexico", "South Africa", "Colombia"]
+#regions = ["Argentina", "Spain", "Chile", "United Kingdom", "Iran", "Saudi Arabia"]
+#regions = ["Italy", "France", "Turkey", "Germany"]
+#regions = ["Ecuador", "Canada", "Qatar", "Bolivia", "Israel", "Sweden", "Panama", "Belgium"]
+#regions = ["Netherlands", "Guatemala", "Singapore", "Poland", "Portugal", "Japan"]
+#regions = ["Austria", "El Salvador", "Australia", "Costa Rica"]
+#regions = ["Korea, South", "Norway", "Finland", "Paraguay"]
+#regions = ["Taiwan*", "Vietnam", "Uruguay", "New Zealand", "Iceland"]
 
 regionsIndexes = [[],[]]
 groupbyCountry = True
@@ -68,9 +68,9 @@ startDateDay = 2
 
 #Selecting data to display
 startDate = "2/22/20" #Starting point for plotbyDate. Default: 1/22/20
-caseCount = 500 #Starting point for plotbyOutbreak (number of confirmed cases)
+caseCount = 1000 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
-dataGuide = 1 #Data type to calculate startpoints (confirmed, deaths, recovered)
+dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
 
 defaultFont = "Oswald" #Change this if you don't like it or is not available in your system
 legendFont = "Myriad Pro" #Change this to edit legends' font 
