@@ -29,9 +29,9 @@ realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 ratioticks = 0.1
-estimationticks = 100000
+estimationticks = 200000
 
 #Deciding if you want to save and show charts...
 saveChart = True

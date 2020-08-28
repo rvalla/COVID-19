@@ -18,13 +18,12 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-regions = ["CABA", "BUENOS AIRES", "CORDOBA", "CHACO", "JUJUY", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
-#regions = ["CORDOBA", "CHACO", "JUJUY", "LA RIOJA", "MENDOZA", "NEUQUEN", "RIO NEGRO", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "JUJUY", "MENDOZA", "RIO NEGRO"]
+#regions = ["NEUQUEN", "ENTRE RIOS", "LA RIOJA", "SALTA", "SANTA FE"]
 
 #Selecting data to display
-startDate = "2020-05-01" #Starting point for plotbyDate. Default: 03/03
-#startDate = "2020-04-15"
-caseCount = 10 #Starting point for plotbyOutbreak (number of confirmed cases)
+startDate = "2020-06-01" #Starting point for plotbyDate. Default: 03/03
+caseCount = 100 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
 #Deciding language for titles and tags...
@@ -63,8 +62,8 @@ weeklyAnalysisAC = False #Decide if you want to plot week day data of notified c
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
-ticksSizes = [25000, 400, 1000, 20, 0.05]
-#ticksSizes = [1000, 20, 50, 3, 0.05]
+ticksSizes = [25000, 800, 1000, 25, 0.05]
+#ticksSizes = [1500, 20, 50, 3, 0.05]
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -430,7 +429,7 @@ def plotArgentinaB(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 30)
+	gridAndTicks(s[1]*1.1, 50)
 	ticksLocator(2)
 	a = plt.xlim()
 	plt.gca().xaxis.set_ticklabels([])
@@ -441,7 +440,7 @@ def plotArgentinaB(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 0.025)
+	gridAndTicks(s[1]*1.1, 0.015)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
@@ -745,7 +744,7 @@ if deathsByDate == True:
 	print("Plotting deaths cases data by date...", end="\n")
 	plotbyDate(regions, 2, xTitles[0+lg], yTitles[2+lg], True, ticksSizes[1], saveChart, showChart)
 if confirmedAndDeathsbyDate == True:
-	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
+	plotDoublebyDate(regions, 0, 2, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], True, 2*ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
 if confirmedByOutbreak == True:
 	print("Plotting confirmed cases data by outbreak...", end="\n")
 	plotbyOutbreak(regions, 0, dataGuide, startPoints, xTitles[0+lg], yTitles[0+lg], ticksSizes[0], saveChart, showChart)
@@ -753,7 +752,7 @@ if deathsByOutbreak == True:
 	print("Plotting deaths data by outbreak...", end="\n")
 	plotbyOutbreak(regions, 2, dataGuide, startPoints, xTitles[0+lg], yTitles[2+lg], ticksSizes[1], saveChart, showChart)
 if confirmedAndDeathsbyOutbreak == True:
-	plotDoublebyOutbreak(regions, 0, 2, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
+	plotDoublebyOutbreak(regions, 0, 2, dataGuide, xTitles[0+lg], yTitles[0+lg], yTitles[2+lg], 2*ticksSizes[0], 2*ticksSizes[1], saveChart, showChart)
 if newConfirmedCases == True:
 	print("Plotting daily confirmed cases data...", end="\n")
 	plotbyDate(regions, 7, xTitles[0+lg], yTitles[0+lg], True, ticksSizes[2], saveChart, showChart)

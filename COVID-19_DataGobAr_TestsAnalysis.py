@@ -24,9 +24,9 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-08-17"
+dataEndDate = "2020-08-22"
 wantedStartDate = "2020-05-01"
-wantedEndDate = "2020-08-15"
+wantedEndDate = "2020-08-21"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
@@ -34,8 +34,8 @@ plotScale = "linear"
 lg = 1 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = True
-showChart = False
+saveChart = False
+showChart = True
 
 #Deciding what to plot...
 plotByRegions = True
