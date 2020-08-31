@@ -22,16 +22,18 @@ print("Loading data...", end="\n")
 regions = ["CABA", "BUENOS AIRES", "ARGENTINA"]
 
 #Selecting data to display
-startDate = "2020-03-03" #Starting point for plotbyDate. Default: 03/03
+startDate = "2020-05-01" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 0 # 0 for english, 1 for spanish
+lg = 1 # 0 for english, 1 for spanish
 ratioticks = 0.1
 estimationticks = 200000
+newratioticks = 0.2
+newestimationticks = 3000
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -41,15 +43,18 @@ showChart = False
 realCasesEstimation = False
 testedRatio = False
 ratioAndEstimation = True
+ratioAndEstimation7dAv = True
 
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
-fileNames = ["00_Confirmed.csv", "02_Deaths.csv"]				
+fileNames = ["00_Confirmed.csv", "02_Deaths.csv", "07_NewConfirmed.csv", "11_NewDeaths.csv",
+			"26_NewConfirmed7dAv.csv", "28_Newdeaths7dAv.csv"]
 dataTitles = ["Estimation based on deaths", "Estimación a partir de fallecimientos", "Known cases ratio",
-				"Tasa de detección"]
+				"Tasa de detección", "Estimation based on deaths (7d)", "Estimación a partir de fallecimientos (7d)",
+				"Known cases ratio (7d)", "Tasa de detección (7d)"]
 plotTitles = ["Real cases estimation", "Estimación de casos"]
 shortLabels = ["Estimated cases", "Casos estimados", "Confirmed", "Confirmados", "Deaths", "Fallecimientos",
 				"Known ratio", "Tasa de detección"]
@@ -135,20 +140,33 @@ estimationsAndData = []
 
 def buildData():
 	for r in range(len(regions)):
-		regiondata = pd.DataFrame(index=databases[0].index, columns=["confirmed", "deaths", "estimation", "ratio"])
+		regiondata = pd.DataFrame(index=databases[0].index, columns=["confirmed",  "deaths", "estimation", "ratio",
+					"new confirmed", "new deaths", "new estimated", "new ratio", "new confirmed (7d)", "new deaths (7d)",
+					"new estimated (7d)", "new ratio (7d)"])
 		for e in range(regiondata.shape[0]):
 			regiondata.loc[regiondata.index[e], "confirmed"] = databases[0].loc[databases[0].index[e], regions[r]]
-			regiondata.loc[regiondata.index[e], "deaths"] = databases[1].loc[databases[1].index[e], regions[r]] 
+			regiondata.loc[regiondata.index[e], "deaths"] = databases[1].loc[databases[1].index[e], regions[r]]
+			regiondata.loc[regiondata.index[e], "new confirmed"] = databases[2].loc[databases[2].index[e], regions[r]] 
+			regiondata.loc[regiondata.index[e], "new confirmed (7d)"] = databases[4].loc[databases[4].index[e], regions[r]]
+			regiondata.loc[regiondata.index[e], "new deaths"] = databases[3].loc[databases[3].index[e], regions[r]]
+			regiondata.loc[regiondata.index[e], "new deaths (7d)"] = databases[5].loc[databases[5].index[e], regions[r]]
 		for e in range(regiondata.shape[0] - deathOffset):
 			regiondata.loc[regiondata.index[e], "estimation"] = \
 			regiondata.loc[regiondata.index[e + deathOffset], "deaths"] / realMortality
+			regiondata.loc[regiondata.index[e], "new estimated"] = \
+			regiondata.loc[regiondata.index[e + deathOffset], "new deaths"] / realMortality
+			regiondata.loc[regiondata.index[e], "new estimated (7d)"] = \
+			regiondata.loc[regiondata.index[e + deathOffset], "new deaths (7d)"] / realMortality
 		regiondata["ratio"] = regiondata["confirmed"].div(regiondata["estimation"])
+		regiondata["new ratio"] = regiondata["new confirmed"].div(regiondata["new estimated"])
+		regiondata["new ratio (7d)"] = regiondata["new confirmed (7d)"].div(regiondata["new estimated (7d)"])
 		databases[d].index = pd.DatetimeIndex(databases[d].index)
 		databases[d].index.name = "FECHA"
 		global estimationsAndData
 		estimationsAndData.append(regiondata)
 
 buildData()
+estimationsAndData[0].to_csv("saraza.csv")
 
 def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
 	figure = plt.figure(num=None, figsize=(4, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -169,7 +187,7 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 #	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
 	plt.ylabel("")
 	plt.xlabel("")
-	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
+	plt.legend(loc=4, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
 	ticksLocator(3)
@@ -212,9 +230,75 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 		savePlot("E_00_KnownRatioAndEstimation.csv", figure)
 	if show == True:
 		plt.show()
-	
+
+def plotRatioAndEstimation7dAv(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
+	figure = plt.figure(num=None, figsize=(4, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	#figure.suptitle("COVID-19: " + plotTitles[0+lg] + "\n (" + tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=12)
+	plt.subplot2grid((2, 1), (0, 0))
+	#Saving y values for markQ...
+	yquarantine = []
+	x = quarantineIndex
+	#Plotting selected data...
+	for i in range(len(regions)):
+		plotA = estimationsAndData[i][startDate:]["new ratio (7d)"].plot(kind='line', label=regions[i], \
+				color=colorlist[i], alpha = 1.0, linewidth=2.0)
+	s = plt.ylim()
+	a = plt.xlim()
+	#Setting up titles	
+	plotA.set_title(dataTitles[6+lg], fontname=defaultFont, fontsize=10)
+	plt.yscale(plotScale)
+#	plt.ylabel(ytitleA, fontname=legendFont, fontsize=8)
+	plt.ylabel("")
+	plt.xlabel("")
+	plt.legend(loc=1, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
+	#Setting up grid...
+	gridAndTicks(s[1]*1.1, ticksIntervalA)
+	ticksLocator(3)
+	plt.gca().xaxis.set_ticklabels([])
+	#Setting axis labels font and legend
+	plt.subplot2grid((2, 1), (1, 0))
+	#Saving y values for markQ...
+	yquarantine = []
+	x = quarantineIndex
+	#Plotting selected data...
+	for i in range(len(regions)):
+		plotB = estimationsAndData[i][startDate:]["new estimated (7d)"].plot(kind='line', label=regions[i], \
+				color=colorlist[i], alpha = 1.0, linewidth=2.0)
+		plotB = estimationsAndData[i][startDate:]["new confirmed (7d)"].plot(kind='line', label=regions[i], \
+				color=colorlist[i], alpha = 0.5, linewidth=2.0)
+		yquarantine.append(estimationsAndData[i].loc[quarantineStart, "estimation"])
+	s = plt.ylim()
+	plt.xlim(a[0], a[1])
+	if markQ == True:
+		y = max(yquarantine) #Drawing a mark on quarantineStartDate
+		markQuarantine("", s[1]/20, s[1]/5, 8, quarantineStart, y, 5, 9, 7)
+	#Setting up titles	
+	plotB.set_title(dataTitles[4+lg] +"\n (" + tConector[8+lg] + str(deathOffset) + ", " +
+			tConector[6+lg] + str(realMortality) + ")", fontname=defaultFont, fontsize=10)
+	plt.yscale(plotScale)
+#	plt.ylabel(ytitleB, fontname=legendFont, fontsize=8)
+	plt.ylabel("")
+	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
+	#Setting up grid...
+	gridAndTicks(s[1]*1.1, ticksIntervalB)
+	ticksLocator(3)
+	ylabels = nu.arange(0, s[1]/1000*1.1, ticksIntervalB/1000).tolist()
+	for l in range(len(ylabels)):
+		ylabels[l] = "{:.0f}".format(ylabels[l])
+		ylabels[l] += "K"
+	plt.yticks(nu.arange(0, s[1] * 1.1, ticksIntervalB), ylabels)
+	plt.tight_layout(rect=[0, 0, 1, 1])
+	if savechart == True:
+		auxName = fileNames[0].split(".")
+		savePlot("E_00_KnownRatioAndEstimation7dAv.csv", figure)
+	if show == True:
+		plt.show()
+
 if ratioAndEstimation == True:	
 	plotRatioAndEstimation(regions, xTitles[0+lg], yTitles[6+lg], yTitles[0+lg], True, ratioticks, estimationticks, saveChart, showChart)
+
+if ratioAndEstimation7dAv == True:	
+	plotRatioAndEstimation7dAv(regions, xTitles[0+lg], yTitles[6+lg], yTitles[0+lg], True, newratioticks, newestimationticks, saveChart, showChart)
 
 #Saying good bye...
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
