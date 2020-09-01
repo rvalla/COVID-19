@@ -22,7 +22,7 @@ print("Loading data...", end="\n")
 regions = ["CABA", "BUENOS AIRES", "ARGENTINA"]
 
 #Selecting data to display
-startDate = "2020-05-01" #Starting point for plotbyDate. Default: 03/03
+startDate = "2020-04-01" #Starting point for plotbyDate. Default: 03/03
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 realMortality = 0.01 #Real mortality to estimate infected count from deaths
@@ -166,7 +166,6 @@ def buildData():
 		estimationsAndData.append(regiondata)
 
 buildData()
-estimationsAndData[0].to_csv("saraza.csv")
 
 def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksIntervalA, ticksIntervalB, savechart, show):
 	figure = plt.figure(num=None, figsize=(4, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -200,9 +199,9 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	#Plotting selected data...
 	for i in range(len(regions)):
 		plotB = estimationsAndData[i][startDate:]["estimation"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 1.0, linewidth=2.0)
+				color=colorlist[i], alpha = 1.0, linewidth=2.0, zorder=2)
 		plotB = estimationsAndData[i][startDate:]["confirmed"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 0.5, linewidth=2.0)
+				color=colorlist[i], alpha = 0.5, linewidth=2.0, zorder=1)
 		yquarantine.append(estimationsAndData[i].loc[quarantineStart, "estimation"])
 	s = plt.ylim()
 	plt.xlim(a[0], a[1])
@@ -263,9 +262,9 @@ def plotRatioAndEstimation7dAv(regions, xtitle, ytitleA, ytitleB, markQ, ticksIn
 	#Plotting selected data...
 	for i in range(len(regions)):
 		plotB = estimationsAndData[i][startDate:]["new estimated (7d)"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 1.0, linewidth=2.0)
+				color=colorlist[i], alpha = 1.0, linewidth=2.0, zorder=2)
 		plotB = estimationsAndData[i][startDate:]["new confirmed (7d)"].plot(kind='line', label=regions[i], \
-				color=colorlist[i], alpha = 0.5, linewidth=2.0)
+				color=colorlist[i], alpha = 0.5, linewidth=2.0, zorder=1)
 		yquarantine.append(estimationsAndData[i].loc[quarantineStart, "estimation"])
 	s = plt.ylim()
 	plt.xlim(a[0], a[1])

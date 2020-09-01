@@ -15,8 +15,7 @@ print("-----------------------------------------------")
 print()
 
 #Selecting data: "Confirmed", "Deaths" or "Recovered"
-regions = ["CABA", "Buenos Aires", "Santa Fe", "Córdoba", "Río Negro", "Chubut", "Mendoza", "Chaco", "Misiones"]
-#regions = ["CABA", "Buenos Aires"]
+regions = ["CABA", "Buenos Aires", "Chaco", "Córdoba", "Jujuy", "Santa Fe", "Mendoza", "Río Negro"]
 
 fileName = "Covid19Determinaciones.csv"
 fileCompletePath = "Argentina_Data/datos.gob.ar/" + fileName
@@ -24,18 +23,18 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-08-22"
+dataEndDate = "2020-08-31"
 wantedStartDate = "2020-05-01"
-wantedEndDate = "2020-08-21"
+wantedEndDate = "2020-08-30"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = False
-showChart = True
+saveChart = True
+showChart = False
 
 #Deciding what to plot...
 plotByRegions = True
@@ -44,6 +43,7 @@ plotInfectedRatio = True
 plotCumulativeRatio = True
 plotPositives = True
 plotCumulativePositives = True
+plotTestAndRatio = True
 
 #Loading data by province...
 databases = []
@@ -134,7 +134,7 @@ ptitles = ["Daily tests by region (7 days)", "Testeos diarios por provincia (7 d
 			"Cumulative positive tests ratio", "Tasa de positividad acumulada", "Daily positive tests (7 days)",
 			"Testeos positivos diarios (7 días)", "Cumulative positive tests", "Testeos positivos acumulados"]
 filenames = ["T_00_dailytests", "T_01_cumulativetests", "T_02_dailypositiveratio", "T_03_positiveratio",
-			"T_04_dailypositives", "T_05_cumulativepositives"]
+			"T_04_dailypositives", "T_05_cumulativepositives", "T_06_dailytestAndratio"]
 xtitles = ["Time in days", "Tiempo en días"]
 ytitles = ["Number of tests", "Cantidad de tests", "Positive tests ratio", "Tasa de positividad",
 			"Positive tests", "Tests positivos"]
@@ -157,8 +157,8 @@ def gridAndTicks(yMax, ticksinterval):
 	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
 	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
 	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
-	plt.xticks(fontsize=7)
-	plt.yticks(fontsize=7)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
 	plt.yticks(nu.arange(0, yMax, ticksinterval))
 	plt.gca().set_facecolor(backgroundPlot)
 
@@ -169,7 +169,7 @@ def ticksLocator(weekInterval):
 	plt.gca().xaxis.set_minor_formatter(tk.NullFormatter())
 
 def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, show, csvname):
-	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+	figure = plt.figure(num=None, figsize=(6, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
 	for i in range(len(datatoplot)):
 		datatoplot[i][wantedStartDate:wantedEndDate][tag].plot(kind='line', label=regions[i], linewidth=2.0)
 	plt.title(ptitle, fontname=defaultFont)
@@ -186,19 +186,30 @@ def plotData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, 
 	if show == True:
 		plt.show()
 		
-def plotDoubleData(datatoplot, tag, ptitle, xtitle, ytitle, ticksinterval, savechart, show, csvname):
-	figure = plt.figure(num=None, figsize=(8, 4), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+def plotDoubleData(datatoplot, tagA, tagB, ptitle, xtitle, ytitle, ticksintervalA, ticksintervalB, savechart, show, csvname):
+	figure = plt.figure(num=None, figsize=(5, 4.5), dpi=150, facecolor=backgroundFigure, edgecolor='k')
+	dataA = plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datatoplot)):
-		datatoplot[i][wantedStartDate:wantedEndDate][tag].plot(kind='line', label=regions[i], linewidth=2.0)
-	plt.title(ptitle, fontname=defaultFont)
+		dataA = datatoplot[i][wantedStartDate:wantedEndDate][tagA].plot(kind='line', label=regions[i], linewidth=2.0)
+	dataA.set_title(ptitle[0], fontname=defaultFont)
 	s = plt.ylim()
-	plt.yscale(plotScale)
-	plt.ylabel(ytitle, fontname=legendFont)
-	plt.xlabel(xtitle, fontname=legendFont)
-	gridAndTicks(s[1]*1.1, ticksinterval)
+	dataA.set_yscale(plotScale)
+	dataA.set_ylabel(ytitle[0], fontname=legendFont)
+	dataA.set_xlabel("")
+	gridAndTicks(s[1]*1.1, ticksintervalA)
 	ticksLocator(2)
 	plt.legend(loc=2, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 7})
-	plt.tight_layout()
+	dataB = plt.subplot2grid((2, 1), (1, 0))
+	for i in range(len(datatoplot)):
+		dataB = datatoplot[i][wantedStartDate:wantedEndDate][tagB].plot(kind='line', label=regions[i], linewidth=2.0)
+	dataB.set_title(ptitle[1], fontname=defaultFont)
+	s = plt.ylim()
+	dataB.set_yscale(plotScale)
+	dataB.set_ylabel(ytitle[1], fontname=legendFont)
+	dataB.set_xlabel(xtitle, fontname=legendFont)
+	gridAndTicks(s[1]*1.1, ticksintervalB)
+	ticksLocator(2)
+	plt.tight_layout(rect=[0, 0, 1, 1])
 	if savechart == True:
 		savePlot(csvname, figure)
 	if show == True:
@@ -222,5 +233,8 @@ if plotPositives == True:
 if plotCumulativePositives == True:
 	print("Plotting cummulative positive tests ratio since date...", end="\n")
 	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], 30000, saveChart, showChart, filenames[5])
+if plotTestAndRatio == True:
+	plotDoubleData(databases, "total7d", "ratio7d", [ptitles[0+lg],ptitles[4+lg]], xtitles[0+lg], [ytitles[0+lg],ytitles[2+lg]], \
+					2500, 0.15,  saveChart, showChart, filenames[6])
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")
