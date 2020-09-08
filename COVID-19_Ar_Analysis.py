@@ -18,8 +18,9 @@ print("Loading data...", end="\n")
 
 #Selecting regions to study in detail...
 #Note that the first one will be used as reference to decide periods of time in some charts...
-regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "JUJUY", "MENDOZA", "RIO NEGRO"]
-#regions = ["NEUQUEN", "ENTRE RIOS", "LA RIOJA", "SALTA", "SANTA FE"]
+regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "JUJUY", "MENDOZA", "RIO NEGRO", "SANTA FE"]
+#regions = ["CABA", "CHACO", "CORDOBA", "JUJUY", "MENDOZA", "RIO NEGRO", "SANTA FE"]
+#regions = ["NEUQUEN", "ENTRE RIOS", "LA RIOJA", "SALTA"]
 
 #Selecting data to display
 startDate = "2020-06-01" #Starting point for plotbyDate. Default: 03/03
@@ -30,8 +31,8 @@ dataGuide = 2 #Data type to calculate startpoints (0 for confirmed, 2 for deaths
 lg = 0 # 0 for english, 1 for spanish
 
 #Deciding if you want to save and show charts...
-saveChart = True
-showChart = False
+saveChart = False
+showChart = True
 
 #Deciding what to plot...
 confirmedByDate = True #Decide if you want to plot confirmed data by date for selected regions.
@@ -63,7 +64,7 @@ weeklyAnalysisAC = False #Decide if you want to plot week day data of notified c
 #Deciding between linear or logarithmic scales...
 plotScale = "linear"
 ticksSizes = [25000, 800, 1000, 25, 0.05]
-#ticksSizes = [1500, 20, 50, 3, 0.05]
+#ticksSizes = [1000, 15, 75, 2, 0.02]
 
 #Variables to store filenames and other strings...
 fileNamePrefix = "Argentina_COVID19_"
@@ -388,13 +389,13 @@ def plotArgentinaA(savechart, show):
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 50000)
+	gridAndTicks(s[1]*1.1, 100000)
 	ticksLocator(2)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 50).tolist()
+	ylabels = nu.arange(0, s[1]/1000*1.1, 100).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 50000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 100000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((2, 1), (1, 0))
@@ -411,7 +412,7 @@ def plotArgentinaA(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 1500)
+	gridAndTicks(s[1]*1.1, 2000)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
@@ -440,7 +441,7 @@ def plotArgentinaB(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 0.015)
+	gridAndTicks(s[1]*1.1, 0.010)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.tight_layout(rect=[0, 0, 1, 1])
@@ -508,13 +509,13 @@ def plotAllCountryDataWide(savechart, show):
 	total.set_title(plotTitles[2*1+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 100000)
+	gridAndTicks(s[1]*1.1, 150000)
 	ticksLocator(2)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 100).tolist()
+	ylabels = nu.arange(0, s[1]/1000*1.1, 150).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 100000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 150000), ylabels)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting up new daily chart...
 	plt.subplot2grid((3, 2), (0, 1))
@@ -531,7 +532,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 2000)
+	gridAndTicks(s[1]*1.1, 2500)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
@@ -542,7 +543,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 50)
+	gridAndTicks(s[1]*1.1, 75)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
@@ -556,7 +557,7 @@ def plotAllCountryDataWide(savechart, show):
 	plt.yscale(plotScale)
 	s = plt.ylim()
 	plt.xlabel("")
-	gridAndTicks(s[1]*1.1, 0.1)
+	gridAndTicks(s[1]*1.1, 0.15)
 	ticksLocator(2)
 	plt.xlim(a[0], a[1])
 	plt.gca().xaxis.set_ticklabels([])
@@ -568,13 +569,13 @@ def plotAllCountryDataWide(savechart, show):
 	tests.set_title(plotTitles[2*6+lg], fontsize=10, fontname=defaultFont)
 	plt.yscale(plotScale)
 	s = plt.ylim()
-	gridAndTicks(s[1]*1.1, 300000)
+	gridAndTicks(s[1]*1.1, 500000)
 	ticksLocator(2)
-	ylabels = nu.arange(0, s[1]/1000*1.1, 300).tolist()
+	ylabels = nu.arange(0, s[1]/1000*1.1, 500).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])
 		ylabels[l] += "K"
-	plt.yticks(nu.arange(0, s[1] * 1.1, 300000), ylabels)
+	plt.yticks(nu.arange(0, s[1] * 1.1, 500000), ylabels)
 	plt.xlabel("")
 	plt.xlim(a[0], a[1])
 	#Plotting duplication times...

@@ -23,14 +23,15 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-08-31"
+dataEndDate = "2020-09-06"
 wantedStartDate = "2020-05-01"
-wantedEndDate = "2020-08-30"
+wantedEndDate = "2020-09-05"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
 #Deciding language for titles and tags...
 lg = 0 # 0 for english, 1 for spanish
+ticksSizes = [1000, 150000, 0.15, 30000]
 
 #Deciding if you want to save and show charts...
 saveChart = True
@@ -217,24 +218,24 @@ def plotDoubleData(datatoplot, tagA, tagB, ptitle, xtitle, ytitle, ticksinterval
 
 if plotByRegions == True:
 	print("Plotting tests data by date...", end="\n")
-	plotData(databases, "total7d", ptitles[0+lg], xtitles[0+lg], ytitles[0+lg], 1000, saveChart, showChart, filenames[0])
+	plotData(databases, "total7d", ptitles[0+lg], xtitles[0+lg], ytitles[0+lg], ticksSizes[0], saveChart, showChart, filenames[0])
 if plotCumulative == True:
 	print("Plotting cummulative tests since date...", end="\n")
-	plotData(cumulative_databases, "total", ptitles[2+lg], xtitles[0+lg], ytitles[0+lg], 50000, saveChart, showChart, filenames[1])
+	plotData(cumulative_databases, "total", ptitles[2+lg], xtitles[0+lg], ytitles[0+lg], ticksSizes[1], saveChart, showChart, filenames[1])
 if plotInfectedRatio == True:
 	print("Plotting positive tests ratio since date...", end="\n")
-	plotData(databases, "ratio7d", ptitles[4+lg], xtitles[0+lg], ytitles[2+lg], 0.25, saveChart, showChart, filenames[2])
+	plotData(databases, "ratio7d", ptitles[4+lg], xtitles[0+lg], ytitles[2+lg], ticksSizes[2], saveChart, showChart, filenames[2])
 if plotCumulativeRatio == True:
 	print("Plotting cummulative positive tests ratio since date...", end="\n")
-	plotData(cumulative_databases, "ratio", ptitles[6+lg], xtitles[0+lg], ytitles[2+lg], 0.05, saveChart, showChart, filenames[3])
+	plotData(cumulative_databases, "ratio", ptitles[6+lg], xtitles[0+lg], ytitles[2+lg], ticksSizes[2], saveChart, showChart, filenames[3])
 if plotPositives == True:
 	print("Plotting cummulative positive tests ratio since date...", end="\n")
-	plotData(databases, "positivos7d", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], 500, saveChart, showChart, filenames[4])
+	plotData(databases, "positivos7d", ptitles[8+lg], xtitles[0+lg], ytitles[4+lg], ticksSizes[0], saveChart, showChart, filenames[4])
 if plotCumulativePositives == True:
 	print("Plotting cummulative positive tests ratio since date...", end="\n")
-	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], 30000, saveChart, showChart, filenames[5])
+	plotData(cumulative_databases, "positivos", ptitles[10+lg], xtitles[0+lg], ytitles[4+lg], ticksSizes[3], saveChart, showChart, filenames[5])
 if plotTestAndRatio == True:
-	plotDoubleData(databases, "total7d", "ratio7d", [ptitles[0+lg],ptitles[4+lg]], xtitles[0+lg], [ytitles[0+lg],ytitles[2+lg]], \
-					2500, 0.15,  saveChart, showChart, filenames[6])
+	plotDoubleData(databases, "total7d", "ratio7d", [ptitles[0+lg],ptitles[4+lg]], xtitles[0+lg], ["",""], \
+					2.5*ticksSizes[0], ticksSizes[2],  saveChart, showChart, filenames[6])
 
 print("That's all. If you want more plots, edit the code and run again.                          ", end="\n")

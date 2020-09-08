@@ -7,7 +7,7 @@ import matplotlib.dates as mdates
 from datetime import datetime as dt
 
 print("####################################################")
-print("       Visualization of COVID-19 Outbreak")
+print("       Estimations of COVID-19 Outbreak")
 print("----------------------------------------------------")
 print("https://github.com/rvalla/COVID-19")
 print("Data loaded from official national reports")
