@@ -1,6 +1,6 @@
 # Analysis and plotting of COVID-19 data
 
-This is a very little piece of code in [Python](https://www.python.org) to analyse trough plots
+This is a very little piece of code in [Python](https://www.python.org) to analyse through plots
 the data in the [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns
 Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19) by regions. Or the data from [National
 Reports](https://www.argentina.gob.ar/coronavirus/informe-diario) published in Argentina.
@@ -57,7 +57,7 @@ to know exactly what each one represents.
 - Confirmed case: a case confirmed by the authorities
 - Confirmed cases: number of cases confirmed so far
 - Recovered case: a person who is no longer infected
-- Revovered cases: number of recovered cases so far
+- Recovered cases: number of recovered cases so far
 - Active cases: confirmed cases - recovered cases
 - Death case: a case which ended with death of the patient
 - New cases: number of new cases registered on a day
