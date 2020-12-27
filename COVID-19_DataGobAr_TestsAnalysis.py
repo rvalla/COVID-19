@@ -22,14 +22,14 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-12-14"
+dataEndDate = "2020-12-26"
 wantedStartDate = "2020-09-01"
-wantedEndDate = "2020-12-07"
+wantedEndDate = "2020-12-21"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
+lg = 0 # 0 for english, 1 for spanish
 ticksSizes = [1000, 150000, 0.15, 30000]
 
 #Deciding if you want to save and show charts...
