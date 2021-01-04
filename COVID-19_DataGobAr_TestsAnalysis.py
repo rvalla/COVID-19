@@ -14,7 +14,7 @@ print("https://datos.gob.ar/dataset?q=covid")
 print("-----------------------------------------------")
 print()
 
-regions = ["CABA", "Buenos Aires", "Córdoba", "Santa Fe", "Chubut", "Corrientes", "Santa Cruz"]
+regions = ["CABA", "Buenos Aires", "Córdoba", "Santa Fe"]
 
 fileName = "Covid19Determinaciones.csv"
 fileCompletePath = "Argentina_Data/datos.gob.ar/" + fileName
@@ -22,9 +22,9 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2020-12-26"
+dataEndDate = "2021-01-04"
 wantedStartDate = "2020-09-01"
-wantedEndDate = "2020-12-21"
+wantedEndDate = "2021-01-01"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
