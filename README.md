@@ -1,6 +1,6 @@
 # Analysis and plotting of COVID-19 data
 
-This is a very little piece of code in [Python](https://www.python.org) to analyse through plots
+This is a very little piece of code in [Python](https://www.python.org) to analyze through plots
 the data in the [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns
 Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19) by regions. Or the data from [National
 Reports](https://www.argentina.gob.ar/coronavirus/informe-diario) published in Argentina.

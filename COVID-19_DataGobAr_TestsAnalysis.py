@@ -22,9 +22,9 @@ chartPath = "Argentina_Data/actual_charts/testing/"
 colorlist = ["orange", "tab:blue", "tab:red", "tab:green"]
 
 dataStartDate = "2020-02-11"
-dataEndDate = "2021-02-21"
+dataEndDate = "2021-03-07"
 wantedStartDate = "2020-09-01"
-wantedEndDate = "2021-02-15"
+wantedEndDate = "2021-03-01"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 plotScale = "linear"
 
