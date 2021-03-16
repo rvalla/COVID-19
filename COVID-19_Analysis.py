@@ -17,13 +17,13 @@ print("Ploting data of ", end=" ")
 #Deciding what to plot...
 confirmedByDate = False #Decide if you want to plot data by date for selected regions.
 deathsByDate = False
-confirmedAndDeathsByDate = True
+confirmedAndDeathsByDate = False
 confirmedByOutbreak = False #Decide if you want to plot data by notified cases for selected regions.
 deathsByOutbreak = False
-confirmedAndDeahtsByOutbreak = True
+confirmedAndDeahtsByOutbreak = False
 newConfirmed = False #Decide if you want to plot new daily cases for selected regions
 newDeaths = False
-newConfirmedTrend = False #Decide if you want to plot new daily cases trend (5 day average) for selected regions
+newConfirmedTrend = False #Decide if you want to plot new daily cases trend (7 day average) for selected regions
 newDeathsTrend = False
 newConfirmedAndDeathTrend = True
 deathRate = False #Decide if you want to plot death rate evolution for selected regions
@@ -35,14 +35,20 @@ weeklyAnalysisR = False
 #Note that the first one will be used as reference to decide periods of time to plot
 #regions = ["India", "Brazil", "Russia"]
 regions = ["Argentina", "Peru", "Mexico", "South Africa", "Colombia"]
-#regions = ["Argentina", "Chile", "United Kingdom", "Iran", "Saudi Arabia", "Spain", "France"]
-#regions = ["Argentina", "Italy", "Turkey", "Germany"]
-#regions = ["Netherlands", "Poland", "Ecuador", "Canada", "Qatar", "Israel", "Panama", "Bolivia"]
-#regions = ["Sweden", "Guatemala", "Singapore", "Portugal", "Japan", "Costa Rica", "Switzerland"]
-#regions = ["Austria", "El Salvador", "Australia", "Paraguay"]
-#regions = ["Korea, South", "Norway", "Finland"]
-#regions = ["Taiwan*", "Vietnam", "Uruguay", "New Zealand", "Iceland"]
-#regions = ["Australia", "Paraguay", "Uruguay"]
+#regions = ["Argentina", "Chile", "Colombia", "Peru"]
+#regions = ["Germany", "United Kingdom", "Spain", "France"]
+#regions = ["Germany", "United Kingdom"]
+#regions = ["Argentina", "Italy", "Germany", "Poland", "Spain", "France"]
+#regions = ["Netherlands", "Ecuador", "Canada", "Qatar", "Israel", "Panama", "Bolivia"]
+#regions = ["Austria", "Sweden", "Portugal", "Switzerland"]
+#regions = ["Singapore", "Japan", "Costa Rica"]
+#regions = ["El Salvador", "Australia"]
+#regions = ["Korea, South", "Norway", "Finland", "Australia"]
+#regions = ["Taiwan*", "Vietnam", "New Zealand"]
+#regions = ["Sweden", "Norway", "Finland", "Denmark"]
+#regions = ["Czechia"]
+regions = ["Paraguay", "Chile"]
+#regions = ["Brazil", "United Kingdom"]
 
 regionsIndexes = [[],[]]
 groupbyCountry = True
@@ -68,7 +74,7 @@ dayTags = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "
 startDateDay = 2
 
 #Selecting data to display
-startDate = "7/1/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
@@ -318,8 +324,13 @@ def getNewCasesAv(datalist):
 	ls = []
 	ls.append(None)
 	ls.append(None)
-	for e in range(len(datalist) - 4):
-		ls.append((datalist[e+4] + datalist[e+3] + datalist[e+2] + datalist[e+1] + datalist[e])/5)
+	ls.append(None)
+	for e in range(len(datalist) - 6):
+		t = 0
+		for i in range(7):
+			t += datalist[e+i]
+		ls.append(t/7)
+	ls.append(None)
 	ls.append(None)
 	ls.append(None)
 	return ls
@@ -352,7 +363,7 @@ def plotNewCases(datalocation, datatype, dataguide):
 	plt.tight_layout()
 	plt.show()
 
-def plotNewCases5Av(datalocation, datatype, dataguide):
+def plotNerCases7Av(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -366,7 +377,7 @@ def plotNewCases5Av(datalocation, datatype, dataguide):
 	plt.title("COVID-19: New " + dataTitles[datatype] + " cases trend since number " + str(caseCount) + " " + dataTitles[dataguide])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (7 days)", fontname=legendFont)
 	plt.xlabel("Time in days", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -397,7 +408,7 @@ def plotDoubleNewCases5Av(datalocation, datatypeA, datatypeB, dataguide):
 	plt.title(dataTitles[datatypeA])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (7 days)", fontname=legendFont)
 	plt.xlabel("", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -419,7 +430,7 @@ def plotDoubleNewCases5Av(datalocation, datatypeA, datatypeB, dataguide):
 	plt.title(dataTitles[datatypeB])
 	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
 	plt.grid()
-	plt.ylabel("Average of new cases (5 days)", fontname=legendFont)
+	plt.ylabel("Average of new cases (7 days)", fontname=legendFont)
 	plt.xlabel("Time in days", fontname=legendFont)
 	plt.yscale(plotScale)
 	plt.xticks(fontsize=6)
@@ -648,9 +659,9 @@ if newConfirmed == True:
 if newDeaths == True:
 	plotNewCases(regionsIndexes, 1, dataGuide)
 if newConfirmedTrend == True:
-	plotNewCases5Av(regionsIndexes, 0, dataGuide)
+	plotNerCases7Av(regionsIndexes, 0, dataGuide)
 if newDeathsTrend == True:
-	plotNewCases5Av(regionsIndexes, 1, dataGuide)
+	plotNerCases7Av(regionsIndexes, 1, dataGuide)
 if newConfirmedAndDeathTrend == True:
 	plotDoubleNewCases5Av(regionsIndexes, 0, 1, dataGuide)
 if deathRate == True:
