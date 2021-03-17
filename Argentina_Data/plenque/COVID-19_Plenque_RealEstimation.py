@@ -23,8 +23,8 @@ regionslabels = ["CABA", "PBA", "COR", "SF", "Argentina"]
 regionstoplot = [0, 1, 4]
 
 #Selecting data to display
-startDate = "2020-03-01" #Starting point for plotbyDate. Default: 03/03
-endDate = "2020-09-15"
+startDate = "2020-04-01" #Starting point for plotbyDate. Default: 03/03
+endDate = "2021-02-28"
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 dataGuide = 0 #Data type to calculate startpoints (0 for confirmed, 2 for deaths)
 
@@ -32,10 +32,10 @@ realMortality = 0.01 #Real mortality to estimate infected count from deaths
 deathOffset = 10 #Number of days needed to reach a death since symptoms onset on average
 
 #Deciding language for titles and tags...
-lg = 1 # 0 for english, 1 for spanish
-ratioticks = 0.1
-estimationticks = 500000
-newratioticks = 0.2
+lg = 0 # 0 for english, 1 for spanish
+ratioticks = 0.15
+estimationticks = 1000000
+newratioticks = 0.4
 newestimationticks = 10000
 
 #Deciding if you want to save and show charts...
@@ -43,8 +43,6 @@ saveChart = True
 showChart = False
 
 #Deciding what to plot...
-realCasesEstimation = False
-testedRatio = False
 ratioAndEstimation = True
 ratioAndEstimation7dAv = True
 
@@ -161,7 +159,7 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	plt.legend(loc=4, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
-	ticksLocator(3)
+	ticksLocator(5)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting axis labels font and legend
 	plt.subplot2grid((2, 1), (1, 0))
@@ -189,7 +187,7 @@ def plotRatioAndEstimation(regions, xtitle, ytitleA, ytitleB, markQ, ticksInterv
 	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	ticksLocator(3)
+	ticksLocator(5)
 	ylabels = nu.arange(0, s[1]/1000000*1.1, ticksIntervalB/1000000).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.1f}".format(ylabels[l])
@@ -224,7 +222,7 @@ def plotRatioAndEstimation7dAv(regions, xtitle, ytitleA, ytitleB, markQ, ticksIn
 	plt.legend(loc=1, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 6})
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalA)
-	ticksLocator(3)
+	ticksLocator(5)
 	plt.gca().xaxis.set_ticklabels([])
 	#Setting axis labels font and legend
 	plt.subplot2grid((2, 1), (1, 0))
@@ -252,7 +250,7 @@ def plotRatioAndEstimation7dAv(regions, xtitle, ytitleA, ytitleB, markQ, ticksIn
 	plt.xlabel(xtitle, fontname=legendFont, fontsize=8)
 	#Setting up grid...
 	gridAndTicks(s[1]*1.1, ticksIntervalB)
-	ticksLocator(3)
+	ticksLocator(5)
 	ylabels = nu.arange(0, s[1]/1000*1.1, ticksIntervalB/1000).tolist()
 	for l in range(len(ylabels)):
 		ylabels[l] = "{:.0f}".format(ylabels[l])

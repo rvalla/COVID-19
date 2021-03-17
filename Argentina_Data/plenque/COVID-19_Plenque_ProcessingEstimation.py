@@ -12,9 +12,6 @@ print("------------------------------------------------")
 print()
 print("Loading data...", end="\n")
 
-#Selecting regions to study in detail...
-#Note that the first one will be used as reference to decide periods of time in some charts...
-#regions = ["CABA", "BUENOS AIRES", "CHACO", "CORDOBA", "RIO NEGRO", "MENDOZA", "NEUQUEN", "ARGENTINA", "SANTA FE", "TIERRA DEL FUEGO", "ENTRE RIOS"]
 regionslabels = ["CABA", "PBA", "COR", "SF", "Argentina"]
 
 #Variables to store filenames and other strings...
@@ -26,7 +23,7 @@ datapath = "plenque_data/"
 
 #Defining the data period
 dataStartDate = "2020-01-01"
-dataEndDate = "2020-10-10"
+dataEndDate = "2021-03-16"
 dataPeriod = pd.date_range(dataStartDate, dataEndDate)
 
 realMortality = 0.01 #Real mortality to estimate infected count from deaths
