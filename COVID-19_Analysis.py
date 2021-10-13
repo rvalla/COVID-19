@@ -25,7 +25,8 @@ newConfirmed = False #Decide if you want to plot new daily cases for selected re
 newDeaths = False
 newConfirmedTrend = False #Decide if you want to plot new daily cases trend (7 day average) for selected regions
 newDeathsTrend = False
-newConfirmedAndDeathTrend = True
+newConfirmedAndDeathTrend = False
+newConfirmedAndDeathTrendByDate = True
 deathRate = False #Decide if you want to plot death rate evolution for selected regions
 duplicationTimes = False #Decide if you want to plot cases duplication times for selected regions
 weeklyAnalysis = False #Decide if you want to plot new daily cases by day of the week for selected regions
@@ -35,20 +36,22 @@ weeklyAnalysisR = False
 #Note that the first one will be used as reference to decide periods of time to plot
 #regions = ["India", "Brazil", "Russia"]
 regions = ["Argentina", "Peru", "Mexico", "South Africa", "Colombia"]
-#regions = ["Argentina", "Chile", "Colombia", "Peru"]
-#regions = ["Germany", "United Kingdom", "Spain", "France"]
+#regions = ["Chile", "Argentina", "Colombia", "Paraguay"]
+#regions = ["Germany", "United Kingdom", "Italy"]
 #regions = ["Germany", "United Kingdom"]
-#regions = ["Argentina", "Italy", "Germany", "Poland", "Spain", "France"]
+#regions = ["Argentina", "Italy", "Germany", "Poland", "France"]
 #regions = ["Netherlands", "Ecuador", "Canada", "Qatar", "Israel", "Panama", "Bolivia"]
 #regions = ["Austria", "Sweden", "Portugal", "Switzerland"]
-#regions = ["Singapore", "Japan", "Costa Rica"]
-#regions = ["El Salvador", "Australia"]
-#regions = ["Korea, South", "Norway", "Finland", "Australia"]
-#regions = ["Taiwan*", "Vietnam", "New Zealand"]
+#regions = ["Israel", "Singapore", "Japan", "Costa Rica"]
+#regions = ["New Zealand", "Australia"]
+#regions = ["Norway", "Korea, South", "Finland"]
+#regions = ["Taiwan*", "New Zealand"]
 #regions = ["Sweden", "Norway", "Finland", "Denmark"]
 #regions = ["Czechia"]
-regions = ["Paraguay", "Chile"]
+#regions = ["Paraguay"]
 #regions = ["Brazil", "United Kingdom"]
+#regions = ["Argentina", "Japan"]
+#regions = ["Uruguay"]
 
 regionsIndexes = [[],[]]
 groupbyCountry = True
@@ -74,7 +77,7 @@ dayTags = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "
 startDateDay = 2
 
 #Selecting data to display
-startDate = "3/1/20" #Starting point for plotbyDate. Default: 1/22/20
+startDate = "3/1/21" #Starting point for plotbyDate. Default: 1/22/20
 caseCount = 200 #Starting point for plotbyOutbreak (number of confirmed cases)
 outbreakDayCount = 0 #Number of days after caseCount condition is fulfiled
 dataGuide = 0 #Data type to calculate startpoints (confirmed, deaths, recovered)
@@ -363,7 +366,7 @@ def plotNewCases(datalocation, datatype, dataguide):
 	plt.tight_layout()
 	plt.show()
 
-def plotNerCases7Av(datalocation, datatype, dataguide):
+def plotNewCases7Av(datalocation, datatype, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure(num=None, figsize=(8, 4), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
@@ -395,7 +398,7 @@ def plotDoubleNewCases5Av(datalocation, datatypeA, datatypeB, dataguide):
 	startPoints = regionsStartPoints(regions)
 	period = databases[dataguide].shape[0] - startPoints[dataguide][0] - outbreakDayCount
 	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
-	figure.suptitle("COVID-19: New cases trend since number "  + str(caseCount) + " " + dataTitles[dataguide],
+	figure.suptitle("COVID-19: New cases trend since number "  + str(caseCount),
 						fontsize=13, fontname=defaultFont)
 	plt.subplot2grid((2, 1), (0, 0))
 	for i in range(len(datalocation[datatypeA])):
@@ -425,6 +428,51 @@ def plotDoubleNewCases5Av(datalocation, datatypeA, datatypeB, dataguide):
 		if startPoint > 0:
 			startPoint -= 1
 		datalist = databases[datatypeB][startPoint:startPoint + period][regionsIndexes[datatypeB][i]].values.tolist()
+		datalistsub = getNewCasesAv(getNewCases(datalist))
+		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
+	plt.title(dataTitles[datatypeB])
+	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
+	plt.grid()
+	plt.ylabel("Average of new cases (7 days)", fontname=legendFont)
+	plt.xlabel("Time in days", fontname=legendFont)
+	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.gca().set_facecolor(backgroundPlot)
+	plt.tight_layout(rect=[0, 0, 1, 1])
+	plt.show()
+
+def plotDoubleNewCases5AvByDate(datalocation, datatypeA, datatypeB, dataguide):
+	figure = plt.figure(num=None, figsize=(8, 6), dpi=imageResolution, facecolor=backgroundFigure, edgecolor='k')
+	figure.suptitle("COVID-19: New cases trend since "  + str(startDate),
+						fontsize=13, fontname=defaultFont)
+	plt.subplot2grid((2, 1), (0, 0))
+	for i in range(len(datalocation[datatypeA])):
+		datalist = databases[datatypeA][startDate:][regionsIndexes[datatypeA][i]].values.tolist()
+		datalistsub = getNewCasesAv(getNewCases(datalist))
+		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
+	plt.title(dataTitles[datatypeA])
+	plt.legend(loc=0, shadow = True, facecolor = backgroundFigure, prop={'family' : legendFont, 'size' : 8})
+	plt.grid()
+	plt.ylabel("Average of new cases (7 days)", fontname=legendFont)
+	plt.xlabel("", fontname=legendFont)
+	plt.yscale(plotScale)
+	plt.xticks(fontsize=6)
+	plt.yticks(fontsize=6)
+	plt.minorticks_on()
+	plt.grid(True, "major", "y", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "y", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.grid(True, "major", "x", ls="-", lw=0.8, c=majorGridColor, alpha=alphaMGC)
+	plt.grid(True, "minor", "x", ls="--", lw=0.3, c=minorGridColor, alpha=alphamGC)
+	plt.gca().set_facecolor(backgroundPlot)
+	plt.subplot2grid((2, 1), (1, 0))
+	for i in range(len(datalocation[datatypeB])):
+		datalist = databases[datatypeA][startDate:][regionsIndexes[datatypeB][i]].values.tolist()
 		datalistsub = getNewCasesAv(getNewCases(datalist))
 		plt.plot(datalistsub, label=regions[i], linewidth=2.5)
 	plt.title(dataTitles[datatypeB])
@@ -659,11 +707,13 @@ if newConfirmed == True:
 if newDeaths == True:
 	plotNewCases(regionsIndexes, 1, dataGuide)
 if newConfirmedTrend == True:
-	plotNerCases7Av(regionsIndexes, 0, dataGuide)
+	plotNewCases7Av(regionsIndexes, 0, dataGuide)
 if newDeathsTrend == True:
-	plotNerCases7Av(regionsIndexes, 1, dataGuide)
+	plotNewCases7Av(regionsIndexes, 1, dataGuide)
 if newConfirmedAndDeathTrend == True:
 	plotDoubleNewCases5Av(regionsIndexes, 0, 1, dataGuide)
+if newConfirmedAndDeathTrendByDate == True:
+	plotDoubleNewCases5AvByDate(regionsIndexes, 0, 1, dataGuide)
 if deathRate == True:
 	plotDeathRate(regionsIndexes)
 if duplicationTimes == True:
